@@ -1,37 +1,24 @@
-// React
-import { useRef, useEffect, useState } from "react";
+// Components
+import Map from "./components/map/Map";
 
-// external modules
-import mapboxgl from "mapbox-gl";
+// styled elements
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 // css
 import "./App.css";
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
-
 function App() {
-  const mapContainer = useRef(null);
-  const map = useRef(null);
-  const [lng, setLng] = useState(-70.9);
-  const [lat, setLat] = useState(42.35);
-  const [zoom, setZoom] = useState(9);
-
-  useEffect(() => {
-    if (map.current) return; // initialize map only once
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: [lng, lat],
-      zoom: zoom,
-    });
-  });
-
-  console.log(import.meta.env.VITE_MAPBOX_TOKEN);
-
   return (
-    <>
-      <div ref={mapContainer} className="map-container" />
-    </>
+    <Container fluid>
+      <Row style={{ height: "100vh" }}>
+        <Col style={{ backgroundColor: "pink", padding: 0 }}>
+          <Map />
+        </Col>
+        <Col style={{ backgroundColor: "red" }}>2 of 2</Col>
+      </Row>
+    </Container>
   );
 }
 
