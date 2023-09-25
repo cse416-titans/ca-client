@@ -4,9 +4,6 @@ import { useRef, useEffect, useState } from "react";
 // external modules
 import mapboxgl from "mapbox-gl";
 
-// Components
-import MapConfigurationContainer from "./MapConfigurationContainer";
-
 function Map() {
   const mapContainer = useRef(null);
   const map = useRef(null);
@@ -36,7 +33,6 @@ function Map() {
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <div ref={mapContainer} className="map-container" />
-      <MapConfigurationContainer lat={lat} lng={lng} zoom={zoom} />
     </div>
   );
 }

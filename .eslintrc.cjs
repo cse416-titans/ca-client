@@ -21,5 +21,6 @@ module.exports = {
     ],
     "import/no-webpack-loader-syntax":
       "off" /* disable inline loading to exclude mapbox-gl from transpilation. Source: https://stackoverflow.com/questions/45443274/webpack-2-expected-error-using-with-import */,
+    "react/prop-types": "off" /* disable props validation */,
   },
 };
