@@ -11,19 +11,21 @@ import "./App.css";
 import ClusteringPane from "./components/clustering-pane/ClusteringPane";
 import { useState } from "react";
 import ClusterAnalysisPane from "./components/clustering-pane/ClusterAnalysisPane";
+import PlanAnalysisPane from "./components/clustering-pane/PlanAnalysisPane";
 
 function App() {
   const [stage, setStage] = useState(0);
 
   return (
-    <Container fluid>
+    <Container fluid style={{ overflow: "hidden" }}>
       <Row style={{ height: "100vh" }}>
         <Col>
           <Map />
         </Col>
-        <Col style={{ padding: "50px 0" }}>
+        <Col style={{ padding: "25px 0", overflow: "hidden" }}>
           {stage === 0 && <ClusteringPane setStage={setStage} />}
           {stage === 1 && <ClusterAnalysisPane setStage={setStage} />}
+          {stage === 2 && <PlanAnalysisPane setStage={setStage} />}
         </Col>
       </Row>
     </Container>

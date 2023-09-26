@@ -129,7 +129,7 @@ function BasicExample({ setStage }) {
 
 function ClusteringPane({ setStage }) {
   return (
-    <div style={{ height: "100%" }}>
+    <div style={{ height: "100%", overflowY: "scroll" }}>
       <Container>
         <Row>
           <BreadcrumbExample setStage={setStage} />

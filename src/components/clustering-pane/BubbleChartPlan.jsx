@@ -41,32 +41,20 @@ export const data = {
   labels: labels,
   datasets: [
     {
-      type: "bubble",
-      label: "Cluster",
-      data: Array.from({ length: 50 }, () => ({
-        x: faker.datatype.number({ min: -100, max: 100 }),
-        y: faker.datatype.number({ min: -100, max: 100 }),
-        r: faker.datatype.number({ min: 15, max: 25 }),
-      })),
-      backgroundColor: Array.from({ length: 50 }, () => dynamicColors()),
-    },
-    {
       type: "scatter",
       label: "District Plan",
-      data: Array.from({ length: 5000 }, () => ({
+      data: Array.from({ length: 1000 }, () => ({
         x: faker.datatype.number({ min: -100, max: 100 }),
         y: faker.datatype.number({ min: -100, max: 100 }),
       })),
-      pointRadius: 0.5,
-      pointHoverRadius: 0.5,
-      pointHitRadius: 0,
-      backgroundColor: "rgba(0,0,0,0.1)",
+      pointRadius: 3,
+      backgroundColor: Array.from({ length: 1000 }, () => dynamicColors()),
       //point cross
     },
   ],
 };
 
-function BubbleChart({ setStage }) {
+function BubbleChartPlan({ setStage }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -87,4 +75,4 @@ function BubbleChart({ setStage }) {
   );
 }
 
-export default BubbleChart;
+export default BubbleChartPlan;

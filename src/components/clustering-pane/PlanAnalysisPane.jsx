@@ -4,29 +4,32 @@ import {
   Col,
   Breadcrumb,
   ListGroup,
+  Button,
   Form,
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
-import BubbleChart from "./BubbleChart";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import ClusterGraph from "./ClusterGraph";
 import TableExample from "./TableExample";
-import ModalExampleAddFilter from "./ModalExampleAddFilter";
+import BubbleChartPlan from "./BubbleChartPlan";
 
 function BreadcrumbExample({ setStage }) {
   return (
     <Breadcrumb>
       <Breadcrumb.Item onClick={() => setStage(0)}>Home</Breadcrumb.Item>
-      <Breadcrumb.Item href="" active>
+      <Breadcrumb.Item onClick={() => setStage(1)}>
         Clustering #1
+      </Breadcrumb.Item>
+      <Breadcrumb.Item href="" active>
+        Cluster #57
       </Breadcrumb.Item>
     </Breadcrumb>
   );
 }
 
-function ClusterAnalysisPane({ setStage }) {
+function PlanAnalysisPane({ setStage }) {
   return (
     <div style={{ overflow: "hidden" }}>
       <Container>
@@ -35,7 +38,7 @@ function ClusterAnalysisPane({ setStage }) {
         </Row>
         <Row>
           <Col className="my-auto">
-            <h1>Cluster Analysis</h1>
+            <h1>Plan Analysis</h1>
           </Col>
           <Col className="my-auto"></Col>
         </Row>
@@ -50,7 +53,7 @@ function ClusterAnalysisPane({ setStage }) {
               <Row style={{ height: "50%", overflowY: "scroll" }}>
                 <Row>
                   <Col style={{ padding: "10px 100px" }}>
-                    <BubbleChart setStage={setStage} />
+                    <BubbleChartPlan />
                   </Col>
                 </Row>
                 <Col>
@@ -86,7 +89,9 @@ function ClusterAnalysisPane({ setStage }) {
                         <span>Filter List</span>
                       </Col>
                       <Col>
-                        <ModalExampleAddFilter />
+                        <Button style={{ float: "right" }}>
+                          Add New Filter...
+                        </Button>
                       </Col>
                     </Row>
 
@@ -192,4 +197,4 @@ function ClusterAnalysisPane({ setStage }) {
   );
 }
 
-export default ClusterAnalysisPane;
+export default PlanAnalysisPane;
