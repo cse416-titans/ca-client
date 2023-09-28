@@ -7,6 +7,7 @@ import {
   Form,
   DropdownButton,
   Dropdown,
+  Button,
 } from "react-bootstrap";
 import BubbleChart from "./BubbleChart";
 import Tab from "react-bootstrap/Tab";
@@ -174,6 +175,9 @@ function ClusterAnalysisPane({ setStage }) {
                           Plot Option 3
                         </Dropdown.Item>
                       </DropdownButton>
+                      <Button style={{ marginTop: "10px" }} variant="success">
+                        Create Graph
+                      </Button>
                     </Row>
                   </Col>
                 </Row>
