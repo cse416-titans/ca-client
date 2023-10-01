@@ -9,19 +9,20 @@ export default function AnalysisContainer() {
   return (
     <ContentsContainer>
       <Tabs
-        defaultActiveKey="ensemble"
+        defaultActiveKey="home"
         id="uncontrolled-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="home" title="ensemble">
+        <Tab eventKey="home" title="Manage Ensembles">
           <EnsembleInfoForm />
         </Tab>
-        <Tab eventKey="profile" title="graph">
+        <Tab eventKey="profile" title="Manage Clusters">
           <ClusterPlotForm />
         </Tab>
-        <Tab eventKey="contact" title="table">
+        <Tab eventKey="contact" title="Cluster Pattern">
           <ClusterTableForm />
         </Tab>
+        <Tab eventKey={"contact2"} title={"Vote Prediction"}></Tab>
       </Tabs>
     </ContentsContainer>
   );

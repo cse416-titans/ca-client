@@ -1,13 +1,13 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 export default function DataForm({ children, headerText }) {
   return (
-    <Container>
-      <Row>
+    <Container className="mt-3">
+      {/*      <Row className="mb-3">
         <Col>
-          <h3>{headerText}</h3>
+          <div style={{ textTransform: "uppercase" }}>{headerText}</div>
         </Col>
-      </Row>
+  </Row>*/}
       <Row>{children}</Row>
     </Container>
   );

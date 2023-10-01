@@ -1,4 +1,15 @@
-import { Row, Col, Dropdown, Container, Tooltip } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Dropdown,
+  Container,
+  Tooltip,
+  Card,
+  Button,
+  Badge,
+  Table,
+  DropdownButton,
+} from "react-bootstrap";
 
 import DataForm from "./common/DataForm";
 import {
@@ -105,18 +116,83 @@ export default function EnsembleInfoForm() {
   return (
     <DataForm headerText={"EnsembleInfoForm"}>
       <Row>
-        <Col xs={6}>
-          <Row className="align-items-center">
-            <Row>
-              <EnsembleSelectionMenu />
-            </Row>
-            <Row>
-              <EnsembleMetaData />
-            </Row>
+        <Col lg={6}>
+          <Row className="mb-3">
+            <Col>
+              <Card>
+                <Card.Header>Ensemble Overview</Card.Header>
+                <Card.Body>
+                  <Table striped bordered hover>
+                    <tbody>
+                      <tr>
+                        <td>Total number of ensembles</td>
+                        <td>
+                          <Badge bg="secondary">5</Badge>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>No. of plans in an ensemble</td>
+                        <td>
+                          <Badge bg="secondary">5</Badge>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Avg. distance between plan pairs</td>
+                        <td>
+                          <Badge bg="secondary">5</Badge>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+
+                  <Button variant="outline-primary" size="sm">
+                    Learn More...
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Card>
+                <Card.Header>
+                  Select an Ensemble for Cluster Analysis
+                </Card.Header>
+                <Card.Body>
+                  <Row className="justify-content-center text-center">
+                    <DropdownButton
+                      id="dropdown-basic-button"
+                      title="Dropdown button"
+                      className="mb-3"
+                    >
+                      <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                      <Dropdown.Item href="#/action-2">
+                        Another action
+                      </Dropdown.Item>
+                      <Dropdown.Item href="#/action-3">
+                        Something else
+                      </Dropdown.Item>
+                    </DropdownButton>
+                  </Row>
+
+                  <Button variant="outline-primary" size="sm">
+                    Learn More...
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
           </Row>
         </Col>
-        <Col xs={6}>
-          <EnsembleAssociationGraph />
+        <Col lg={6}>
+          <Card>
+            <Card.Header>Ensemble Graph Analysis</Card.Header>
+            <Card.Body>
+              <EnsembleAssociationGraph />
+              <Button variant="outline-primary" size="sm">
+                Learn More...
+              </Button>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </DataForm>

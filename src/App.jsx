@@ -1,5 +1,4 @@
 // Components
-import Map from "./components/map-pane/Map";
 
 // styled elements
 import Container from "react-bootstrap/Container";
@@ -9,30 +8,24 @@ import { Stack } from "react-bootstrap";
 
 // css
 import "./App.css";
-import ClusteringPane from "./components/clustering-pane/ClusteringPane";
 import { useState } from "react";
-import ClusterAnalysisPane from "./components/clustering-pane/ClusterAnalysisPane";
-import PlanAnalysisPane from "./components/clustering-pane/PlanAnalysisPane";
 import Header from "./components/layout/Header";
-import ContentsContainer from "./components/layout/ContentsContainer";
 import Footer from "./components/layout/Footer";
 import AnalysisContainer from "./components/AnalysisContainer";
-import ClusterPlotForm from "./components/ClusterPlotForm";
 
 function App() {
   const [stage, setStage] = useState(0);
 
   return (
-    <Container className="h-100" fluid>
+    <Container className="h-100" fluid style={{ position: "fixed" }}>
       <Row className="h-100">
-        <Col lg={4}>col 1</Col>
-        <Col lg={8} className="px-0">
-          <Stack gap={3} className="content-center">
+        <Col lg={6}>col 1</Col>
+        <Col lg={6} className="px-0">
+          <Stack gap={0} className="content-center">
             <Header>
-              <h1>STATE_NAME</h1>
+              <h3>Louisianna</h3>
             </Header>
             <AnalysisContainer />
-            <Footer />
           </Stack>
         </Col>
       </Row>

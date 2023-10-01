@@ -23,3 +23,7 @@
 .dropdown-menu {
   width: max-content;
 }
+
+* {
+  user-select: none;
+}

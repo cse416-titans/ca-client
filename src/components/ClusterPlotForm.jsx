@@ -1,12 +1,22 @@
+import { useState } from "react";
+
 import {
   Tabs,
   Tab,
   Container,
   Row,
   Col,
+  Card,
   Button,
-  Dropdown,
+  Breadcrumb,
+  Badge,
+  Table,
+  Form,
+  Carousel,
 } from "react-bootstrap";
+
+import { data } from "../assets/testData";
+import DataForm from "./common/DataForm";
 
 import {
   Chart as ChartJS,
@@ -15,347 +25,297 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Chart, getElementAtEvent, getDatasetAtEvent } from "react-chartjs-2";
 
-import { Chart, getElementAtEvent } from "react-chartjs-2";
-import { faker } from "@faker-js/faker";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 
-import DataForm from "./common/DataForm";
-import DescriptedClickable from "./common/DescriptedClickable";
+function ClusterScatterPlot({ setIndex }) {
+  const chartRef = useRef();
 
-ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
+  ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
-export const options = {
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
-  animation: false,
-  plugins: {
-    tooltip: {
-      filter: function (tooltipItem) {
-        return tooltipItem.datasetIndex === 0;
+  const options = {
+    plugins: {
+      tooltip: {
+        filter: function (tooltipItem) {
+          return tooltipItem.datasetIndex === 0;
+        },
       },
     },
-  },
-};
+    animation: false,
+  };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+  const onClick = (e) => {
+    if (Array.from(getElementAtEvent(chartRef.current, e)).length === 0) {
+      return;
+    }
+    setIndex(1);
+  };
 
-const dynamicColors = function () {
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
-  const a = 0.1 + Math.random() * 0.5;
-  return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-};
-
-export const data = {
-  labels: labels,
-  datasets: [
-    {
-      type: "bubble",
-      label: "Cluster",
-      data: Array.from({ length: 50 }, () => ({
-        x: faker.number.int({ min: -100, max: 100 }),
-        y: faker.number.int({ min: -100, max: 100 }),
-        r: faker.number.int({ min: 15, max: 25 }),
-      })),
-      backgroundColor: Array.from({ length: 50 }, () => dynamicColors()),
-    },
-    {
-      type: "scatter",
-      label: "District Plan",
-      data: Array.from({ length: 5000 }, () => ({
-        x: faker.number.int({ min: -100, max: 100 }),
-        y: faker.number.int({ min: -100, max: 100 }),
-      })),
-      pointRadius: 0.5,
-      pointHoverRadius: 0.5,
-      pointHitRadius: 0,
-      backgroundColor: "rgba(0,0,0,0.1)",
-      //point cross
-    },
-  ],
-};
-
-export const options2 = {
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
-  animation: false,
-  plugins: {
-    tooltip: {
-      filter: function (tooltipItem) {
-        return tooltipItem.datasetIndex === 0;
-      },
-    },
-  },
-};
-
-const labels2 = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-];
-
-const dynamicColors2 = function () {
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
-  const a = 0.1 + Math.random() * 0.5;
-  return "rgba(" + r + "," + g + "," + b + "," + a + ")";
-};
-
-export const data2 = {
-  labels: labels2,
-  datasets: [
-    {
-      type: "scatter",
-      label: "District Plan",
-      data: Array.from({ length: 1000 }, () => ({
-        x: faker.datatype.number({ min: -100, max: 100 }),
-        y: faker.datatype.number({ min: -100, max: 100 }),
-      })),
-      pointRadius: 3,
-      backgroundColor: Array.from({ length: 1000 }, () => dynamicColors2()),
-      //point cross
-    },
-  ],
-};
-
-function ClusterScatterPlot() {
   return (
-    <Container>
-      <Row>
-        <Col xs={6}>
-          <BubbleChart />
-        </Col>
-        <Col xs={6}>
-          <Row>
-            <DescriptedClickable headerText={"Distance Measure"}>
-              <Row>
-                <Col xs={6}>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                      Distance Measure 1
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item>Distance Measure 1</Dropdown.Item>
-                      <Dropdown.Item>Distance Measure 2</Dropdown.Item>
-                      <Dropdown.Item>Distance Measure 3</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-                <Col xs={6}>
-                  <Button>Compare This Measure...</Button>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-          <Row>
-            <DescriptedClickable headerText={"Display selected cluster"}>
-              <Row>
-                <Col>
-                  <Button>Display cluster #1...</Button>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-          <Row>
-            <DescriptedClickable headerText={"Plotting criteria"}>
-              <Row>
-                <Col>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                      X: ~
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item>A</Dropdown.Item>
-                      <Dropdown.Item>B</Dropdown.Item>
-                      <Dropdown.Item>C</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-                <Col>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                      Y: ~
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item>D</Dropdown.Item>
-                      <Dropdown.Item>E</Dropdown.Item>
-                      <Dropdown.Item>F</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-          <Row>
-            <DescriptedClickable headerText={"Filter"}>
-              <Row>
-                <Col>
-                  <Button>Filter...</Button>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-        </Col>
+    <Container className="justify-content-center">
+      <Row
+        style={{ width: "700px", height: "300px", justifyContent: "center" }}
+      >
+        <Chart
+          ref={chartRef}
+          type="bubble"
+          options={options}
+          data={data}
+          onClick={onClick}
+        />
       </Row>
     </Container>
-  );
-}
-
-function PlanScatterPlot() {
-  return (
-    <Container>
-      <Row>
-        <Col xs={6}>
-          <BubbleChartPlan />
-        </Col>
-        <Col xs={6}>
-          <Row>
-            <DescriptedClickable headerText={"Distance Measure"}>
-              <Row>
-                <Col xs={6}>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                      Distance Measure 1
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item>Distance Measure 1</Dropdown.Item>
-                      <Dropdown.Item>Distance Measure 2</Dropdown.Item>
-                      <Dropdown.Item>Distance Measure 3</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-                <Col xs={6}>
-                  <Button>Compare This Measure...</Button>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-          <Row>
-            <DescriptedClickable headerText={"Display selected cluster"}>
-              <Row>
-                <Col>
-                  <Button>Display cluster #1...</Button>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-          <Row>
-            <DescriptedClickable headerText={"Plotting criteria"}>
-              <Row>
-                <Col>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                      X: ~
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item>A</Dropdown.Item>
-                      <Dropdown.Item>B</Dropdown.Item>
-                      <Dropdown.Item>C</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-                <Col>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                      Y: ~
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item>D</Dropdown.Item>
-                      <Dropdown.Item>E</Dropdown.Item>
-                      <Dropdown.Item>F</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-          <Row>
-            <DescriptedClickable headerText={"Filter"}>
-              <Row>
-                <Col>
-                  <Button>Filter...</Button>
-                </Col>
-              </Row>
-            </DescriptedClickable>
-          </Row>
-        </Col>
-      </Row>
-    </Container>
-  );
-}
-
-function BubbleChartPlan() {
-  const chartRef = useRef(null);
-
-  useEffect(() => {
-    const chart = chartRef.current;
-  }, []);
-
-  return (
-    <Chart
-      type="bubble"
-      ref={chartRef}
-      onClick={(e) => {
-        console.log(getElementAtEvent(chartRef.current, e));
-      }}
-      options={options2}
-      data={data2}
-    />
-  );
-}
-
-function BubbleChart() {
-  const chartRef = useRef(null);
-
-  useEffect(() => {
-    const chart = chartRef.current;
-  }, []);
-
-  return (
-    <Chart
-      type="bubble"
-      ref={chartRef}
-      onClick={(e) => {
-        console.log(getElementAtEvent(chartRef.current, e));
-      }}
-      options={options}
-      data={data}
-    />
   );
 }
 
 export default function ClusterPlotForm() {
+  const [index, setIndex] = useState(0);
+
+  const handleSelect = (selectedIndex) => {
+    setIndex(selectedIndex);
+  };
+
   return (
     <DataForm headerText={"ClusterPlotForm"}>
       <Tabs
         defaultActiveKey="cluster"
         id="uncontrolled-tab-example"
-        className="mb-0"
+        className="mb-3"
       >
-        <Tab eventKey="cluster" title="Cluster">
-          <ClusterScatterPlot />
+        <Tab eventKey="cluster" title="Clusters Overview">
+          <Row className="mb-3 align-middle">
+            <Col lg={12}>
+              <Card>
+                <Card.Header className="align-middle">
+                  <Row>
+                    <Col className="align-middle">
+                      <Breadcrumb>
+                        {index === 0 ? (
+                          <Breadcrumb.Item active>Ensemble #1</Breadcrumb.Item>
+                        ) : (
+                          <>
+                            <Breadcrumb.Item onClick={() => setIndex(0)}>
+                              Ensemble #1
+                            </Breadcrumb.Item>
+                            <Breadcrumb.Item active>
+                              {"Cluster #" + Math.floor(Math.random() * 50)}
+                            </Breadcrumb.Item>
+                          </>
+                        )}
+                      </Breadcrumb>
+                    </Col>
+                  </Row>
+                </Card.Header>
+                <Card.Body>
+                  <Carousel
+                    data-bs-theme="dark"
+                    activeIndex={index}
+                    onSelect={handleSelect}
+                    slide={true}
+                    interval={null}
+                    controls={false}
+                    indicators={false}
+                  >
+                    <Carousel.Item>
+                      <ClusterScatterPlot setIndex={setIndex} />
+                    </Carousel.Item>
+                    <Carousel.Item>
+                      <ClusterScatterPlot />
+                    </Carousel.Item>
+                  </Carousel>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col lg={6}></Col>
+          </Row>
+          <Row className="mb-3">
+            <Col lg={6}>
+              <Card>
+                <Card.Header>View Tabular Summary</Card.Header>
+                <Card.Body>
+                  <Row className="mb-3">
+                    <Col>
+                      <Button variant="outline-success" size="sm">
+                        Open in New Window...
+                      </Button>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Button variant="outline-primary" size="sm">
+                        Learn More...
+                      </Button>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col lg={6}>
+              <Card>
+                <Card.Header>Filter & View</Card.Header>
+                <Card.Body>
+                  <Row className="mb-3">
+                    <Col>
+                      <Button variant="outline-success" size="sm">
+                        Adjust Filter...
+                      </Button>
+                    </Col>
+                  </Row>
+                  <Row className="mb-3">
+                    <Col>
+                      <Button variant="outline-success" size="sm">
+                        Change View Settings...
+                      </Button>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Button variant="outline-primary" size="sm">
+                        Learn More...
+                      </Button>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
         </Tab>
-        <Tab eventKey="plan" title="Plan">
-          <PlanScatterPlot />
+        <Tab eventKey="plan" title="Clustering Method">
+          <Row>
+            <Col lg={12} className="mb-3">
+              <Row>
+                <Col>
+                  <Card>
+                    <Card.Header className="align-middle">
+                      <Row>
+                        <Col>Change Distance Measure</Col>
+                      </Row>
+                    </Card.Header>
+                    <Card.Body>
+                      <Row className="gy-4">
+                        <Col md={6}>
+                          <Card bg="primary" text="white">
+                            <Card.Body>
+                              <Card.Title>Optimal Transport</Card.Title>
+                              <Card.Text>
+                                Some quick example text to build on the card
+                                title and make up the bulk of the card's
+                                content.
+                              </Card.Text>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                        <Col md={6}>
+                          <Card>
+                            <Card.Body>
+                              <Card.Title>Hamming Distance</Card.Title>
+                              <Card.Text>
+                                Some quick example text to build on the card
+                                title and make up the bulk of the card's
+                                content.
+                              </Card.Text>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                        <Col md={6}>
+                          <Card>
+                            <Card.Body>
+                              <Card.Title>Total Variation Distance</Card.Title>
+                              <Card.Text>
+                                Some quick example text to build on the card
+                                title and make up the bulk of the card's
+                                content.
+                              </Card.Text>
+                            </Card.Body>
+                          </Card>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+            <Col lg={6}>
+              <Row>
+                <Col>
+                  <Card>
+                    <Card.Header className="align-middle">
+                      <Row>
+                        <Col>Adjust Cluster Size</Col>
+                      </Row>
+                    </Card.Header>
+                    <Card.Body>
+                      <Row>
+                        <Col md={12}>
+                          <>
+                            <Form.Label>Minimum</Form.Label>
+                            <Form.Range />
+                          </>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md={12}>
+                          <>
+                            <Form.Label>Maximum</Form.Label>
+                            <Form.Range />
+                          </>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Button variant="outline-primary" size="sm">
+                            Learn More...
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+            <Col lg={6}>
+              <Row>
+                <Col>
+                  <Card>
+                    <Card.Header className="align-middle">
+                      <Row>
+                        <Col>Clustering Method Evaluation</Col>
+                      </Row>
+                    </Card.Header>
+                    <Card.Body>
+                      <Row>
+                        <Col>
+                          <Table striped bordered hover>
+                            <tbody>
+                              <tr className="text-center">
+                                <td colSpan={2}>
+                                  <b>Optimal Transport</b>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Mean Cluster Distance</td>
+                                <td>
+                                  <Badge bg="secondary">0.8</Badge>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <Button variant="outline-success" size="sm">
+                            See in Detail...
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </Tab>
       </Tabs>
     </DataForm>
