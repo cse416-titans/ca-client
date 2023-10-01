@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 import { Button, Container, Row, Col } from "react-bootstrap";
 
-import makeData from "../assets/makeData";
+import makeData from "../../assets/makeData";
 
 const Styles = styled.div`
   padding: 1rem;

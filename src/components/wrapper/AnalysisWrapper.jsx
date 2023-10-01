@@ -1,11 +1,12 @@
 import { Tabs, Tab } from "react-bootstrap";
 
-import ClusterPlotForm from "./ClusterPlotForm";
-import ClusterTableForm from "./ClusterTableForm";
-import EnsembleInfoForm from "./EnsembleInfoForm";
-import ContentsContainer from "./layout/ContentsContainer";
+import ClusterPlotForm from "../form/ClusterPlotForm";
+import ClusterTableForm from "../form/ClusterTableForm";
+import EnsembleInfoForm from "../form/EnsembleInfoForm";
+import ContentsContainer from "../layout/ContentsContainer";
+import StateInfoForm from "../form/StateInfoForm";
 
-export default function AnalysisContainer() {
+export default function AnalysisWrapper() {
   return (
     <ContentsContainer>
       <Tabs
@@ -13,6 +14,9 @@ export default function AnalysisContainer() {
         id="uncontrolled-tab-example"
         className="mb-3"
       >
+        <Tab eventKey={"state"} title={"State Information"}>
+          <StateInfoForm />
+        </Tab>
         <Tab eventKey="home" title="Manage Ensembles">
           <EnsembleInfoForm />
         </Tab>
@@ -22,7 +26,6 @@ export default function AnalysisContainer() {
         <Tab eventKey="contact" title="Cluster Pattern">
           <ClusterTableForm />
         </Tab>
-        <Tab eventKey={"contact2"} title={"Vote Prediction"}></Tab>
       </Tabs>
     </ContentsContainer>
   );

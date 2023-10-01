@@ -6,51 +6,47 @@ import {
   Card,
   Button,
   Stack,
+  Breadcrumb,
 } from "react-bootstrap";
 
-import DataForm from "./common/DataForm";
-import TableExample from "./TableExample";
+import DataForm from "../common/DataForm";
+import TableWrapper from "./TableExample";
 
-function ClusterTable() {
-  return (
-    <Container className="overflow-y-scroll" style={{ height: "500px" }}>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Cluster</th>
-            <th>Voting Margin</th>
-            <th>Demographic Margin</th>
-            <th>Income Margin</th>
-            <th>Compactness Index</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: 100 }).map((_, index) => (
-            <tr key={index}>
-              <td>{index}</td>
-              <td>{Math.random().toFixed(2)}</td>
-              <td>{Math.random().toFixed(2)}</td>
-              <td>{Math.random().toFixed(2)}</td>
-              <td>{Math.random().toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </Container>
-  );
-}
+import { useState } from "react";
 
 export default function ClusterTableForm() {
+  const [index, setIndex] = useState(0);
+
   return (
     <DataForm headerText={"ClusterTableForm"}>
       <Row className="mb-3">
         <Col lg={12}>
           <Card>
-            <Card.Header>Clustered Summary of Ensemble #1</Card.Header>
+            <Card.Header>
+              <Row>
+                <Col className="align-middle">
+                  <Stack direction="horizontal" gap={3}>
+                    <span>Summary Table of </span>
+                    <Breadcrumb>
+                      {index === 0 ? (
+                        <Breadcrumb.Item active>Ensemble #1</Breadcrumb.Item>
+                      ) : (
+                        <>
+                          <Breadcrumb.Item>Ensemble #1</Breadcrumb.Item>
+                          <Breadcrumb.Item active>
+                            {"Cluster #" + Math.floor(Math.random() * 50)}
+                          </Breadcrumb.Item>
+                        </>
+                      )}
+                    </Breadcrumb>
+                  </Stack>
+                </Col>
+              </Row>
+            </Card.Header>
             <Card.Body className="p-0">
               <Row>
                 <Col>
-                  <TableExample />
+                  <TableWrapper />
                 </Col>
               </Row>
               <Row>
@@ -115,9 +111,25 @@ export default function ClusterTableForm() {
           </Card>
         </Col>
         <Col>
-          <Card>
-            <Card.Header>Filter & View</Card.Header>
-            <Card.Body>hello</Card.Body>
+          <Card border="info">
+            <Card.Header>Voting Estimation</Card.Header>
+            <Card.Body>
+              <Row className="mb-3">
+                <Col>
+                  <span>
+                    In this Ensemble, see how the voting margins for each
+                    cluster is calculated.
+                  </span>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Button variant="outline-info" size="sm">
+                    See How...
+                  </Button>
+                </Col>
+              </Row>
+            </Card.Body>
           </Card>
         </Col>
       </Row>

@@ -10,22 +10,22 @@ import { Stack } from "react-bootstrap";
 import "./App.css";
 import { useState } from "react";
 import Header from "./components/layout/Header";
-import Footer from "./components/layout/Footer";
-import AnalysisContainer from "./components/AnalysisContainer";
+import AnalysisWrapper from "./components/wrapper/AnalysisWrapper";
 
 function App() {
   const [stage, setStage] = useState(0);
+  const [width, setWidth] = useState(6);
 
   return (
     <Container className="h-100" fluid style={{ position: "fixed" }}>
       <Row className="h-100">
-        <Col lg={6}>col 1</Col>
-        <Col lg={6} className="px-0">
+        <Col lg={12 - width}>col 1</Col>
+        <Col lg={width} className="px-0">
           <Stack gap={0} className="content-center">
             <Header>
-              <h3>Louisianna</h3>
+              <h2>Titan: Redistricting Cluster Analyzer</h2>
             </Header>
-            <AnalysisContainer />
+            <AnalysisWrapper />
           </Stack>
         </Col>
       </Row>

@@ -13,10 +13,11 @@ import {
   Table,
   Form,
   Carousel,
+  Stack,
 } from "react-bootstrap";
 
-import { data } from "../assets/testData";
-import DataForm from "./common/DataForm";
+import { data } from "../../assets/testData";
+import DataForm from "../common/DataForm";
 
 import {
   Chart as ChartJS,
@@ -87,25 +88,24 @@ export default function ClusterPlotForm() {
           <Row className="mb-3 align-middle">
             <Col lg={12}>
               <Card>
-                <Card.Header className="align-middle">
-                  <Row>
-                    <Col className="align-middle">
-                      <Breadcrumb>
-                        {index === 0 ? (
-                          <Breadcrumb.Item active>Ensemble #1</Breadcrumb.Item>
-                        ) : (
-                          <>
-                            <Breadcrumb.Item onClick={() => setIndex(0)}>
-                              Ensemble #1
-                            </Breadcrumb.Item>
-                            <Breadcrumb.Item active>
-                              {"Cluster #" + Math.floor(Math.random() * 50)}
-                            </Breadcrumb.Item>
-                          </>
-                        )}
-                      </Breadcrumb>
-                    </Col>
-                  </Row>
+                <Card.Header>
+                  <Stack direction="horizontal" gap={3}>
+                    <span>Scatter Plot of </span>
+                    <Breadcrumb>
+                      {index === 0 ? (
+                        <Breadcrumb.Item active>Ensemble #1</Breadcrumb.Item>
+                      ) : (
+                        <>
+                          <Breadcrumb.Item onClick={() => setIndex(0)}>
+                            Ensemble #1
+                          </Breadcrumb.Item>
+                          <Breadcrumb.Item active>
+                            {"Cluster #" + Math.floor(Math.random() * 50)}
+                          </Breadcrumb.Item>
+                        </>
+                      )}
+                    </Breadcrumb>
+                  </Stack>
                 </Card.Header>
                 <Card.Body>
                   <Carousel
