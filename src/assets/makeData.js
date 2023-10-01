@@ -8,31 +8,106 @@ const range = (len) => {
   return arr;
 };
 
-const newPerson = (i) => {
-  const statusChance = Math.random();
+const newCluster = (i) => {
+  const split = Number.parseFloat(-50 + Math.random() * 50).toFixed(2);
+  const dem = Number.parseFloat(50 - split).toFixed(2);
+  const rep = parseFloat(100 - dem).toFixed(2);
+  const seatDem = Number.parseInt(Math.random() * 10);
+  const seatRep = Number.parseInt(10 - seatDem);
+  const asian = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const african = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const hispanic = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const other = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const white = Number.parseFloat(
+    1 - parseFloat(asian + african + hispanic + other)
+  ).toFixed(2);
+  const majminRatio = Number.parseFloat(
+    white - parseFloat(asian + african + hispanic + other)
+  ).toFixed(2);
+
+  const showMap = Math.random() * 1 > 0 ? 1 : 0;
+  const gotoDetail = 0;
+
   return {
     color: randomColorArr[i],
     firstName: i,
-    lastName: "0",
-    age: Math.floor(Math.random() * 30),
-    visits: Math.floor(Math.random() * 100),
-    progress: Math.floor(Math.random() * 100),
-    status:
-      statusChance > 0.66
-        ? "relationship"
-        : statusChance > 0.33
-        ? "complicated"
-        : "single",
+    split,
+    dem,
+    rep,
+    seatDem,
+    seatRep,
+    asian,
+    african,
+    hispanic,
+    white,
+    other,
+    majminRatio,
+    showMap,
+    gotoDetail,
   };
 };
 
-export default function makeData(...lens) {
+export function makeData(...lens) {
   let i = 0;
   const makeDataLevel = (depth = 0) => {
     const len = lens[depth];
     return range(len).map((d) => {
       return {
-        ...newPerson(++i),
+        ...newCluster(++i),
+        subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
+      };
+    });
+  };
+
+  return makeDataLevel();
+}
+
+const newPlan = (i) => {
+  const split = Number.parseFloat(-50 + Math.random() * 50).toFixed(2);
+  const dem = Number.parseFloat(50 - split).toFixed(2);
+  const rep = parseFloat(100 - dem).toFixed(2);
+  const seatDem = Number.parseInt(Math.random() * 10);
+  const seatRep = Number.parseInt(10 - seatDem);
+  const asian = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const african = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const hispanic = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const other = Number.parseFloat(Math.random() * 1).toFixed(2);
+  const white = Number.parseFloat(
+    1 - parseFloat(asian + african + hispanic + other)
+  ).toFixed(2);
+  const majminRatio = Number.parseFloat(
+    white - parseFloat(asian + african + hispanic + other)
+  ).toFixed(2);
+
+  const showMap = Math.random() * 1 > 0.5 ? 1 : 0;
+  const gotoDetail = 0;
+
+  return {
+    color: randomColorArr[i],
+    firstName: i,
+    split,
+    dem,
+    rep,
+    seatDem,
+    seatRep,
+    asian,
+    african,
+    hispanic,
+    white,
+    other,
+    majminRatio,
+    showMap,
+    gotoDetail,
+  };
+};
+
+export function makeDataPlan(...lens) {
+  let i = 0;
+  const makeDataLevel = (depth = 0) => {
+    const len = lens[depth];
+    return range(len).map((d) => {
+      return {
+        ...newPlan(++i),
         subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
       };
     });

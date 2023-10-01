@@ -16,7 +16,7 @@ import {
   Stack,
 } from "react-bootstrap";
 
-import { data } from "../../assets/testData";
+import { data, dataPlan } from "../../assets/testData";
 import DataForm from "../common/DataForm";
 
 import {
@@ -26,9 +26,72 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Chart, getElementAtEvent, getDatasetAtEvent } from "react-chartjs-2";
+import { Chart, getElementAtEvent } from "react-chartjs-2";
+import zoomPlugin from "chartjs-plugin-zoom";
+import Zoom from "chartjs-plugin-zoom";
 
 import { useRef } from "react";
+
+function PlanScatterPlot({ setIndex }) {
+  const chartRef = useRef();
+  ChartJS.register(
+    zoomPlugin,
+    Zoom,
+    LinearScale,
+    PointElement,
+    Tooltip,
+    Legend
+  );
+
+  const options = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        filter: function (tooltipItem) {
+          return tooltipItem.datasetIndex === 0;
+        },
+      },
+    },
+    animation: false,
+    zoom: {
+      zoom: {
+        wheel: {
+          enabled: true, // SET SCROOL ZOOM TO TRUE
+        },
+        mode: "xy",
+        speed: 100,
+      },
+      pan: {
+        enabled: true,
+        mode: "xy",
+        speed: 100,
+      },
+    },
+  };
+
+  const onClick = (e) => {
+    if (Array.from(getElementAtEvent(chartRef.current, e)).length === 0) {
+      return;
+    }
+    setIndex(1);
+  };
+
+  return (
+    <Container className="justify-content-center">
+      <Row
+        style={{ width: "700px", height: "300px", justifyContent: "center" }}
+      >
+        <Chart
+          ref={chartRef}
+          type="scatter"
+          options={options}
+          data={dataPlan}
+          onClick={onClick}
+        />
+      </Row>
+    </Container>
+  );
+}
 
 function ClusterScatterPlot({ setIndex }) {
   const chartRef = useRef();
@@ -60,7 +123,7 @@ function ClusterScatterPlot({ setIndex }) {
       >
         <Chart
           ref={chartRef}
-          type="bubble"
+          type="scatter"
           options={options}
           data={data}
           onClick={onClick}
@@ -121,7 +184,7 @@ export default function ClusterPlotForm() {
                       <ClusterScatterPlot setIndex={setIndex} />
                     </Carousel.Item>
                     <Carousel.Item>
-                      <ClusterScatterPlot />
+                      <PlanScatterPlot />
                     </Carousel.Item>
                   </Carousel>
                 </Card.Body>

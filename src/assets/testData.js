@@ -53,3 +53,32 @@ export const data = {
     },
   ],
 };
+
+export const dataPlan = {
+  datasets: [
+    {
+      type: "scatter",
+      label: "Available Plans",
+      data: Array.from({ length: 500 }, () => ({
+        x: faker.number.float({ min: -1, max: 1 }),
+        y: faker.number.float({ min: -1, max: 1 }),
+      })),
+      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointHitRadius: 5,
+    },
+    {
+      type: "scatter",
+      label: "Unavailable Plans",
+      data: Array.from({ length: 500 }, () => ({
+        x: faker.number.float({ min: -1, max: 1 }),
+        y: faker.number.float({ min: -1, max: 1 }),
+      })),
+      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      pointRadius: 1,
+      pointHoverRadius: 1,
+      pointHitRadius: 1,
+    },
+  ],
+};

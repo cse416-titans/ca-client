@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Button, Container, Row, Col, Form } from "react-bootstrap";
 
-import makeData from "../../assets/makeData";
+import { makeData, makeDataPlan } from "../../assets/makeData";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -56,7 +56,7 @@ const Styles = styled.div`
   }
 `;
 
-function TableExample({ columns, data }) {
+function TableExample({ columns, data, setIndex }) {
   // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
@@ -139,10 +139,10 @@ function TableExample({ columns, data }) {
         <Col>
           <table {...getTableProps()} style={{ width: "100%" }}>
             <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column, i) => (
-                    <th {...column.getHeaderProps()}>
+              {headerGroups.map((headerGroup, i) => (
+                <tr key={i} {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column, j) => (
+                    <th key={j} {...column.getHeaderProps()}>
                       {column.render("Header")}
                     </th>
                   ))}
@@ -153,10 +153,41 @@ function TableExample({ columns, data }) {
               {page.map((row, i) => {
                 prepareRow(row);
                 return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
+                  <tr
+                    onClick={() => setIndex(1)}
+                    key={i}
+                    {...row.getRowProps()}
+                  >
+                    {row.cells.map((cell, j) => {
+                      if (cell.column.id === "showMap") {
+                        if (cell.value === 1) {
+                          return (
+                            <td key={j} {...cell.getCellProps()} style={{}}>
+                              <Form.Check
+                                type="switch"
+                                id="custom-switch"
+                                style={{ width: "100%" }}
+                              />
+                            </td>
+                          );
+                        } else {
+                          return (
+                            <td key={j} {...cell.getCellProps()} style={{}}>
+                              {" "}
+                            </td>
+                          );
+                        }
+                      } else if (cell.column.id === "gotoDetailFiller") {
+                        return (
+                          <td key={j} {...cell.getCellProps()} style={{}}>
+                            {">"}
+                          </td>
+                        );
+                      }
                       return (
-                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        <td key={j} {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+                        </td>
                       );
                     })}
                   </tr>
@@ -170,7 +201,7 @@ function TableExample({ columns, data }) {
   );
 }
 
-export default function TableWrapper() {
+export function TableWrapper({ setIndex }) {
   const columns = React.useMemo(
     () => [
       {
@@ -183,23 +214,74 @@ export default function TableWrapper() {
         ],
       },
       {
-        Header: "Info",
+        Header: "Political Index",
         columns: [
           {
-            Header: "Age",
-            accessor: "age",
+            Header: "Margin",
+            accessor: "split",
           },
           {
-            Header: "Visits",
-            accessor: "visits",
+            Header: "Dem. %",
+            accessor: "dem",
           },
           {
-            Header: "Status",
-            accessor: "status",
+            Header: "Rep. %",
+            accessor: "rep",
           },
           {
-            Header: "Profile Progress",
-            accessor: "progress",
+            Header: "Dem. Seats",
+            accessor: "seatDem",
+          },
+          {
+            Header: "Rep. Seats",
+            accessor: "seatRep",
+          },
+        ],
+      },
+      {
+        Header: "Demographic Index",
+        columns: [
+          {
+            Header: "Asian",
+            accessor: "asian",
+          },
+          {
+            Header: "A-An",
+            accessor: "african",
+          },
+          {
+            Header: "Hisp.",
+            accessor: "hispanic",
+          },
+          {
+            Header: "White",
+            accessor: "white",
+          },
+          {
+            Header: "Other",
+            accessor: "other",
+          },
+          {
+            Header: "Maj-Min",
+            accessor: "majminRatio",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Map",
+            accessor: "showMap",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Detail",
+            accessor: "gotoDetailFiller",
           },
         ],
       },
@@ -211,7 +293,95 @@ export default function TableWrapper() {
 
   return (
     <Styles>
-      <TableExample columns={columns} data={data} />
+      <TableExample columns={columns} data={data} setIndex={setIndex} />
+    </Styles>
+  );
+}
+
+export function TableWrapperPlan({ setIndex }) {
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Plan",
+        columns: [
+          {
+            Header: "No.",
+            accessor: "firstName",
+          },
+        ],
+      },
+      {
+        Header: "Political Index",
+        columns: [
+          {
+            Header: "Margin",
+            accessor: "split",
+          },
+          {
+            Header: "Dem. %",
+            accessor: "dem",
+          },
+          {
+            Header: "Rep. %",
+            accessor: "rep",
+          },
+          {
+            Header: "Dem. Seats",
+            accessor: "seatDem",
+          },
+          {
+            Header: "Rep. Seats",
+            accessor: "seatRep",
+          },
+        ],
+      },
+      {
+        Header: "Demographic Index",
+        columns: [
+          {
+            Header: "Asian",
+            accessor: "asian",
+          },
+          {
+            Header: "A-An",
+            accessor: "african",
+          },
+          {
+            Header: "Hisp.",
+            accessor: "hispanic",
+          },
+          {
+            Header: "White",
+            accessor: "white",
+          },
+          {
+            Header: "Other",
+            accessor: "other",
+          },
+          {
+            Header: "Maj-Min",
+            accessor: "majminRatio",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Map",
+            accessor: "showMap",
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const data = React.useMemo(() => makeDataPlan(1000), []);
+
+  return (
+    <Styles>
+      <TableExample columns={columns} data={data} setIndex={setIndex} />
     </Styles>
   );
 }

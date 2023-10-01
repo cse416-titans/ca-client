@@ -7,15 +7,20 @@ import {
   Button,
   Stack,
   Breadcrumb,
+  Carousel,
 } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
-import TableWrapper from "./TableExample";
+import { TableWrapper, TableWrapperPlan } from "./TableExample";
 
 import { useState } from "react";
 
 export default function ClusterTableForm() {
   const [index, setIndex] = useState(0);
+
+  const handleSelect = (selectedIndex) => {
+    setIndex(selectedIndex);
+  };
 
   return (
     <DataForm headerText={"ClusterTableForm"}>
@@ -32,7 +37,9 @@ export default function ClusterTableForm() {
                         <Breadcrumb.Item active>Ensemble #1</Breadcrumb.Item>
                       ) : (
                         <>
-                          <Breadcrumb.Item>Ensemble #1</Breadcrumb.Item>
+                          <Breadcrumb.Item onClick={() => setIndex(0)}>
+                            Ensemble #1
+                          </Breadcrumb.Item>
                           <Breadcrumb.Item active>
                             {"Cluster #" + Math.floor(Math.random() * 50)}
                           </Breadcrumb.Item>
@@ -46,7 +53,22 @@ export default function ClusterTableForm() {
             <Card.Body className="p-0">
               <Row>
                 <Col>
-                  <TableWrapper />
+                  <Carousel
+                    data-bs-theme="dark"
+                    activeIndex={index}
+                    onSelect={handleSelect}
+                    slide={true}
+                    interval={null}
+                    controls={false}
+                    indicators={false}
+                  >
+                    <Carousel.Item>
+                      <TableWrapper setIndex={setIndex} />
+                    </Carousel.Item>
+                    <Carousel.Item>
+                      <TableWrapperPlan />
+                    </Carousel.Item>
+                  </Carousel>
                 </Col>
               </Row>
               <Row>
