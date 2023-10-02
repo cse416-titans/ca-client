@@ -31,6 +31,7 @@ import {
 import { Chart, getElementAtEvent } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
 import Zoom from "chartjs-plugin-zoom";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { useRef } from "react";
 
@@ -107,6 +108,12 @@ function ClusterScatterPlot({ setIndex }) {
           return tooltipItem.datasetIndex === 0;
         },
       },
+      datalabels: {
+        color: "#36A2EB",
+        formatter: function (value, context) {
+          return context.chart.data.labels[context.dataIndex];
+        },
+      },
     },
     animation: false,
   };
@@ -129,6 +136,7 @@ function ClusterScatterPlot({ setIndex }) {
           options={options}
           data={data}
           onClick={onClick}
+          plugins={[ChartDataLabels]}
         />
       </Row>
     </Container>

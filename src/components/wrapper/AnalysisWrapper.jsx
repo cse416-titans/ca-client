@@ -6,7 +6,7 @@ import EnsembleInfoForm from "../form/EnsembleInfoForm";
 import ContentsContainer from "../layout/ContentsContainer";
 import StateInfoForm from "../form/StateInfoForm";
 
-export default function AnalysisWrapper() {
+export default function AnalysisWrapper({ displayedPlans, setDisplayedPlans }) {
   return (
     <ContentsContainer>
       <Tabs
@@ -21,10 +21,13 @@ export default function AnalysisWrapper() {
           <EnsembleInfoForm />
         </Tab>
         <Tab eventKey="profile" title="Manage Clusters">
-          <ClusterPlotForm />
+          <ClusterPlotForm setDisplayedPlans={setDisplayedPlans} />
         </Tab>
         <Tab eventKey="contact" title="Cluster Pattern">
-          <ClusterTableForm />
+          <ClusterTableForm
+            displayedPlans={displayedPlans}
+            setDisplayedPlans={setDisplayedPlans}
+          />
         </Tab>
       </Tabs>
     </ContentsContainer>

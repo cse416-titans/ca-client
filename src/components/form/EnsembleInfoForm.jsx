@@ -282,7 +282,10 @@ export default function EnsembleInfoForm() {
                                 variant="success"
                                 id="dropdown-basic"
                               >
-                                Dropdown Button
+                                <span>
+                                  Selected Ensemble:{" "}
+                                  <b>Ensemble #1 (100 Plans)</b>
+                                </span>
                               </Dropdown.Toggle>
 
                               <Dropdown.Menu>

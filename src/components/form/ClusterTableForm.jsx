@@ -12,6 +12,7 @@ import {
   Alert,
   Form,
   Dropdown,
+  ListGroup,
 } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
@@ -127,57 +128,91 @@ export default function ClusterTableForm() {
                                       <Row>
                                         <Col>
                                           <Form>
-                                            <Row>
-                                              <Col>Plan / Cluster Display</Col>
-                                            </Row>
                                             <Row className="mb-3">
                                               <Col>
-                                                <Form.Check
-                                                  onClick={(e) =>
-                                                    alert(e.target.name)
-                                                  }
-                                                  type={"radio"}
-                                                  name="viewclusterplan"
-                                                  label={`Clusters Only`}
-                                                />
-                                                <Form.Check
-                                                  type={"radio"}
-                                                  name="viewclusterplan"
-                                                  label={`Plans Only`}
-                                                />
-                                                <Form.Check
-                                                  type={"radio"}
-                                                  name="viewclusterplan"
-                                                  label={`Clusters and Plans`}
-                                                />
+                                                <ListGroup>
+                                                  <ListGroup.Item>
+                                                    Plan / Cluster Display
+                                                  </ListGroup.Item>
+                                                  <ListGroup.Item>
+                                                    <Form.Check
+                                                      onClick={(e) =>
+                                                        alert(e.target.name)
+                                                      }
+                                                      type={"radio"}
+                                                      name="viewclusterplan"
+                                                      label={`Clusters Only`}
+                                                    />
+                                                    <Form.Check
+                                                      type={"radio"}
+                                                      name="viewclusterplan"
+                                                      label={`Plans Only`}
+                                                    />
+                                                    <Form.Check
+                                                      type={"radio"}
+                                                      name="viewclusterplan"
+                                                      label={`Clusters and Plans`}
+                                                    />
+                                                  </ListGroup.Item>
+                                                </ListGroup>
                                               </Col>
                                             </Row>
                                             <Row>
-                                              <Col>Sort By...</Col>
-                                              <Row>
-                                                <Col>
-                                                  <Dropdown>
-                                                    <Dropdown.Toggle
-                                                      variant="success"
-                                                      id="dropdown-basic"
-                                                    >
-                                                      Vote Margin
-                                                    </Dropdown.Toggle>
+                                              <Col>
+                                                <ListGroup>
+                                                  <ListGroup.Item>
+                                                    Sort By...
+                                                  </ListGroup.Item>
+                                                  <ListGroup.Item>
+                                                    <Dropdown>
+                                                      <Dropdown.Toggle
+                                                        size="sm"
+                                                        variant="success"
+                                                        id="dropdown-basic"
+                                                      >
+                                                        Sort By:{" "}
+                                                        <b>Vote Margin</b>
+                                                      </Dropdown.Toggle>
+                                                      <Dropdown.Menu>
+                                                        <Dropdown.Item href="#/action-1">
+                                                          Vote Margin
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item href="#/action-2">
+                                                          Democratic Seats
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item href="#/action-3">
+                                                          Republican Seats
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item href="#/action-3">
+                                                          Maj-Min Demographic
+                                                          Ratio
+                                                        </Dropdown.Item>
+                                                      </Dropdown.Menu>
+                                                    </Dropdown>
+                                                  </ListGroup.Item>
+                                                  <ListGroup.Item>
+                                                    <Dropdown>
+                                                      <Dropdown.Toggle
+                                                        size="sm"
+                                                        variant="success"
+                                                        id="dropdown-basic"
+                                                      >
+                                                        Sort Order:{" "}
+                                                        <b>Ascending</b>
+                                                      </Dropdown.Toggle>
 
-                                                    <Dropdown.Menu>
-                                                      <Dropdown.Item href="#/action-1">
-                                                        Action
-                                                      </Dropdown.Item>
-                                                      <Dropdown.Item href="#/action-2">
-                                                        Another action
-                                                      </Dropdown.Item>
-                                                      <Dropdown.Item href="#/action-3">
-                                                        Something else
-                                                      </Dropdown.Item>
-                                                    </Dropdown.Menu>
-                                                  </Dropdown>
-                                                </Col>
-                                              </Row>
+                                                      <Dropdown.Menu>
+                                                        <Dropdown.Item href="#/action-1">
+                                                          Ascending
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item href="#/action-2">
+                                                          Descending
+                                                        </Dropdown.Item>
+                                                      </Dropdown.Menu>
+                                                    </Dropdown>
+                                                  </ListGroup.Item>
+                                                </ListGroup>
+                                              </Col>
                                             </Row>
                                           </Form>
                                         </Col>
@@ -189,10 +224,51 @@ export default function ClusterTableForm() {
                               <Row className="mt-3">
                                 <Col>
                                   <Card>
-                                    <Card.Header>
-                                      Change View Settings
-                                    </Card.Header>
-                                    <Card.Body>adf</Card.Body>
+                                    <Card.Header>Filter By...</Card.Header>
+                                    <Card.Body>
+                                      <Row>
+                                        <Col>
+                                          <Dropdown>
+                                            <Dropdown.Toggle
+                                              size="sm"
+                                              variant="success"
+                                              id="dropdown-basic"
+                                            >
+                                              Filter By: <b>Vote Margin</b>
+                                            </Dropdown.Toggle>
+
+                                            <Dropdown.Menu>
+                                              <Dropdown.Item href="#/action-1">
+                                                Vote Margin
+                                              </Dropdown.Item>
+                                              <Dropdown.Item href="#/action-2">
+                                                Democratic Seats
+                                              </Dropdown.Item>
+                                              <Dropdown.Item href="#/action-3">
+                                                Republican Seats
+                                              </Dropdown.Item>
+                                              <Dropdown.Item href="#/action-3">
+                                                Maj-Min Demographic Ratio
+                                              </Dropdown.Item>
+                                            </Dropdown.Menu>
+                                          </Dropdown>
+                                        </Col>
+                                      </Row>
+                                      <Row className="mt-3">
+                                        <Col>
+                                          <>
+                                            <Form.Label>Min</Form.Label>
+                                            <Form.Range />
+                                          </>
+                                        </Col>
+                                        <Col>
+                                          <>
+                                            <Form.Label>Max</Form.Label>
+                                            <Form.Range />
+                                          </>
+                                        </Col>
+                                      </Row>
+                                    </Card.Body>
                                   </Card>
                                 </Col>
                               </Row>

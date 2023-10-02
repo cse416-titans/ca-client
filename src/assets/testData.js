@@ -27,7 +27,9 @@ const dynamicColors = function () {
 
 export const randomColorArr = Array.from({ length: 50 }, () => dynamicColors());
 
+i = 0;
 export const data = {
+  labels: Array.from({ length: 50 }, () => i++),
   datasets: [
     {
       type: "bubble",
@@ -35,9 +37,12 @@ export const data = {
       data: Array.from({ length: 50 }, () => ({
         x: faker.number.float({ min: -1, max: 1 }),
         y: faker.number.float({ min: -1, max: 1 }),
-        r: faker.number.float({ min: 10, max: 30 }),
+        r: faker.number.int({ min: 10, max: 30 }),
       })),
       backgroundColor: randomColorArr,
+      datalabels: {
+        color: "black",
+      },
     },
     {
       type: "scatter",
@@ -50,6 +55,11 @@ export const data = {
       pointRadius: 0.5,
       pointHoverRadius: 0.5,
       pointHitRadius: 0,
+      datalabels: {
+        labels: {
+          title: null,
+        },
+      },
     },
   ],
 };
