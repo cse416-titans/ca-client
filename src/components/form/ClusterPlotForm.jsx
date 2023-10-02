@@ -96,7 +96,12 @@ function PlanScatterPlot({ setIndex }) {
   );
 }
 
-function ClusterScatterPlot({ setIndex }) {
+function ClusterScatterPlot({
+  setIndex,
+  displayedPlans,
+  setDisplayedPlans,
+  setSelectedClusterIdx,
+}) {
   const chartRef = useRef();
 
   ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
@@ -119,9 +124,20 @@ function ClusterScatterPlot({ setIndex }) {
   };
 
   const onClick = (e) => {
-    if (Array.from(getElementAtEvent(chartRef.current, e)).length === 0) {
+    const elementArr = Array.from(getElementAtEvent(chartRef.current, e));
+    if (elementArr.length === 0) {
       return;
     }
+
+    const selectedClusterIdx = elementArr[0].index;
+
+    setSelectedClusterIdx(selectedClusterIdx + 1);
+
+    const newDisplayedPlans = [
+      ...displayedPlans,
+      { type: "cluster", id: selectedClusterIdx + 1, parent: null },
+    ];
+    setDisplayedPlans(newDisplayedPlans);
     setIndex(1);
   };
 
@@ -143,7 +159,7 @@ function ClusterScatterPlot({ setIndex }) {
   );
 }
 
-export default function ClusterPlotForm() {
+export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
   const [showTabularSummary, setShowTabularSummary] = useState(false);
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
   const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
@@ -154,6 +170,8 @@ export default function ClusterPlotForm() {
     useState("optimalTransport"); // optimalTransport, hammingDistance, totalVariationDistance
 
   const [index, setIndex] = useState(0);
+
+  const [selectedClusterIdx, setSelectedClusterIdx] = useState(0);
 
   const handleCloseTabularSummary = () => setShowTabularSummary(false);
   const handleShowTabularSummary = () => setShowTabularSummary(true);
@@ -193,7 +211,7 @@ export default function ClusterPlotForm() {
                             Ensemble #1
                           </Breadcrumb.Item>
                           <Breadcrumb.Item active>
-                            {"Cluster #" + Math.floor(Math.random() * 50)}
+                            {"Cluster #" + selectedClusterIdx}
                           </Breadcrumb.Item>
                         </>
                       )}
@@ -211,7 +229,12 @@ export default function ClusterPlotForm() {
                     indicators={false}
                   >
                     <Carousel.Item>
-                      <ClusterScatterPlot setIndex={setIndex} />
+                      <ClusterScatterPlot
+                        setIndex={setIndex}
+                        displayedPlans={displayedPlans}
+                        setDisplayedPlans={setDisplayedPlans}
+                        setSelectedClusterIdx={setSelectedClusterIdx}
+                      />
                     </Carousel.Item>
                     <Carousel.Item>
                       <PlanScatterPlot />

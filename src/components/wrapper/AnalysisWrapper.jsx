@@ -21,7 +21,10 @@ export default function AnalysisWrapper({ displayedPlans, setDisplayedPlans }) {
           <EnsembleInfoForm />
         </Tab>
         <Tab eventKey="profile" title="Manage Clusters">
-          <ClusterPlotForm setDisplayedPlans={setDisplayedPlans} />
+          <ClusterPlotForm
+            displayedPlans={displayedPlans}
+            setDisplayedPlans={setDisplayedPlans}
+          />
         </Tab>
         <Tab eventKey="contact" title="Cluster Pattern">
           <ClusterTableForm

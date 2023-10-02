@@ -62,37 +62,53 @@ const popover = (i) => {
   );
 };
 
-export default function DisplayedPlansTab() {
+export default function DisplayedPlansTab({
+  displayedPlans,
+  setDisplayedPlans,
+}) {
+  const onRemove = (e) => {
+    setDisplayedPlans(
+      displayedPlans.filter((plan) => plan.id !== parseInt(e.target.value))
+    );
+  };
+
   return (
     <Card>
       <Card.Header>Displayed Plans</Card.Header>
       <ListGroup variant="flush">
-        <ListGroup.Item className="px-0">
-          <Row>
-            <Col>
-              <Stack
-                direction="horizontal"
-                gap={3}
-                className="justify-content-center"
-              >
-                <OverlayTrigger
-                  trigger="click"
-                  placement="right"
-                  overlay={popover(0)}
-                >
-                  <Button variant="outline-secondary" size="sm">
-                    Cluster 1
-                  </Button>
-                </OverlayTrigger>
-                <Button variant="outline-danger" size="sm">
-                  X
-                </Button>
-              </Stack>
-            </Col>
-          </Row>
-        </ListGroup.Item>
-        <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-        <ListGroup.Item>Vestibulum at eros</ListGroup.Item>
+        {displayedPlans.map((plan, i) => {
+          return (
+            <ListGroup.Item key={i} className="px-0">
+              <Row>
+                <Col>
+                  <Stack
+                    direction="horizontal"
+                    gap={3}
+                    className="justify-content-center"
+                  >
+                    <OverlayTrigger
+                      trigger="click"
+                      placement="right"
+                      overlay={popover(0)}
+                    >
+                      <Button variant="outline-secondary" size="sm">
+                        Cluster {plan.id}
+                      </Button>
+                    </OverlayTrigger>
+                    <Button
+                      onClick={onRemove}
+                      variant="outline-danger"
+                      size="sm"
+                      value={plan.id}
+                    >
+                      X
+                    </Button>
+                  </Stack>
+                </Col>
+              </Row>
+            </ListGroup.Item>
+          );
+        })}
       </ListGroup>
     </Card>
   );

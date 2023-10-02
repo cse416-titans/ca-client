@@ -24,7 +24,10 @@ import {
 
 import { useState } from "react";
 
-export default function ClusterTableForm() {
+export default function ClusterTableForm({
+  displayedPlans,
+  setDisplayedPlans,
+}) {
   const [showSummaryTable, setShowSummaryTable] = useState(false);
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
   const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
@@ -81,7 +84,11 @@ export default function ClusterTableForm() {
                     indicators={false}
                   >
                     <Carousel.Item>
-                      <TableWrapper setIndex={setIndex} />
+                      <TableWrapper
+                        setIndex={setIndex}
+                        displayedPlans={displayedPlans}
+                        setDisplayedPlans={setDisplayedPlans}
+                      />
                     </Carousel.Item>
                     <Carousel.Item>
                       <TableWrapperPlan />

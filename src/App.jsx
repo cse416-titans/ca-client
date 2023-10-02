@@ -19,7 +19,7 @@ function App() {
   const [stage, setStage] = useState(0);
   const [width, setWidth] = useState(6);
 
-  const [displayedPlans, setDisplayedPlans] = useState([]);
+  const [displayedPlans, setDisplayedPlans] = useState([]); // {type:'cluster'|'plan', id:int, parent:null|clusterId}
 
   return (
     <Container className="h-100" fluid style={{ position: "fixed" }}>
@@ -35,7 +35,10 @@ function App() {
                 margin: "10px 0 0 10px",
               }}
             >
-              <DisplayedPlansTab />
+              <DisplayedPlansTab
+                displayedPlans={displayedPlans}
+                setDisplayedPlans={setDisplayedPlans}
+              />
             </div>
             <Map />
           </MapWrapper>

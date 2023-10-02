@@ -61,7 +61,14 @@ const Styles = styled.div`
   }
 `;
 
-function TableExample({ columns, data, setIndex, newPageSize }) {
+function TableExample({
+  columns,
+  data,
+  setIndex,
+  newPageSize,
+  displayedPlans,
+  setDisplayedPlans,
+}) {
   // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
@@ -168,6 +175,7 @@ function TableExample({ columns, data, setIndex, newPageSize }) {
                                 type="switch"
                                 id="custom-switch"
                                 style={{ width: "100%" }}
+                                checked={true}
                               />
                             </td>
                           );
@@ -212,7 +220,7 @@ function TableExample({ columns, data, setIndex, newPageSize }) {
   );
 }
 
-export function TableWrapper({ setIndex }) {
+export function TableWrapper({ setIndex, displayedPlans, setDisplayedPlans }) {
   const columns = React.useMemo(
     () => [
       {
@@ -309,6 +317,8 @@ export function TableWrapper({ setIndex }) {
         data={data}
         setIndex={setIndex}
         newPageSize={10}
+        displayedPlans={displayedPlans}
+        setDisplayedPlans={setDisplayedPlans}
       />
     </Styles>
   );

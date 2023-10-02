@@ -27,7 +27,7 @@ const dynamicColors = function () {
 
 export const randomColorArr = Array.from({ length: 50 }, () => dynamicColors());
 
-i = 0;
+i = 1;
 export const data = {
   labels: Array.from({ length: 50 }, () => i++),
   datasets: [
