@@ -6,3 +6,8 @@ ol.breadcrumb {
   background-color: transparent;
   margin-bottom: 0;
 }
+
+.selectable:hover {
+  cursor: pointer;
+  background-color: #f5f5f5;
+}

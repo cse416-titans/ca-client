@@ -2,6 +2,8 @@ import { Row, Col, Tooltip, Card, Button, Badge, Table } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
 
+import { useState } from "react";
+
 /*
  * Placeholder for basic info about the set of ensembles that user selected
  * Info includes: 1) total number of random district plans (number), 2) average distance between distance plan pairs (number)
@@ -9,6 +11,7 @@ import DataForm from "../common/DataForm";
  */
 
 export default function StateInfoForm() {
+  const [selectedState, setSelectedState] = useState("Arizona");
   return (
     <DataForm headerText={"EnsembleInfoForm"}>
       <Row className="mb-3">
@@ -18,7 +21,12 @@ export default function StateInfoForm() {
             <Card.Body>
               <Row>
                 <Col>
-                  <Card>
+                  <Card
+                    bg={selectedState === "Arizona" ? "primary" : "light"}
+                    text={selectedState === "Arizona" ? "white" : ""}
+                    className="selectable"
+                    onClick={() => setSelectedState("Arizona")}
+                  >
                     <Card.Body>
                       <Card.Title>Arizona</Card.Title>
                       <Card.Subtitle>State Assembly Plan</Card.Subtitle>
@@ -50,7 +58,14 @@ export default function StateInfoForm() {
                         </Row>
                         <Row>
                           <Col>
-                            <Button variant="outline-primary" size="sm">
+                            <Button
+                              variant={
+                                selectedState === "Arizona"
+                                  ? "outline-light"
+                                  : "outline-primary"
+                              }
+                              size="sm"
+                            >
                               Detail..
                             </Button>
                           </Col>
@@ -60,7 +75,12 @@ export default function StateInfoForm() {
                   </Card>
                 </Col>
                 <Col>
-                  <Card>
+                  <Card
+                    bg={selectedState === "Louisianna" ? "primary" : "light"}
+                    text={selectedState === "Louisianna" ? "white" : ""}
+                    className="selectable"
+                    onClick={() => setSelectedState("Louisianna")}
+                  >
                     <Card.Body>
                       <Card.Title>Louisianna</Card.Title>
                       <Card.Subtitle>State Assembly Plan</Card.Subtitle>
@@ -92,7 +112,14 @@ export default function StateInfoForm() {
                         </Row>
                         <Row>
                           <Col>
-                            <Button variant="outline-primary" size="sm">
+                            <Button
+                              variant={
+                                selectedState === "Louisianna"
+                                  ? "outline-light"
+                                  : "outline-primary"
+                              }
+                              size="sm"
+                            >
                               Detail..
                             </Button>
                           </Col>
@@ -102,7 +129,12 @@ export default function StateInfoForm() {
                   </Card>
                 </Col>
                 <Col>
-                  <Card>
+                  <Card
+                    bg={selectedState === "Nevada" ? "primary" : "light"}
+                    text={selectedState === "Nevada" ? "white" : ""}
+                    className="selectable"
+                    onClick={() => setSelectedState("Nevada")}
+                  >
                     <Card.Body>
                       <Card.Title>Nevada</Card.Title>
                       <Card.Subtitle>State Assembly Plan</Card.Subtitle>
@@ -134,7 +166,14 @@ export default function StateInfoForm() {
                         </Row>
                         <Row>
                           <Col>
-                            <Button variant="outline-primary" size="sm">
+                            <Button
+                              variant={
+                                selectedState === "Nevada"
+                                  ? "outline-light"
+                                  : "outline-primary"
+                              }
+                              size="sm"
+                            >
                               Detail..
                             </Button>
                           </Col>

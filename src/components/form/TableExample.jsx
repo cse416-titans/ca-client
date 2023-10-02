@@ -3,7 +3,11 @@ import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 import { Button, Container, Row, Col, Form } from "react-bootstrap";
 
-import { makeData, makeDataPlan } from "../../assets/makeData";
+import {
+  makeData,
+  makeDataClusterAndPlan,
+  makeDataPlan,
+} from "../../assets/makeData";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -19,6 +23,7 @@ const Styles = styled.div`
 
     tr:hover {
       background-color: #e6e6e6;
+      transition: 0.1s;
     }
   }
 
@@ -56,7 +61,7 @@ const Styles = styled.div`
   }
 `;
 
-function TableExample({ columns, data, setIndex }) {
+function TableExample({ columns, data, setIndex, newPageSize }) {
   // Use the state and functions returned from useTable to build your UI
   const {
     getTableProps,
@@ -80,7 +85,7 @@ function TableExample({ columns, data, setIndex }) {
     {
       columns,
       data,
-      initialState: { pageIndex: 2 },
+      initialState: { pageIndex: 2, pageSize: newPageSize },
     },
     usePagination
   );
@@ -153,11 +158,7 @@ function TableExample({ columns, data, setIndex }) {
               {page.map((row, i) => {
                 prepareRow(row);
                 return (
-                  <tr
-                    onClick={() => setIndex(1)}
-                    key={i}
-                    {...row.getRowProps()}
-                  >
+                  <tr key={i} {...row.getRowProps()}>
                     {row.cells.map((cell, j) => {
                       if (cell.column.id === "showMap") {
                         if (cell.value === 1) {
@@ -177,10 +178,20 @@ function TableExample({ columns, data, setIndex }) {
                             </td>
                           );
                         }
-                      } else if (cell.column.id === "gotoDetailFiller") {
+                      } else if (cell.column.id === "gotoDetail") {
                         return (
-                          <td key={j} {...cell.getCellProps()} style={{}}>
-                            {">"}
+                          <td
+                            key={j}
+                            {...cell.getCellProps()}
+                            onClick={() => setIndex(1)}
+                          >
+                            {parseInt(cell.value) ? ">" : ""}
+                          </td>
+                        );
+                      } else if (cell.column.id === "isCluster") {
+                        return (
+                          <td key={j} {...cell.getCellProps()}>
+                            {parseInt(cell.value) ? "Cluster" : "Plan"}
                           </td>
                         );
                       }
@@ -281,7 +292,7 @@ export function TableWrapper({ setIndex }) {
         columns: [
           {
             Header: "Detail",
-            accessor: "gotoDetailFiller",
+            accessor: "gotoDetail",
           },
         ],
       },
@@ -293,7 +304,12 @@ export function TableWrapper({ setIndex }) {
 
   return (
     <Styles>
-      <TableExample columns={columns} data={data} setIndex={setIndex} />
+      <TableExample
+        columns={columns}
+        data={data}
+        setIndex={setIndex}
+        newPageSize={10}
+      />
     </Styles>
   );
 }
@@ -381,7 +397,114 @@ export function TableWrapperPlan({ setIndex }) {
 
   return (
     <Styles>
-      <TableExample columns={columns} data={data} setIndex={setIndex} />
+      <TableExample
+        columns={columns}
+        data={data}
+        setIndex={setIndex}
+        newPageSize={10}
+      />
+    </Styles>
+  );
+}
+
+export function TableWrapperClusterAndPlan({ setIndex }) {
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Plan",
+        columns: [
+          {
+            Header: "Type",
+            accessor: "isCluster",
+          },
+        ],
+      },
+      {
+        Header: "Political Index",
+        columns: [
+          {
+            Header: "Margin",
+            accessor: "split",
+          },
+          {
+            Header: "Dem. %",
+            accessor: "dem",
+          },
+          {
+            Header: "Rep. %",
+            accessor: "rep",
+          },
+          {
+            Header: "Dem. Seats",
+            accessor: "seatDem",
+          },
+          {
+            Header: "Rep. Seats",
+            accessor: "seatRep",
+          },
+        ],
+      },
+      {
+        Header: "Demographic Index",
+        columns: [
+          {
+            Header: "Asian",
+            accessor: "asian",
+          },
+          {
+            Header: "A-An",
+            accessor: "african",
+          },
+          {
+            Header: "Hisp.",
+            accessor: "hispanic",
+          },
+          {
+            Header: "White",
+            accessor: "white",
+          },
+          {
+            Header: "Other",
+            accessor: "other",
+          },
+          {
+            Header: "Maj-Min",
+            accessor: "majminRatio",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Map",
+            accessor: "showMap",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Detail",
+            accessor: "gotoDetail",
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const data = React.useMemo(() => makeDataClusterAndPlan(10050), []);
+
+  return (
+    <Styles>
+      <TableExample
+        columns={columns}
+        data={data}
+        setIndex={setIndex}
+        newPageSize={20}
+      />
     </Styles>
   );
 }

@@ -1,4 +1,15 @@
-import { Row, Col, Tooltip, Card, Button, Badge, Table } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Tooltip,
+  Card,
+  Button,
+  Badge,
+  Table,
+  Modal,
+  Dropdown,
+  Alert,
+} from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
 
@@ -11,6 +22,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
+import { useState } from "react";
+import { exampleEnsembleArr } from "../../assets/makeData";
 
 /*
  * Placeholder for basic info about the set of ensembles that user selected
@@ -67,6 +81,11 @@ function EnsembleAssociationGraph() {
 }
 
 export default function EnsembleInfoForm() {
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   return (
     <DataForm headerText={"EnsembleInfoForm"}>
       <Row>
@@ -188,9 +207,77 @@ export default function EnsembleInfoForm() {
               </Row>
               <Row className="mb-3">
                 <Col>
-                  <Button variant="outline-success" size="sm">
-                    See More Ensembles...
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={handleShow}
+                    >
+                      See More Ensembles...
+                    </Button>
+
+                    <Modal show={show} onHide={handleClose}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>Select an Ensemble</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Row>
+                          <Col>
+                            <Alert variant="success">
+                              <Alert.Heading>
+                                Hey, nice to see you
+                              </Alert.Heading>
+                              <p>
+                                Aww yeah, you successfully read this important
+                                alert message. This example text is going to run
+                                a bit longer so that you can see how spacing
+                                within an alert works with this kind of content.
+                              </p>
+                              <hr />
+                              <p className="mb-0">
+                                Whenever you need to, be sure to use margin
+                                utilities to keep things nice and tidy.
+                              </p>
+                            </Alert>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <Dropdown drop="end">
+                              <Dropdown.Toggle
+                                variant="success"
+                                id="dropdown-basic"
+                              >
+                                Dropdown Button
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                {exampleEnsembleArr.map((_, i) => {
+                                  return (
+                                    <Dropdown.Item key={i}>
+                                      {"Ensemble " +
+                                        (i + 1) +
+                                        " (" +
+                                        100 * (i + 1) +
+                                        " plans)"}
+                                    </Dropdown.Item>
+                                  );
+                                })}
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </Col>
+                        </Row>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                          Close
+                        </Button>
+                        <Button variant="primary" onClick={handleClose}>
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </>
                 </Col>
               </Row>
               <Row>

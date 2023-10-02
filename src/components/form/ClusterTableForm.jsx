@@ -8,15 +8,31 @@ import {
   Stack,
   Breadcrumb,
   Carousel,
+  Modal,
+  Alert,
 } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
-import { TableWrapper, TableWrapperPlan } from "./TableExample";
+import {
+  TableWrapper,
+  TableWrapperClusterAndPlan,
+  TableWrapperPlan,
+} from "./TableExample";
 
 import { useState } from "react";
 
 export default function ClusterTableForm() {
+  const [showSummaryTable, setShowSummaryTable] = useState(false);
+  const [showAdjustFilter, setShowAdjustFilter] = useState(false);
+  const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
   const [index, setIndex] = useState(0);
+
+  const handleCloseSummaryTable = () => setShowSummaryTable(false);
+  const handleShowSummaryTable = () => setShowSummaryTable(true);
+  const handleCloseAdjustFilter = () => setShowAdjustFilter(false);
+  const handleShowAdjustFilter = () => setShowAdjustFilter(true);
+  const handleCloseChangeViewSettings = () => setShowChangeViewSettings(false);
+  const handleShowChangeViewSettings = () => setShowChangeViewSettings(true);
 
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
@@ -54,7 +70,6 @@ export default function ClusterTableForm() {
               <Row>
                 <Col>
                   <Carousel
-                    data-bs-theme="dark"
                     activeIndex={index}
                     onSelect={handleSelect}
                     slide={true}
@@ -73,14 +88,64 @@ export default function ClusterTableForm() {
               </Row>
               <Row>
                 <Col sm={12}>
-                  <Stack direction="horizontal" gap={3}>
-                    <Button
-                      className="m-3 mt-0"
-                      size="sm"
-                      variant="outline-success"
-                    >
-                      {"Open in New Window..."}
-                    </Button>
+                  <Stack direction="horizontal" gap={0}>
+                    <>
+                      <Button
+                        className="mb-3 mx-3"
+                        variant="outline-success"
+                        size="sm"
+                        onClick={handleShowSummaryTable}
+                      >
+                        View In Detail...
+                      </Button>
+
+                      <Modal
+                        show={showSummaryTable}
+                        size="xl"
+                        onHide={handleCloseSummaryTable}
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>
+                            Tabular Summary of Ensemble #1
+                          </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <Row>
+                            <Col md={8}>
+                              <TableWrapperClusterAndPlan />
+                            </Col>
+                            <Col>
+                              <Row>
+                                <Col>
+                                  <Card>
+                                    <Card.Header>Filter & View</Card.Header>
+                                    <Card.Body>adf</Card.Body>
+                                  </Card>
+                                </Col>
+                              </Row>
+                              <Row className="mt-3">
+                                <Col>
+                                  <Card>
+                                    <Card.Header>
+                                      Change View Settings
+                                    </Card.Header>
+                                    <Card.Body>adf</Card.Body>
+                                  </Card>
+                                </Col>
+                              </Row>
+                            </Col>
+                          </Row>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button
+                            variant="secondary"
+                            onClick={handleCloseSummaryTable}
+                          >
+                            Close
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                    </>
                     <Button
                       className="m-3 mt-0"
                       size="sm"
@@ -88,6 +153,7 @@ export default function ClusterTableForm() {
                     >
                       {"Download .CSV..."}
                     </Button>
+
                     <Button
                       className="m-3 mt-0"
                       size="sm"
@@ -110,16 +176,118 @@ export default function ClusterTableForm() {
             <Card.Body>
               <Row className="mb-3">
                 <Col>
-                  <Button variant="outline-success" size="sm">
-                    Adjust Filter...
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={handleShowAdjustFilter}
+                    >
+                      Adjust Filter...
+                    </Button>
+
+                    <Modal
+                      show={showAdjustFilter}
+                      onHide={handleCloseAdjustFilter}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Adjust Filter</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Row>
+                          <Col>
+                            <Alert variant="success">
+                              <Alert.Heading>
+                                Hey, nice to see you
+                              </Alert.Heading>
+                              <p>
+                                Aww yeah, you successfully read this important
+                                alert message. This example text is going to run
+                                a bit longer so that you can see how spacing
+                                within an alert works with this kind of content.
+                              </p>
+                              <hr />
+                              <p className="mb-0">
+                                Whenever you need to, be sure to use margin
+                                utilities to keep things nice and tidy.
+                              </p>
+                            </Alert>
+                          </Col>
+                        </Row>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleCloseAdjustFilter}
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleCloseAdjustFilter}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </>
                 </Col>
               </Row>
               <Row className="mb-3">
                 <Col>
-                  <Button variant="outline-success" size="sm">
-                    Change View Settings...
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={handleShowChangeViewSettings}
+                    >
+                      Change View Settings...
+                    </Button>
+
+                    <Modal
+                      show={showChangeViewSettings}
+                      onHide={handleCloseChangeViewSettings}
+                    >
+                      <Modal.Header closeButton>
+                        <Modal.Title>Change View Settings</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Row>
+                          <Col>
+                            <Alert variant="success">
+                              <Alert.Heading>
+                                Hey, nice to see you
+                              </Alert.Heading>
+                              <p>
+                                Aww yeah, you successfully read this important
+                                alert message. This example text is going to run
+                                a bit longer so that you can see how spacing
+                                within an alert works with this kind of content.
+                              </p>
+                              <hr />
+                              <p className="mb-0">
+                                Whenever you need to, be sure to use margin
+                                utilities to keep things nice and tidy.
+                              </p>
+                            </Alert>
+                          </Col>
+                        </Row>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button
+                          variant="secondary"
+                          onClick={handleCloseChangeViewSettings}
+                        >
+                          Close
+                        </Button>
+                        <Button
+                          variant="primary"
+                          onClick={handleCloseChangeViewSettings}
+                        >
+                          Save Changes
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                  </>
                 </Col>
               </Row>
               <Row>

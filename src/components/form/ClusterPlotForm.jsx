@@ -14,6 +14,8 @@ import {
   Form,
   Carousel,
   Stack,
+  Modal,
+  Alert,
 } from "react-bootstrap";
 
 import { data, dataPlan } from "../../assets/testData";
@@ -134,7 +136,24 @@ function ClusterScatterPlot({ setIndex }) {
 }
 
 export default function ClusterPlotForm() {
+  const [showTabularSummary, setShowTabularSummary] = useState(false);
+  const [showAdjustFilter, setShowAdjustFilter] = useState(false);
+  const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
+  const [showClusteringMethodEvaluation, setShowClusteringMethodEvaluation] =
+    useState(false);
+
   const [index, setIndex] = useState(0);
+
+  const handleCloseTabularSummary = () => setShowTabularSummary(false);
+  const handleShowTabularSummary = () => setShowTabularSummary(true);
+  const handleCloseAdjustFilter = () => setShowAdjustFilter(false);
+  const handleShowAdjustFilter = () => setShowAdjustFilter(true);
+  const handleCloseChangeViewSettings = () => setShowChangeViewSettings(false);
+  const handleShowChangeViewSettings = () => setShowChangeViewSettings(true);
+  const handleCloseClusteringMethodEvaluation = () =>
+    setShowClusteringMethodEvaluation(false);
+  const handleShowClusteringMethodEvaluation = () =>
+    setShowClusteringMethodEvaluation(true);
 
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
@@ -199,9 +218,61 @@ export default function ClusterPlotForm() {
                 <Card.Body>
                   <Row className="mb-3">
                     <Col>
-                      <Button variant="outline-success" size="sm">
-                        Open in New Window...
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={handleShowTabularSummary}
+                        >
+                          Open In New Window...
+                        </Button>
+
+                        <Modal
+                          show={showTabularSummary}
+                          onHide={handleCloseTabularSummary}
+                        >
+                          <Modal.Header closeButton>
+                            <Modal.Title>Select an Ensemble</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Row>
+                              <Col>
+                                <Alert variant="success">
+                                  <Alert.Heading>
+                                    Hey, nice to see you
+                                  </Alert.Heading>
+                                  <p>
+                                    Aww yeah, you successfully read this
+                                    important alert message. This example text
+                                    is going to run a bit longer so that you can
+                                    see how spacing within an alert works with
+                                    this kind of content.
+                                  </p>
+                                  <hr />
+                                  <p className="mb-0">
+                                    Whenever you need to, be sure to use margin
+                                    utilities to keep things nice and tidy.
+                                  </p>
+                                </Alert>
+                              </Col>
+                            </Row>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button
+                              variant="secondary"
+                              onClick={handleCloseTabularSummary}
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              variant="primary"
+                              onClick={handleCloseTabularSummary}
+                            >
+                              Save Changes
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </>
                     </Col>
                   </Row>
                   <Row>
@@ -220,16 +291,120 @@ export default function ClusterPlotForm() {
                 <Card.Body>
                   <Row className="mb-3">
                     <Col>
-                      <Button variant="outline-success" size="sm">
-                        Adjust Filter...
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={handleShowAdjustFilter}
+                        >
+                          Adjust Filter...
+                        </Button>
+
+                        <Modal
+                          show={showAdjustFilter}
+                          onHide={handleCloseAdjustFilter}
+                        >
+                          <Modal.Header closeButton>
+                            <Modal.Title>Adjust Filter</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Row>
+                              <Col>
+                                <Alert variant="success">
+                                  <Alert.Heading>
+                                    Hey, nice to see you
+                                  </Alert.Heading>
+                                  <p>
+                                    Aww yeah, you successfully read this
+                                    important alert message. This example text
+                                    is going to run a bit longer so that you can
+                                    see how spacing within an alert works with
+                                    this kind of content.
+                                  </p>
+                                  <hr />
+                                  <p className="mb-0">
+                                    Whenever you need to, be sure to use margin
+                                    utilities to keep things nice and tidy.
+                                  </p>
+                                </Alert>
+                              </Col>
+                            </Row>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button
+                              variant="secondary"
+                              onClick={handleCloseAdjustFilter}
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              variant="primary"
+                              onClick={handleCloseAdjustFilter}
+                            >
+                              Save Changes
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </>
                     </Col>
                   </Row>
                   <Row className="mb-3">
                     <Col>
-                      <Button variant="outline-success" size="sm">
-                        Change View Settings...
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={handleShowChangeViewSettings}
+                        >
+                          Change View Settings...
+                        </Button>
+
+                        <Modal
+                          show={showChangeViewSettings}
+                          onHide={handleCloseChangeViewSettings}
+                        >
+                          <Modal.Header closeButton>
+                            <Modal.Title>Change View Settings</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <Row>
+                              <Col>
+                                <Alert variant="success">
+                                  <Alert.Heading>
+                                    Hey, nice to see you
+                                  </Alert.Heading>
+                                  <p>
+                                    Aww yeah, you successfully read this
+                                    important alert message. This example text
+                                    is going to run a bit longer so that you can
+                                    see how spacing within an alert works with
+                                    this kind of content.
+                                  </p>
+                                  <hr />
+                                  <p className="mb-0">
+                                    Whenever you need to, be sure to use margin
+                                    utilities to keep things nice and tidy.
+                                  </p>
+                                </Alert>
+                              </Col>
+                            </Row>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button
+                              variant="secondary"
+                              onClick={handleCloseChangeViewSettings}
+                            >
+                              Close
+                            </Button>
+                            <Button
+                              variant="primary"
+                              onClick={handleCloseChangeViewSettings}
+                            >
+                              Save Changes
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </>
                     </Col>
                   </Row>
                   <Row>
@@ -368,9 +543,68 @@ export default function ClusterPlotForm() {
                       </Row>
                       <Row>
                         <Col>
-                          <Button variant="outline-success" size="sm">
-                            See in Detail...
-                          </Button>
+                          <>
+                            <Button
+                              variant="outline-success"
+                              size="sm"
+                              onClick={handleShowClusteringMethodEvaluation}
+                            >
+                              View In Detail...
+                            </Button>
+
+                            <Modal
+                              show={showClusteringMethodEvaluation}
+                              onHide={handleCloseClusteringMethodEvaluation}
+                            >
+                              <Modal.Header closeButton>
+                                <Modal.Title>
+                                  Evaluate Your Clustering Method
+                                </Modal.Title>
+                              </Modal.Header>
+                              <Modal.Body>
+                                <Row>
+                                  <Col>
+                                    <Alert variant="success">
+                                      <Alert.Heading>
+                                        Hey, nice to see you
+                                      </Alert.Heading>
+                                      <p>
+                                        Aww yeah, you successfully read this
+                                        important alert message. This example
+                                        text is going to run a bit longer so
+                                        that you can see how spacing within an
+                                        alert works with this kind of content.
+                                      </p>
+                                      <hr />
+                                      <p className="mb-0">
+                                        Whenever you need to, be sure to use
+                                        margin utilities to keep things nice and
+                                        tidy.
+                                      </p>
+                                    </Alert>
+                                  </Col>
+                                </Row>
+                              </Modal.Body>
+                              <Modal.Footer>
+                                <Button
+                                  variant="secondary"
+                                  onClick={
+                                    handleCloseClusteringMethodEvaluation
+                                  }
+                                >
+                                  Close
+                                </Button>
+                                <Button
+                                  variant="primary"
+                                  onClick={
+                                    handleCloseClusteringMethodEvaluation
+                                  }
+                                >
+                                  Save Changes
+                                </Button>
+                              </Modal.Footer>
+                            </Modal>
+                          </>
                         </Col>
                       </Row>
                     </Card.Body>
