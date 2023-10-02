@@ -9,5 +9,5 @@ ol.breadcrumb {
 
 .selectable:hover {
   cursor: pointer;
-  background-color: #f5f5f5;
+  filter: brightness(95%);
 }

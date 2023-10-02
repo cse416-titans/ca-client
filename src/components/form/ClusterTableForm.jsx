@@ -10,6 +10,8 @@ import {
   Carousel,
   Modal,
   Alert,
+  Form,
+  Dropdown,
 } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
@@ -118,8 +120,69 @@ export default function ClusterTableForm() {
                               <Row>
                                 <Col>
                                   <Card>
-                                    <Card.Header>Filter & View</Card.Header>
-                                    <Card.Body>adf</Card.Body>
+                                    <Card.Header>
+                                      Change View Settings
+                                    </Card.Header>
+                                    <Card.Body>
+                                      <Row>
+                                        <Col>
+                                          <Form>
+                                            <Row>
+                                              <Col>Plan / Cluster Display</Col>
+                                            </Row>
+                                            <Row className="mb-3">
+                                              <Col>
+                                                <Form.Check
+                                                  onClick={(e) =>
+                                                    alert(e.target.name)
+                                                  }
+                                                  type={"radio"}
+                                                  name="viewclusterplan"
+                                                  label={`Clusters Only`}
+                                                />
+                                                <Form.Check
+                                                  type={"radio"}
+                                                  name="viewclusterplan"
+                                                  label={`Plans Only`}
+                                                />
+                                                <Form.Check
+                                                  type={"radio"}
+                                                  name="viewclusterplan"
+                                                  label={`Clusters and Plans`}
+                                                />
+                                              </Col>
+                                            </Row>
+                                            <Row>
+                                              <Col>Sort By...</Col>
+                                              <Row>
+                                                <Col>
+                                                  <Dropdown>
+                                                    <Dropdown.Toggle
+                                                      variant="success"
+                                                      id="dropdown-basic"
+                                                    >
+                                                      Vote Margin
+                                                    </Dropdown.Toggle>
+
+                                                    <Dropdown.Menu>
+                                                      <Dropdown.Item href="#/action-1">
+                                                        Action
+                                                      </Dropdown.Item>
+                                                      <Dropdown.Item href="#/action-2">
+                                                        Another action
+                                                      </Dropdown.Item>
+                                                      <Dropdown.Item href="#/action-3">
+                                                        Something else
+                                                      </Dropdown.Item>
+                                                    </Dropdown.Menu>
+                                                  </Dropdown>
+                                                </Col>
+                                              </Row>
+                                            </Row>
+                                          </Form>
+                                        </Col>
+                                      </Row>
+                                    </Card.Body>
                                   </Card>
                                 </Col>
                               </Row>

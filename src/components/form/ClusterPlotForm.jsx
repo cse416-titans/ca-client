@@ -142,6 +142,9 @@ export default function ClusterPlotForm() {
   const [showClusteringMethodEvaluation, setShowClusteringMethodEvaluation] =
     useState(false);
 
+  const [selectedDistanceMeasure, setSelectedDistanceMeasure] =
+    useState("optimalTransport"); // optimalTransport, hammingDistance, totalVariationDistance
+
   const [index, setIndex] = useState(0);
 
   const handleCloseTabularSummary = () => setShowTabularSummary(false);
@@ -433,7 +436,22 @@ export default function ClusterPlotForm() {
                     <Card.Body>
                       <Row className="gy-4">
                         <Col md={6}>
-                          <Card bg="primary" text="white">
+                          <Card
+                            className="selectable"
+                            bg={
+                              selectedDistanceMeasure === "optimalTransport"
+                                ? "primary"
+                                : "light"
+                            }
+                            text={
+                              selectedDistanceMeasure === "optimalTransport"
+                                ? "white"
+                                : ""
+                            }
+                            onClick={() =>
+                              setSelectedDistanceMeasure("optimalTransport")
+                            }
+                          >
                             <Card.Body>
                               <Card.Title>Optimal Transport</Card.Title>
                               <Card.Text>
@@ -445,7 +463,22 @@ export default function ClusterPlotForm() {
                           </Card>
                         </Col>
                         <Col md={6}>
-                          <Card>
+                          <Card
+                            className="selectable"
+                            bg={
+                              selectedDistanceMeasure === "hammingDistance"
+                                ? "primary"
+                                : "light"
+                            }
+                            text={
+                              selectedDistanceMeasure === "hammingDistance"
+                                ? "white"
+                                : ""
+                            }
+                            onClick={() =>
+                              setSelectedDistanceMeasure("hammingDistance")
+                            }
+                          >
                             <Card.Body>
                               <Card.Title>Hamming Distance</Card.Title>
                               <Card.Text>
@@ -457,7 +490,26 @@ export default function ClusterPlotForm() {
                           </Card>
                         </Col>
                         <Col md={6}>
-                          <Card>
+                          <Card
+                            className="selectable"
+                            bg={
+                              selectedDistanceMeasure ===
+                              "totalVariationDistance"
+                                ? "primary"
+                                : "light"
+                            }
+                            text={
+                              selectedDistanceMeasure ===
+                              "totalVariationDistance"
+                                ? "white"
+                                : ""
+                            }
+                            onClick={() =>
+                              setSelectedDistanceMeasure(
+                                "totalVariationDistance"
+                              )
+                            }
+                          >
                             <Card.Body>
                               <Card.Title>Total Variation Distance</Card.Title>
                               <Card.Text>
