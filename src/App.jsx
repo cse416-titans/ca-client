@@ -15,9 +15,13 @@ import Map from "./components/Map";
 import MapWrapper from "./components/wrapper/MapWrapper";
 import DisplayedPlansTab from "./components/DisplayedPlansTab";
 
+// json
+import arizona from "./data/arizona_curr.json";
+
 function App() {
   const [stage, setStage] = useState(0);
   const [width, setWidth] = useState(6);
+  const [map_f, setMap_f] = useState([[34.048927, -111.093735], 7, arizona]);
 
   const [displayedPlans, setDisplayedPlans] = useState([]); // {type:'cluster'|'plan', id:int, parent:null|clusterId}
 
@@ -40,7 +44,7 @@ function App() {
                 setDisplayedPlans={setDisplayedPlans}
               />
             </div>
-            <Map />
+            <Map map_f={map_f}/>
           </MapWrapper>
         </Col>
         <Col
@@ -55,6 +59,8 @@ function App() {
             <AnalysisWrapper
               displayedPlans={displayedPlans}
               setDisplayedPlans={setDisplayedPlans}
+              map_f={map_f}
+              setMap_f={setMap_f}
             />
           </Stack>
         </Col>

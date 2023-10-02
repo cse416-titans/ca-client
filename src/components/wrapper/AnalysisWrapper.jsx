@@ -6,7 +6,7 @@ import EnsembleInfoForm from "../form/EnsembleInfoForm";
 import ContentsContainer from "../layout/ContentsContainer";
 import StateInfoForm from "../form/StateInfoForm";
 
-export default function AnalysisWrapper({ displayedPlans, setDisplayedPlans }) {
+export default function AnalysisWrapper({ displayedPlans, setDisplayedPlans, map_f, setMap_f }) {
   return (
     <ContentsContainer>
       <Tabs
@@ -15,7 +15,7 @@ export default function AnalysisWrapper({ displayedPlans, setDisplayedPlans }) {
         className="mb-3"
       >
         <Tab eventKey={"state"} title={"State Information"}>
-          <StateInfoForm />
+          <StateInfoForm map_f={map_f} setMap_f={setMap_f}/>
         </Tab>
         <Tab eventKey="home" title="Manage Ensembles">
           <EnsembleInfoForm />
