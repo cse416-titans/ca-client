@@ -20,7 +20,9 @@ function App() {
   const [width, setWidth] = useState(6);
 
   const [displayedPlans, setDisplayedPlans] = useState([]); // {type:'cluster'|'plan', id:int, parent:null|clusterId}
+  const [displayedPlansRight, setDisplayedPlansRight] = useState([]); // same
   const [selectedState, setSelectedState] = useState("Arizona");
+  const [showCurrentDistrictPlan, setShowCurrentDistrictPlan] = useState(true);
 
   return (
     <Container className="h-100" fluid style={{ position: "fixed" }}>
@@ -39,28 +41,53 @@ function App() {
               <DisplayedPlansTab
                 displayedPlans={displayedPlans}
                 setDisplayedPlans={setDisplayedPlans}
+                showCurrentDistrictPlan={showCurrentDistrictPlan}
+                setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
+                displayedPlansRight={displayedPlansRight}
+                setDisplayedPlansRight={setDisplayedPlansRight}
               />
             </div>
-            <Map selectedState={selectedState} />
+            <Map
+              displayedPlans={displayedPlans}
+              selectedState={selectedState}
+              showCurrentDistrictPlan={showCurrentDistrictPlan}
+              isRight={false}
+            />
           </MapWrapper>
         </Col>
-        <Col
-          lg={width}
-          className="px-0"
-          style={{ boxShadow: "10px 5px 5px red", zIndex: 1 }}
-        >
-          <Stack gap={0} className="content-center">
-            <Header>
-              <h2>Titan: Redistricting Cluster Analyzer</h2>
-            </Header>
-            <AnalysisWrapper
-              displayedPlans={displayedPlans}
-              setDisplayedPlans={setDisplayedPlans}
-              selectedState={selectedState}
-              setSelectedState={setSelectedState}
-            />
-          </Stack>
-        </Col>
+        {displayedPlansRight.length > 0 ? (
+          <Col>
+            <MapWrapper>
+              <Map
+                displayedPlans={displayedPlansRight}
+                setDisplayedPlans={setDisplayedPlansRight}
+                selectedState={selectedState}
+                showCurrentDistrictPlan={showCurrentDistrictPlan}
+                isRight={true}
+              />
+            </MapWrapper>
+          </Col>
+        ) : null}
+        {displayedPlansRight.length === 0 ? (
+          <Col
+            lg={width}
+            className="px-0"
+            style={{ boxShadow: "10px 5px 5px red", zIndex: 1 }}
+          >
+            <Stack gap={0} className="content-center">
+              <Header>
+                <h2>Titan: Redistricting Cluster Analyzer</h2>
+              </Header>
+              <AnalysisWrapper
+                displayedPlans={displayedPlans}
+                setDisplayedPlans={setDisplayedPlans}
+                selectedState={selectedState}
+                setSelectedState={setSelectedState}
+                setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
+              />
+            </Stack>
+          </Col>
+        ) : null}
       </Row>
     </Container>
   );

@@ -11,6 +11,7 @@ export default function AnalysisWrapper({
   setDisplayedPlans,
   selectedState,
   setSelectedState,
+  setshowCurrentDistrictPlan,
 }) {
   return (
     <ContentsContainer>
@@ -23,6 +24,7 @@ export default function AnalysisWrapper({
           <StateInfoForm
             selectedState={selectedState}
             setSelectedState={setSelectedState}
+            setshowCurrentDistrictPlan={setshowCurrentDistrictPlan}
           />
         </Tab>
         <Tab eventKey="home" title="Manage My Ensemble">

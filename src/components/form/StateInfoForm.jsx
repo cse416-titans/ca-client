@@ -8,7 +8,11 @@ import DataForm from "../common/DataForm";
  * Option includes: 1) ensemble selection dropdown menu
  */
 
-export default function StateInfoForm({ selectedState, setSelectedState }) {
+export default function StateInfoForm({
+  selectedState,
+  setSelectedState,
+  setshowCurrentDistrictPlan,
+}) {
   return (
     <DataForm headerText={"EnsembleInfoForm"}>
       <Row className="mb-3">
@@ -24,6 +28,7 @@ export default function StateInfoForm({ selectedState, setSelectedState }) {
                     className="selectable"
                     onClick={() => {
                       setSelectedState("Arizona");
+                      setshowCurrentDistrictPlan(true);
                     }}
                   >
                     <Card.Body>
@@ -80,6 +85,7 @@ export default function StateInfoForm({ selectedState, setSelectedState }) {
                     className="selectable"
                     onClick={() => {
                       setSelectedState("Louisianna");
+                      setshowCurrentDistrictPlan(true);
                     }}
                   >
                     <Card.Body>
@@ -136,6 +142,7 @@ export default function StateInfoForm({ selectedState, setSelectedState }) {
                     className="selectable"
                     onClick={() => {
                       setSelectedState("Nevada");
+                      setshowCurrentDistrictPlan(true);
                     }}
                   >
                     <Card.Body>

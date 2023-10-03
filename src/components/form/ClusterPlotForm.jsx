@@ -16,6 +16,7 @@ import {
   Stack,
   Modal,
   Alert,
+  Dropdown,
 } from "react-bootstrap";
 
 import { data, dataPlan } from "../../assets/testData";
@@ -272,63 +273,24 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
               <Card>
                 <Card.Header>View Tabular Summary</Card.Header>
                 <Card.Body>
-                  <Row className="mb-3">
+                  <Row>
                     <Col>
-                      <>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={handleShowTabularSummary}
-                        >
-                          Open In New Window...
-                        </Button>
-
-                        <Modal
-                          show={showTabularSummary}
-                          onHide={handleCloseTabularSummary}
-                        >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Select an Ensemble</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body>
-                            <Row>
-                              <Col>
-                                <Alert variant="success">
-                                  <Alert.Heading>
-                                    Hey, nice to see you
-                                  </Alert.Heading>
-                                  <p>
-                                    Aww yeah, you successfully read this
-                                    important alert message. This example text
-                                    is going to run a bit longer so that you can
-                                    see how spacing within an alert works with
-                                    this kind of content.
-                                  </p>
-                                  <hr />
-                                  <p className="mb-0">
-                                    Whenever you need to, be sure to use margin
-                                    utilities to keep things nice and tidy.
-                                  </p>
-                                </Alert>
-                              </Col>
-                            </Row>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button
-                              variant="secondary"
-                              onClick={handleCloseTabularSummary}
-                            >
-                              Close
-                            </Button>
-                            <Button
-                              variant="primary"
-                              onClick={handleCloseTabularSummary}
-                            >
-                              Save Changes
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                      </>
+                      <Table striped bordered hover className="text-center">
+                        <tbody>
+                          <tr>
+                            <td>No. of Clusters</td>
+                            <td>
+                              <Badge bg="secondary">50</Badge>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Avg. Cluster Size</td>
+                            <td>
+                              <Badge bg="secondary">17</Badge>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </Table>
                     </Col>
                   </Row>
                   <Row>
@@ -361,28 +323,65 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                           onHide={handleCloseAdjustFilter}
                         >
                           <Modal.Header closeButton>
-                            <Modal.Title>Adjust Filter</Modal.Title>
+                            <Modal.Title>Change View Settings</Modal.Title>
                           </Modal.Header>
                           <Modal.Body>
                             <Row>
                               <Col>
                                 <Alert variant="success">
                                   <Alert.Heading>
-                                    Hey, nice to see you
+                                    Filter Out Unwanted Items.
                                   </Alert.Heading>
                                   <p>
-                                    Aww yeah, you successfully read this
-                                    important alert message. This example text
-                                    is going to run a bit longer so that you can
-                                    see how spacing within an alert works with
-                                    this kind of content.
-                                  </p>
-                                  <hr />
-                                  <p className="mb-0">
-                                    Whenever you need to, be sure to use margin
-                                    utilities to keep things nice and tidy.
+                                    Throw out the items you don't want to see,
+                                    just focus on the ones you want.
                                   </p>
                                 </Alert>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col>
+                                <Dropdown>
+                                  <Dropdown.Toggle
+                                    size="sm"
+                                    variant="success"
+                                    id="dropdown-basic"
+                                  >
+                                    Filter By: <b>Vote Margin</b>
+                                  </Dropdown.Toggle>
+
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item href="#/action-1">
+                                      Vote Margin
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">
+                                      No. of Opportunity Districts
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Cracking Occurences
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Packing Occurences
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Compactness Index
+                                    </Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                              </Col>
+                            </Row>
+                            <Row className="mt-3">
+                              <Col>
+                                <>
+                                  <Form.Label>Min</Form.Label>
+                                  <Form.Range />
+                                </>
+                              </Col>
+                              <Col>
+                                <>
+                                  <Form.Label>Max</Form.Label>
+                                  <Form.Range />
+                                </>
                               </Col>
                             </Row>
                           </Modal.Body>
@@ -427,21 +426,79 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                               <Col>
                                 <Alert variant="success">
                                   <Alert.Heading>
-                                    Hey, nice to see you
+                                    Display the Cluters and Plans In a Way that
+                                    Suits You.
                                   </Alert.Heading>
                                   <p>
-                                    Aww yeah, you successfully read this
-                                    important alert message. This example text
-                                    is going to run a bit longer so that you can
-                                    see how spacing within an alert works with
-                                    this kind of content.
-                                  </p>
-                                  <hr />
-                                  <p className="mb-0">
-                                    Whenever you need to, be sure to use margin
-                                    utilities to keep things nice and tidy.
+                                    Depending how a plan is redistricted, each
+                                    can have variety of different
+                                    characteristics. (e.g., compactness,
+                                    demographics, etc). In order to analyze such
+                                    variation, you can display the cluster and
+                                    plans with different X-Y axis system.
                                   </p>
                                 </Alert>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col>
+                                <Dropdown>
+                                  <Dropdown.Toggle
+                                    size="sm"
+                                    variant="success"
+                                    id="dropdown-basic"
+                                  >
+                                    X-axis: <b>No. of Opportunity Districts</b>
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item href="#/action-1">
+                                      No. of Opportunity Districts
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">
+                                      No. of Opportunity Districts
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Cracking Occurences
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Packing Occurences
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Compactness Index
+                                    </Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                              </Col>
+                            </Row>
+                            <Row className="mt-3">
+                              <Col>
+                                <Dropdown>
+                                  <Dropdown.Toggle
+                                    size="sm"
+                                    variant="success"
+                                    id="dropdown-basic"
+                                  >
+                                    Y-axis:{" "}
+                                    <b>Average African-American Proportion</b>
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item href="#/action-1">
+                                      Average African-American Proportion
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-2">
+                                      Average Asian Proportion
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Average Hispanic Proportion
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Average White Proportion
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#/action-3">
+                                      Compactness Index
+                                    </Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
                               </Col>
                             </Row>
                           </Modal.Body>
@@ -506,7 +563,7 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                             }
                           >
                             <Card.Body>
-                              <Card.Title>Optimal Transport</Card.Title>
+                              <Card.Title>Center-Point Distance</Card.Title>
                               <Card.Text>
                                 Some quick example text to build on the card
                                 title and make up the bulk of the card's
