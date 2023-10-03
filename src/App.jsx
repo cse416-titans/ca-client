@@ -15,15 +15,12 @@ import Map from "./components/Map";
 import MapWrapper from "./components/wrapper/MapWrapper";
 import DisplayedPlansTab from "./components/DisplayedPlansTab";
 
-// json
-import arizona from "./data/arizona_curr.json";
-
 function App() {
   const [stage, setStage] = useState(0);
   const [width, setWidth] = useState(6);
-  const [map_f, setMap_f] = useState([[34.048927, -111.093735], 7, arizona]);
 
   const [displayedPlans, setDisplayedPlans] = useState([]); // {type:'cluster'|'plan', id:int, parent:null|clusterId}
+  const [selectedState, setSelectedState] = useState("Arizona");
 
   return (
     <Container className="h-100" fluid style={{ position: "fixed" }}>
@@ -44,7 +41,7 @@ function App() {
                 setDisplayedPlans={setDisplayedPlans}
               />
             </div>
-            <Map map_f={map_f}/>
+            <Map selectedState={selectedState} />
           </MapWrapper>
         </Col>
         <Col
@@ -59,8 +56,8 @@ function App() {
             <AnalysisWrapper
               displayedPlans={displayedPlans}
               setDisplayedPlans={setDisplayedPlans}
-              map_f={map_f}
-              setMap_f={setMap_f}
+              selectedState={selectedState}
+              setSelectedState={setSelectedState}
             />
           </Stack>
         </Col>
@@ -70,11 +67,3 @@ function App() {
 }
 
 export default App;
-
-/*
-<Col style={{ padding: "25px 0", overflow: "hidden" }}>
-          {stage === 0 && <ClusteringPane setStage={setStage} />}
-          {stage === 1 && <ClusterAnalysisPane setStage={setStage} />}
-          {stage === 2 && <PlanAnalysisPane setStage={setStage} />}
-</Col>
-*/

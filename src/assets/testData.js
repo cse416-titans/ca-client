@@ -86,9 +86,9 @@ export const dataPlan = {
         y: faker.number.float({ min: -1, max: 1 }),
       })),
       backgroundColor: "rgba(255, 99, 132, 0.5)",
-      pointRadius: 1,
-      pointHoverRadius: 1,
-      pointHitRadius: 1,
+      pointRadius: 2,
+      pointHoverRadius: 2,
+      pointHitRadius: 2,
     },
   ],
 };

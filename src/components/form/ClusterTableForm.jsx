@@ -32,6 +32,7 @@ export default function ClusterTableForm({
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
   const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
   const [index, setIndex] = useState(0);
+  const [activeClusterIdx, setActiveClusterIdx] = useState(-1);
 
   const handleCloseSummaryTable = () => setShowSummaryTable(false);
   const handleShowSummaryTable = () => setShowSummaryTable(true);
@@ -63,7 +64,7 @@ export default function ClusterTableForm({
                             Ensemble #1
                           </Breadcrumb.Item>
                           <Breadcrumb.Item active>
-                            {"Cluster #" + Math.floor(Math.random() * 50)}
+                            {"Cluster #" + activeClusterIdx}
                           </Breadcrumb.Item>
                         </>
                       )}
@@ -88,10 +89,19 @@ export default function ClusterTableForm({
                         setIndex={setIndex}
                         displayedPlans={displayedPlans}
                         setDisplayedPlans={setDisplayedPlans}
+                        activeClusterIdx={activeClusterIdx}
+                        setActiveClusterIdx={setActiveClusterIdx}
+                        pageSize={10}
                       />
                     </Carousel.Item>
                     <Carousel.Item>
-                      <TableWrapperPlan />
+                      <TableWrapperPlan
+                        displayedPlans={displayedPlans}
+                        setDisplayedPlans={setDisplayedPlans}
+                        activeClusterIdx={activeClusterIdx}
+                        setActiveClusterIdx={setActiveClusterIdx}
+                        pageSize={10}
+                      />
                     </Carousel.Item>
                   </Carousel>
                 </Col>
@@ -121,8 +131,57 @@ export default function ClusterTableForm({
                         </Modal.Header>
                         <Modal.Body>
                           <Row>
+                            <Col>
+                              <Breadcrumb>
+                                {index === 0 ? (
+                                  <Breadcrumb.Item active>
+                                    Ensemble #1
+                                  </Breadcrumb.Item>
+                                ) : (
+                                  <>
+                                    <Breadcrumb.Item
+                                      onClick={() => setIndex(0)}
+                                    >
+                                      Ensemble #1
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item active>
+                                      {"Cluster #" + activeClusterIdx}
+                                    </Breadcrumb.Item>
+                                  </>
+                                )}
+                              </Breadcrumb>
+                            </Col>
+                          </Row>
+                          <Row>
                             <Col md={8}>
-                              <TableWrapperClusterAndPlan />
+                              <Carousel
+                                activeIndex={index}
+                                onSelect={handleSelect}
+                                slide={true}
+                                interval={null}
+                                controls={false}
+                                indicators={false}
+                              >
+                                <Carousel.Item>
+                                  <TableWrapper
+                                    setIndex={setIndex}
+                                    displayedPlans={displayedPlans}
+                                    setDisplayedPlans={setDisplayedPlans}
+                                    activeClusterIdx={activeClusterIdx}
+                                    setActiveClusterIdx={setActiveClusterIdx}
+                                    pageSize={20}
+                                  />
+                                </Carousel.Item>
+                                <Carousel.Item>
+                                  <TableWrapperPlan
+                                    displayedPlans={displayedPlans}
+                                    setDisplayedPlans={setDisplayedPlans}
+                                    activeClusterIdx={activeClusterIdx}
+                                    setActiveClusterIdx={setActiveClusterIdx}
+                                    pageSize={20}
+                                  />
+                                </Carousel.Item>
+                              </Carousel>
                             </Col>
                             <Col>
                               <Row>
@@ -135,42 +194,10 @@ export default function ClusterTableForm({
                                       <Row>
                                         <Col>
                                           <Form>
-                                            <Row className="mb-3">
-                                              <Col>
-                                                <ListGroup>
-                                                  <ListGroup.Item>
-                                                    Plan / Cluster Display
-                                                  </ListGroup.Item>
-                                                  <ListGroup.Item>
-                                                    <Form.Check
-                                                      onClick={(e) =>
-                                                        alert(e.target.name)
-                                                      }
-                                                      type={"radio"}
-                                                      name="viewclusterplan"
-                                                      label={`Clusters Only`}
-                                                    />
-                                                    <Form.Check
-                                                      type={"radio"}
-                                                      name="viewclusterplan"
-                                                      label={`Plans Only`}
-                                                    />
-                                                    <Form.Check
-                                                      type={"radio"}
-                                                      name="viewclusterplan"
-                                                      label={`Clusters and Plans`}
-                                                    />
-                                                  </ListGroup.Item>
-                                                </ListGroup>
-                                              </Col>
-                                            </Row>
                                             <Row>
                                               <Col>
-                                                <ListGroup>
-                                                  <ListGroup.Item>
-                                                    Sort By...
-                                                  </ListGroup.Item>
-                                                  <ListGroup.Item>
+                                                <Row>
+                                                  <Col>
                                                     <Dropdown>
                                                       <Dropdown.Toggle
                                                         size="sm"
@@ -185,19 +212,24 @@ export default function ClusterTableForm({
                                                           Vote Margin
                                                         </Dropdown.Item>
                                                         <Dropdown.Item href="#/action-2">
-                                                          Democratic Seats
+                                                          No. of Opportunity
+                                                          Districts
                                                         </Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">
-                                                          Republican Seats
+                                                          Cracking Occurences
                                                         </Dropdown.Item>
                                                         <Dropdown.Item href="#/action-3">
-                                                          Maj-Min Demographic
-                                                          Ratio
+                                                          Packing Occurences
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item href="#/action-3">
+                                                          Compactness Index
                                                         </Dropdown.Item>
                                                       </Dropdown.Menu>
                                                     </Dropdown>
-                                                  </ListGroup.Item>
-                                                  <ListGroup.Item>
+                                                  </Col>
+                                                </Row>
+                                                <Row className="mt-3">
+                                                  <Col>
                                                     <Dropdown>
                                                       <Dropdown.Toggle
                                                         size="sm"
@@ -217,8 +249,8 @@ export default function ClusterTableForm({
                                                         </Dropdown.Item>
                                                       </Dropdown.Menu>
                                                     </Dropdown>
-                                                  </ListGroup.Item>
-                                                </ListGroup>
+                                                  </Col>
+                                                </Row>
                                               </Col>
                                             </Row>
                                           </Form>
@@ -249,13 +281,16 @@ export default function ClusterTableForm({
                                                 Vote Margin
                                               </Dropdown.Item>
                                               <Dropdown.Item href="#/action-2">
-                                                Democratic Seats
+                                                No. of Opportunity Districts
                                               </Dropdown.Item>
                                               <Dropdown.Item href="#/action-3">
-                                                Republican Seats
+                                                Cracking Occurences
                                               </Dropdown.Item>
                                               <Dropdown.Item href="#/action-3">
-                                                Maj-Min Demographic Ratio
+                                                Packing Occurences
+                                              </Dropdown.Item>
+                                              <Dropdown.Item href="#/action-3">
+                                                Compactness Index
                                               </Dropdown.Item>
                                             </Dropdown.Menu>
                                           </Dropdown>
@@ -328,7 +363,7 @@ export default function ClusterTableForm({
                       size="sm"
                       onClick={handleShowAdjustFilter}
                     >
-                      Adjust Filter...
+                      Change View Settings...
                     </Button>
 
                     <Modal
@@ -336,27 +371,72 @@ export default function ClusterTableForm({
                       onHide={handleCloseAdjustFilter}
                     >
                       <Modal.Header closeButton>
-                        <Modal.Title>Adjust Filter</Modal.Title>
+                        <Modal.Title>Change View Settings</Modal.Title>
                       </Modal.Header>
                       <Modal.Body>
                         <Row>
                           <Col>
                             <Alert variant="success">
                               <Alert.Heading>
-                                Hey, nice to see you
+                                Sort It and Find Your Item.
                               </Alert.Heading>
                               <p>
-                                Aww yeah, you successfully read this important
-                                alert message. This example text is going to run
-                                a bit longer so that you can see how spacing
-                                within an alert works with this kind of content.
-                              </p>
-                              <hr />
-                              <p className="mb-0">
-                                Whenever you need to, be sure to use margin
-                                utilities to keep things nice and tidy.
+                                It's a burden sorting through all clusters and
+                                plans. Use the dropdowns below to sort them.
                               </p>
                             </Alert>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                size="sm"
+                                variant="success"
+                                id="dropdown-basic"
+                              >
+                                Sort By: <b>Vote Margin</b>
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                <Dropdown.Item href="#/action-1">
+                                  Vote Margin
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-2">
+                                  No. of Opportunity Districts
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">
+                                  Cracking Occurences
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">
+                                  Packing Occurences
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">
+                                  Compactness Index
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </Col>
+                        </Row>
+                        <Row className="mt-3">
+                          <Col>
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                size="sm"
+                                variant="success"
+                                id="dropdown-basic"
+                              >
+                                Sort Order: <b>Ascending</b>
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                <Dropdown.Item href="#/action-1">
+                                  Ascending
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-2">
+                                  Descending
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
                           </Col>
                         </Row>
                       </Modal.Body>
@@ -386,7 +466,7 @@ export default function ClusterTableForm({
                       size="sm"
                       onClick={handleShowChangeViewSettings}
                     >
-                      Change View Settings...
+                      Adjust Filter...
                     </Button>
 
                     <Modal
@@ -401,20 +481,58 @@ export default function ClusterTableForm({
                           <Col>
                             <Alert variant="success">
                               <Alert.Heading>
-                                Hey, nice to see you
+                                Filter Out Unwanted Items.
                               </Alert.Heading>
                               <p>
-                                Aww yeah, you successfully read this important
-                                alert message. This example text is going to run
-                                a bit longer so that you can see how spacing
-                                within an alert works with this kind of content.
-                              </p>
-                              <hr />
-                              <p className="mb-0">
-                                Whenever you need to, be sure to use margin
-                                utilities to keep things nice and tidy.
+                                Throw out the items you don't want to see, just
+                                focus on the ones you want.
                               </p>
                             </Alert>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                size="sm"
+                                variant="success"
+                                id="dropdown-basic"
+                              >
+                                Filter By: <b>Vote Margin</b>
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                <Dropdown.Item href="#/action-1">
+                                  Vote Margin
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-2">
+                                  No. of Opportunity Districts
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">
+                                  Cracking Occurences
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">
+                                  Packing Occurences
+                                </Dropdown.Item>
+                                <Dropdown.Item href="#/action-3">
+                                  Compactness Index
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </Col>
+                        </Row>
+                        <Row className="mt-3">
+                          <Col>
+                            <>
+                              <Form.Label>Min</Form.Label>
+                              <Form.Range />
+                            </>
+                          </Col>
+                          <Col>
+                            <>
+                              <Form.Label>Max</Form.Label>
+                              <Form.Range />
+                            </>
                           </Col>
                         </Row>
                       </Modal.Body>

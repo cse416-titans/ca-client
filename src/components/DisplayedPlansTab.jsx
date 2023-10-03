@@ -9,11 +9,18 @@ import {
   Stack,
   Form,
 } from "react-bootstrap";
+import { capitalizeFirstLetter } from "../utils/StringFormat";
 
-const popover = (i) => {
+const popover = (plan) => {
   return (
     <Popover id="popover-basic">
-      <Popover.Header as="h3">Cluster {i + 1}</Popover.Header>
+      {plan.type === "cluster" ? (
+        <Popover.Header as="h3">Cluster #{plan.id}</Popover.Header>
+      ) : (
+        <Popover.Header as="h3">
+          Plan #{plan.id} From Cluster # {plan.parent}
+        </Popover.Header>
+      )}
       <Popover.Body>
         <Row className="mb-1">
           <b>Information</b>
@@ -25,38 +32,42 @@ const popover = (i) => {
             </Button>
           </Col>
         </Row>
-        <Row className="mb-1">
-          <b>Display Option</b>
-        </Row>
-        <Row className="mb-3">
-          <Col>
-            <Form>
-              <Form.Check
-                type={"radio"}
-                name="clusterdisplayoption"
-                label={`Show Approximation of the Cluster`}
-              />
-              <Form.Check
-                type={"radio"}
-                name="clusterdisplayoption"
-                label={`Show Plans in the Cluster`}
-              />
-            </Form>
-          </Col>
-        </Row>
-        <Row className="mb-1">
-          <b>Show Up To...</b>
-        </Row>
-        <Row>
-          <Col>
-            <Form>
-              <>
-                <Form.Label>Number of Plans</Form.Label>
-                <Form.Range />
-              </>
-            </Form>
-          </Col>
-        </Row>
+        {plan.type === "cluster" ? (
+          <>
+            <Row className="mb-1">
+              <b>Display Option</b>
+            </Row>
+            <Row className="mb-3">
+              <Col>
+                <Form>
+                  <Form.Check
+                    type={"radio"}
+                    name="clusterdisplayoption"
+                    label={`Show Approximation of the Cluster`}
+                  />
+                  <Form.Check
+                    type={"radio"}
+                    name="clusterdisplayoption"
+                    label={`Show Plans in the Cluster`}
+                  />
+                </Form>
+              </Col>
+            </Row>
+            <Row className="mb-1">
+              <b>Show Up To...</b>
+            </Row>
+            <Row>
+              <Col>
+                <Form>
+                  <>
+                    <Form.Label>Number of Plans</Form.Label>
+                    <Form.Range />
+                  </>
+                </Form>
+              </Col>
+            </Row>
+          </>
+        ) : null}
       </Popover.Body>
     </Popover>
   );
@@ -89,10 +100,10 @@ export default function DisplayedPlansTab({
                     <OverlayTrigger
                       trigger="click"
                       placement="right"
-                      overlay={popover(0)}
+                      overlay={popover(plan)}
                     >
                       <Button variant="outline-secondary" size="sm">
-                        Cluster {plan.id}
+                        {capitalizeFirstLetter(plan.type)} #{plan.id}
                       </Button>
                     </OverlayTrigger>
                     <Button

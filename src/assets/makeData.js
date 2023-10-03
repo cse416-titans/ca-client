@@ -10,10 +10,10 @@ const range = (len) => {
 
 const newCluster = (i) => {
   const split = Number.parseFloat(-50 + Math.random() * 50).toFixed(2);
-  const dem = Number.parseFloat(50 - split).toFixed(2);
-  const rep = parseFloat(100 - dem).toFixed(2);
-  const seatDem = Number.parseInt(Math.random() * 10);
-  const seatRep = Number.parseInt(10 - seatDem);
+  const packing = Math.floor(Math.random() * 10);
+  const cracking = Math.floor(Math.random() * 10);
+  const opportunity = Math.floor(Math.random() * 10);
+  const compactness = Number.parseFloat(Math.random() * 1).toFixed(2);
   const asian = Number.parseFloat(Math.random() * 1).toFixed(2);
   const african = Number.parseFloat(Math.random() * 1).toFixed(2);
   const hispanic = Number.parseFloat(Math.random() * 1).toFixed(2);
@@ -32,10 +32,10 @@ const newCluster = (i) => {
     color: randomColorArr[i],
     firstName: i,
     split,
-    dem,
-    rep,
-    seatDem,
-    seatRep,
+    packing,
+    cracking,
+    opportunity,
+    compactness,
     asian,
     african,
     hispanic,
@@ -47,12 +47,16 @@ const newCluster = (i) => {
   };
 };
 
+export const displayablePlans = Array.from({ length: 1000 }, () =>
+  Math.floor(Math.random() * 1000)
+);
+
 const newPlan = (i) => {
   const split = Number.parseFloat(-50 + Math.random() * 50).toFixed(2);
-  const dem = Number.parseFloat(50 - split).toFixed(2);
-  const rep = parseFloat(100 - dem).toFixed(2);
-  const seatDem = Number.parseInt(Math.random() * 10);
-  const seatRep = Number.parseInt(10 - seatDem);
+  const packing = Math.floor(Math.random() * 10);
+  const cracking = Math.floor(Math.random() * 10);
+  const opportunity = Math.floor(Math.random() * 10);
+  const compactness = Number.parseFloat(Math.random() * 1).toFixed(2);
   const asian = Number.parseFloat(Math.random() * 1).toFixed(2);
   const african = Number.parseFloat(Math.random() * 1).toFixed(2);
   const hispanic = Number.parseFloat(Math.random() * 1).toFixed(2);
@@ -64,17 +68,17 @@ const newPlan = (i) => {
     white - parseFloat(asian + african + hispanic + other)
   ).toFixed(2);
 
-  const showMap = Math.random() * 1 > 0.5 ? 1 : 0;
+  const showMap = displayablePlans.includes(i) ? 1 : 0;
   const gotoDetail = 0;
 
   return {
     color: randomColorArr[i],
     firstName: i,
     split,
-    dem,
-    rep,
-    seatDem,
-    seatRep,
+    packing,
+    cracking,
+    opportunity,
+    compactness,
     asian,
     african,
     hispanic,

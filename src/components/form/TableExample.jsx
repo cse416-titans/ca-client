@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 import { Button, Container, Row, Col, Form } from "react-bootstrap";
@@ -65,9 +66,11 @@ function TableExample({
   columns,
   data,
   setIndex,
-  newPageSize,
   displayedPlans,
   setDisplayedPlans,
+  activeClusterIdx,
+  setActiveClusterIdx,
+  newPageSize,
 }) {
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -92,7 +95,7 @@ function TableExample({
     {
       columns,
       data,
-      initialState: { pageIndex: 2, pageSize: newPageSize },
+      initialState: { pageIndex: 0, pageSize: newPageSize },
     },
     usePagination
   );
@@ -167,15 +170,49 @@ function TableExample({
                 return (
                   <tr key={i} {...row.getRowProps()}>
                     {row.cells.map((cell, j) => {
+                      let planType = "cluster";
+                      if (row.cells[0].column.parent["Header"] === "Plan") {
+                        planType = "plan";
+                      }
+
                       if (cell.column.id === "showMap") {
                         if (cell.value === 1) {
                           return (
-                            <td key={j} {...cell.getCellProps()} style={{}}>
+                            <td key={j} {...cell.getCellProps()}>
                               <Form.Check
                                 type="switch"
                                 id="custom-switch"
                                 style={{ width: "100%" }}
-                                checked={true}
+                                checked={
+                                  displayedPlans &&
+                                  Array.from(displayedPlans).some(
+                                    (plan) =>
+                                      plan.id === row.cells[0].value &&
+                                      plan.type === planType
+                                  )
+                                }
+                                onClick={(e) => {
+                                  console.log(displayedPlans);
+
+                                  if (e.target.checked) {
+                                    setDisplayedPlans([
+                                      ...displayedPlans,
+                                      {
+                                        type: planType,
+                                        id: row.cells[0].value,
+                                        parent: activeClusterIdx,
+                                      },
+                                    ]);
+                                  } else {
+                                    setDisplayedPlans(
+                                      displayedPlans.filter(
+                                        (plan) =>
+                                          plan.id !== row.cells[0].value ||
+                                          plan.type !== planType
+                                      )
+                                    );
+                                  }
+                                }}
                               />
                             </td>
                           );
@@ -191,7 +228,11 @@ function TableExample({
                           <td
                             key={j}
                             {...cell.getCellProps()}
-                            onClick={() => setIndex(1)}
+                            onClick={() => {
+                              setIndex(1);
+                              console.log(row.cells[0].value);
+                              setActiveClusterIdx(row.cells[0].value);
+                            }}
                           >
                             {parseInt(cell.value) ? ">" : ""}
                           </td>
@@ -220,7 +261,14 @@ function TableExample({
   );
 }
 
-export function TableWrapper({ setIndex, displayedPlans, setDisplayedPlans }) {
+export function TableWrapper({
+  setIndex,
+  displayedPlans,
+  setDisplayedPlans,
+  activeClusterIdx,
+  setActiveClusterIdx,
+  pageSize,
+}) {
   const columns = React.useMemo(
     () => [
       {
@@ -240,20 +288,20 @@ export function TableWrapper({ setIndex, displayedPlans, setDisplayedPlans }) {
             accessor: "split",
           },
           {
-            Header: "Dem. %",
-            accessor: "dem",
+            Header: "Opp.",
+            accessor: "opportunity",
           },
           {
-            Header: "Rep. %",
-            accessor: "rep",
+            Header: "Crackings",
+            accessor: "cracking",
           },
           {
-            Header: "Dem. Seats",
-            accessor: "seatDem",
+            Header: "Packings",
+            accessor: "packing",
           },
           {
-            Header: "Rep. Seats",
-            accessor: "seatRep",
+            Header: "Cmpct Idx",
+            accessor: "compactness",
           },
         ],
       },
@@ -316,15 +364,24 @@ export function TableWrapper({ setIndex, displayedPlans, setDisplayedPlans }) {
         columns={columns}
         data={data}
         setIndex={setIndex}
-        newPageSize={10}
+        newPageSize={pageSize}
         displayedPlans={displayedPlans}
         setDisplayedPlans={setDisplayedPlans}
+        activeClusterIdx={activeClusterIdx}
+        setActiveClusterIdx={setActiveClusterIdx}
       />
     </Styles>
   );
 }
 
-export function TableWrapperPlan({ setIndex }) {
+export function TableWrapperPlan({
+  setIndex,
+  displayedPlans,
+  setDisplayedPlans,
+  activeClusterIdx,
+  setActiveClusterIdx,
+  pageSize,
+}) {
   const columns = React.useMemo(
     () => [
       {
@@ -344,20 +401,20 @@ export function TableWrapperPlan({ setIndex }) {
             accessor: "split",
           },
           {
-            Header: "Dem. %",
-            accessor: "dem",
+            Header: "Opp.",
+            accessor: "opportunity",
           },
           {
-            Header: "Rep. %",
-            accessor: "rep",
+            Header: "Crackings",
+            accessor: "cracking",
           },
           {
-            Header: "Dem. Seats",
-            accessor: "seatDem",
+            Header: "Packings",
+            accessor: "packing",
           },
           {
-            Header: "Rep. Seats",
-            accessor: "seatRep",
+            Header: "Cmpct Idx",
+            accessor: "compactness",
           },
         ],
       },
@@ -411,7 +468,11 @@ export function TableWrapperPlan({ setIndex }) {
         columns={columns}
         data={data}
         setIndex={setIndex}
-        newPageSize={10}
+        displayedPlans={displayedPlans}
+        setDisplayedPlans={setDisplayedPlans}
+        activeClusterIdx={activeClusterIdx}
+        setActiveClusterIdx={setActiveClusterIdx}
+        newPageSize={pageSize}
       />
     </Styles>
   );

@@ -2,40 +2,13 @@ import { Row, Col, Tooltip, Card, Button, Badge, Table } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
 
-import { useState } from "react";
-
-
-// json
-import arizona from "../../data/arizona_curr.json";
-import louisiana from "../../data/louisiana_curr.json";
-import nevada from "../../data/nevada_curr.json";
-import { useEffect } from "react";
-
-
 /*
  * Placeholder for basic info about the set of ensembles that user selected
  * Info includes: 1) total number of random district plans (number), 2) average distance between distance plan pairs (number)
  * Option includes: 1) ensemble selection dropdown menu
  */
 
-
-export default function StateInfoForm({ map_f, setMap_f }) {
-  const [selectedState, setSelectedState] = useState("Arizona");
-
-  useEffect(() => {
-    if (selectedState === "Arizona") {
-      setMap_f([[34.048927, -111.093735], 7, arizona])
-      console.log("Ar_Here");
-    }
-    else if (selectedState === "Louisiana") {
-      setMap_f([[30.391830, -92.329102], 7, louisiana])
-    }
-    else if (selectedState === "Nevada") {
-      setMap_f([[39.876019, -117.224121], 7, nevada])
-    }
-
-  }, [selectedState])
-
+export default function StateInfoForm({ selectedState, setSelectedState }) {
   return (
     <DataForm headerText={"EnsembleInfoForm"}>
       <Row className="mb-3">
@@ -49,7 +22,9 @@ export default function StateInfoForm({ map_f, setMap_f }) {
                     bg={selectedState === "Arizona" ? "primary" : "light"}
                     text={selectedState === "Arizona" ? "white" : ""}
                     className="selectable"
-                    onClick={() => setSelectedState("Arizona")}
+                    onClick={() => {
+                      setSelectedState("Arizona");
+                    }}
                   >
                     <Card.Body>
                       <Card.Title>Arizona</Card.Title>
@@ -103,7 +78,9 @@ export default function StateInfoForm({ map_f, setMap_f }) {
                     bg={selectedState === "Louisianna" ? "primary" : "light"}
                     text={selectedState === "Louisianna" ? "white" : ""}
                     className="selectable"
-                    onClick={() => setSelectedState("Louisiana")}
+                    onClick={() => {
+                      setSelectedState("Louisianna");
+                    }}
                   >
                     <Card.Body>
                       <Card.Title>Louisianna</Card.Title>
@@ -138,7 +115,7 @@ export default function StateInfoForm({ map_f, setMap_f }) {
                           <Col>
                             <Button
                               variant={
-                                selectedState === "Louisiana"
+                                selectedState === "Louisianna"
                                   ? "outline-light"
                                   : "outline-primary"
                               }
@@ -157,7 +134,9 @@ export default function StateInfoForm({ map_f, setMap_f }) {
                     bg={selectedState === "Nevada" ? "primary" : "light"}
                     text={selectedState === "Nevada" ? "white" : ""}
                     className="selectable"
-                    onClick={() => setSelectedState("Nevada")}
+                    onClick={() => {
+                      setSelectedState("Nevada");
+                    }}
                   >
                     <Card.Body>
                       <Card.Title>Nevada</Card.Title>

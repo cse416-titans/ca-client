@@ -259,18 +259,36 @@ export default function EnsembleInfoForm() {
                           <Col>
                             <Alert variant="success">
                               <Alert.Heading>
-                                Hey, nice to see you
+                                Selecting an Ensemble is the real start of your
+                                analysis.
                               </Alert.Heading>
                               <p>
-                                Aww yeah, you successfully read this important
-                                alert message. This example text is going to run
-                                a bit longer so that you can see how spacing
-                                within an alert works with this kind of content.
+                                We've prepared a few example ensembles for you.
+                                Not sure which one to choose? Read several
+                                considerations below to help you decide:
+                              </p>
+                              <p>
+                                1. There is a trade-off between the quality and
+                                speed. The larger the ensemble, the more likely
+                                your analysis is more accurate. However, it will
+                                be harder to search through all the individual
+                                plans of your choice.
+                              </p>
+                              <p>
+                                2. The choice of ensemble size really depdens on
+                                why are you using our service. If you are
+                                interested in a particular cluster (e.g., You
+                                want to search a plan with at least some number
+                                of Opportunity Districts), it is sufficient to
+                                use small ensembles. However, if you are
+                                interested in evaluating some clustering
+                                methods, you may want to use larger ensembles.
                               </p>
                               <hr />
                               <p className="mb-0">
-                                Whenever you need to, be sure to use margin
-                                utilities to keep things nice and tidy.
+                                So, keep those in mind! In the dropdown menu
+                                below, you can select an ensemble of your
+                                choice.
                               </p>
                             </Alert>
                           </Col>

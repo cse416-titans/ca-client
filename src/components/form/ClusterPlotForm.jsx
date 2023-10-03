@@ -34,8 +34,14 @@ import Zoom from "chartjs-plugin-zoom";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { useRef } from "react";
+import { displayablePlans } from "../../assets/makeData";
 
-function PlanScatterPlot({ setIndex }) {
+function PlanScatterPlot({
+  setIndex,
+  selectedClusterIdx,
+  displayedPlans,
+  setDisplayedPlans,
+}) {
   const chartRef = useRef();
   ChartJS.register(
     zoomPlugin,
@@ -73,10 +79,22 @@ function PlanScatterPlot({ setIndex }) {
   };
 
   const onClick = (e) => {
-    if (Array.from(getElementAtEvent(chartRef.current, e)).length === 0) {
+    const elementArr = Array.from(getElementAtEvent(chartRef.current, e));
+
+    if (elementArr.length === 0) {
       return;
     }
-    setIndex(1);
+
+    const newDisplayedPlans = [
+      ...displayedPlans,
+      {
+        type: "plan",
+        id: displayablePlans[Math.floor(Math.random() * 1000)],
+        parent: selectedClusterIdx,
+      },
+    ];
+
+    setDisplayedPlans(newDisplayedPlans);
   };
 
   return (
@@ -237,7 +255,11 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                       />
                     </Carousel.Item>
                     <Carousel.Item>
-                      <PlanScatterPlot />
+                      <PlanScatterPlot
+                        selectedClusterIdx={selectedClusterIdx}
+                        displayedPlans={displayedPlans}
+                        setDisplayedPlans={setDisplayedPlans}
+                      />
                     </Carousel.Item>
                   </Carousel>
                 </Card.Body>
@@ -638,6 +660,7 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                             <Modal
                               show={showClusteringMethodEvaluation}
                               onHide={handleCloseClusteringMethodEvaluation}
+                              size="xl"
                             >
                               <Modal.Header closeButton>
                                 <Modal.Title>
@@ -649,22 +672,182 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                                   <Col>
                                     <Alert variant="success">
                                       <Alert.Heading>
-                                        Hey, nice to see you
+                                        See if the Ensemble is well-clustered.
                                       </Alert.Heading>
                                       <p>
-                                        Aww yeah, you successfully read this
-                                        important alert message. This example
-                                        text is going to run a bit longer so
-                                        that you can see how spacing within an
-                                        alert works with this kind of content.
+                                        What defines a 'good clustering'? It can
+                                        assessed by both, or either one of the
+                                        two criteria:
+                                      </p>
+                                      <p>
+                                        <b>First,</b> Each cluster is
+                                        well-defined (meaning that each cluster
+                                        is separate from other clusters).
+                                      </p>
+                                      <p>
+                                        <b>Second,</b> Each cluster is 'compact'
+                                        (meaning that each cluster is not too
+                                        spread out).
                                       </p>
                                       <hr />
                                       <p className="mb-0">
-                                        Whenever you need to, be sure to use
-                                        margin utilities to keep things nice and
-                                        tidy.
+                                        In the table below, you can see the
+                                        comparison between each measure and the
+                                        optimal transport, the one known to be
+                                        the best so far.
                                       </p>
                                     </Alert>
+                                  </Col>
+                                </Row>
+                                <Row>
+                                  <Col>
+                                    <Table
+                                      striped
+                                      bordered
+                                      hover
+                                      className="text-center"
+                                    >
+                                      <thead>
+                                        <tr>
+                                          <td> </td>
+                                          <td colSpan={4}>
+                                            Distance Between Different Clusters
+                                          </td>
+                                          <td colSpan={4}>
+                                            Distance between pairs of Plans in a
+                                            cluster
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Distance Measure</td>
+                                          <td>Median</td>
+                                          <td>Mean</td>
+                                          <td>Max</td>
+                                          <td>Min</td>
+                                          <td>Median</td>
+                                          <td>Mean</td>
+                                          <td>Max</td>
+                                          <td>Min</td>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr>
+                                          <td>Center-Point Distance</td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.9</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.1</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.8</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.98</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                        </tr>
+
+                                        <tr>
+                                          <td>Hamming Distance</td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.9</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.1</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.8</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.98</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td>Total Variation Distance</td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.9</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.1</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.8</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.98</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            style={{
+                                              backgroundColor: "yellow",
+                                            }}
+                                          >
+                                            Optimal Transport
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.9</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.1</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.7</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.8</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.98</Badge>
+                                          </td>
+                                          <td>
+                                            <Badge bg="secondary">0.43</Badge>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </Table>
                                   </Col>
                                 </Row>
                               </Modal.Body>
