@@ -571,8 +571,9 @@ export default function ClusterTableForm({
               <Row className="mb-3">
                 <Col>
                   <span>
-                    In this Ensemble, see how the voting margins for each
-                    cluster is calculated.
+                    <b>2020 Presidential Election Data</b> is used to estimate
+                    the voting result. Click below to see how the voting margins
+                    for each cluster is calculated.
                   </span>
                 </Col>
               </Row>
