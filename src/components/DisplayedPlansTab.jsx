@@ -104,7 +104,42 @@ const popover = (
               </Col>
             </Row>
           </>
-        ) : null}
+        ) : (
+          <>
+            {" "}
+            <Row className="mb-1">
+              <b>Show On Different Screen</b>
+            </Row>
+            <Row>
+              <Col>
+                <Form>
+                  <Form.Check
+                    type={"checkbox"}
+                    name={"showonrightmap"}
+                    label={`Show On Right Map`}
+                    checked={displayedPlansRight.includes(plan)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setDisplayedPlansRight([...displayedPlansRight, plan]);
+                        setDisplayedPlans(
+                          displayedPlans.filter(
+                            (p) => p.id !== plan.id || p.type !== plan.type
+                          )
+                        );
+                      } else {
+                        setDisplayedPlansRight(
+                          displayedPlansRight.filter(
+                            (p) => p.id !== plan.id || p.type !== plan.type
+                          )
+                        );
+                      }
+                    }}
+                  ></Form.Check>
+                </Form>
+              </Col>
+            </Row>
+          </>
+        )}
       </Popover.Body>
     </Popover>
   );

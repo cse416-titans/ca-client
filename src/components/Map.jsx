@@ -53,7 +53,7 @@ function initRandomPlanData(state) {
     return {
       lat: 39.876019,
       lng: -117.224121,
-      zoom: 7,
+      zoom: 3,
       stateJson: randomPlanJson,
     };
   }
