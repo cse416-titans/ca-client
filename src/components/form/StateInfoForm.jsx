@@ -193,6 +193,13 @@ export default function StateInfoForm({
                   </Card>
                 </Col>
               </Row>
+              <Row className="mt-3 text-end">
+                <Col>
+                  <span style={{ fontStyle: "italic" }}>
+                    ... And More to Come!
+                  </span>
+                </Col>
+              </Row>
             </Card.Body>
           </Card>
         </Col>

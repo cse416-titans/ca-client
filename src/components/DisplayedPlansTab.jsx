@@ -133,6 +133,18 @@ export default function DisplayedPlansTab({
         <Card>
           <Card.Header>Displayed Plans</Card.Header>
           <ListGroup variant="flush">
+            <ListGroup.Item>
+              <Form.Check
+                type={"checkbox"}
+                id={"default-checkbox"}
+                label={"Show Enacted Plan"}
+                style={{ backgroundColor: "white" }}
+                checked={showCurrentDistrictPlan}
+                onChange={(e) => {
+                  setShowCurrentDistrictPlan(e.target.checked);
+                }}
+              />
+            </ListGroup.Item>
             {displayedPlans.map((plan, i) => {
               return (
                 <ListGroup.Item key={i} className="px-0">
@@ -173,22 +185,6 @@ export default function DisplayedPlansTab({
               );
             })}
           </ListGroup>
-        </Card>
-      </Col>
-      <Col>
-        <Card>
-          <Card.Body>
-            <Form.Check
-              type={"checkbox"}
-              id={"default-checkbox"}
-              label={"Show Current Distrct Plan"}
-              style={{ backgroundColor: "white" }}
-              checked={showCurrentDistrictPlan}
-              onChange={(e) => {
-                setShowCurrentDistrictPlan(e.target.checked);
-              }}
-            />
-          </Card.Body>
         </Card>
       </Col>
     </Row>
