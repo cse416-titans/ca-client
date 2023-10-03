@@ -16,7 +16,7 @@ export default function AnalysisWrapper({
   return (
     <ContentsContainer>
       <Tabs
-        defaultActiveKey="home"
+        defaultActiveKey="state"
         id="uncontrolled-tab-example"
         className="mb-3"
       >
