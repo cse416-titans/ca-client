@@ -768,11 +768,10 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                                         <tr>
                                           <td> </td>
                                           <td colSpan={4}>
-                                            Distance Between Different Clusters
+                                            Cluster Separation Index
                                           </td>
                                           <td colSpan={4}>
-                                            Distance between pairs of Plans in a
-                                            cluster
+                                            In-Cluster Similarity Index
                                           </td>
                                         </tr>
                                         <tr>
