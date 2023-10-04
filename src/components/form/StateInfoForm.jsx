@@ -1,6 +1,7 @@
 import { Row, Col, Tooltip, Card, Button, Badge, Table } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
+import axios from "axios";
 
 /*
  * Placeholder for basic info about the set of ensembles that user selected
@@ -27,8 +28,20 @@ export default function StateInfoForm({
                     text={selectedState === "Arizona" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
+                      console.log("Here0");
                       setSelectedState("Arizona");
+                      console.log("Here1");
+                      axios
+                      .get("http://localhost:8080/hi")
+                      .then(function (res) {
+                        console.log("Here2");
+                        console.log(res.data);
+                      })
+                      .catch(function (err) {
+                        console.log(err);
+                      })
                       setshowCurrentDistrictPlan(true);
+
                     }}
                   >
                     <Card.Body>
