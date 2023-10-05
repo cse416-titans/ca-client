@@ -271,7 +271,7 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
           <Row className="mb-3">
             <Col lg={6}>
               <Card>
-                <Card.Header>View Tabular Summary</Card.Header>
+                <Card.Header>Overview of Clusters</Card.Header>
                 <Card.Body>
                   <Row>
                     <Col>
