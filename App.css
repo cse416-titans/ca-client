@@ -1,0 +1,13 @@
+body {
+  height: 100vh;
+}
+
+ol.breadcrumb {
+  background-color: transparent;
+  margin-bottom: 0;
+}
+
+.selectable:hover {
+  cursor: pointer;
+  filter: brightness(95%);
+}
