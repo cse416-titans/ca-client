@@ -21,9 +21,9 @@ export default function AnalysisWrapper({
         id="uncontrolled-tab-example"
         className="mb-3"
       >
-        <Tab eventKey="test" title="Client/Server Test">
-          <ClientSeverForm />
-        </Tab>
+        {/*<Tab eventKey="test" title="Client/Server Test">
+          {<ClientSeverForm />}
+  </Tab>*/}
         <Tab eventKey={"state"} title={"State Information"}>
           <StateInfoForm
             selectedState={selectedState}
