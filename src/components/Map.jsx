@@ -2,6 +2,7 @@
 import { Button } from "react-bootstrap";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { useState } from "react";
 
 // json
 import arizonaPlanJson from "../data/arizona_curr.json";
@@ -133,6 +134,12 @@ function Map({
   showCurrentDistrictPlan,
   isRight,
 }) {
+  /*
+    DESC:
+    statePlanData : Enacted plan geojson
+    randomPlanData : Random plan geojson
+  */
+
   let statePlanData = null;
 
   switch (selectedState) {
@@ -153,7 +160,11 @@ function Map({
     return <div></div>;
   }
 
-  const randomPlanData = initRandomPlanData(selectedState);
+  /*
+    TODO: randomPlanData -> list of real plan data in displayedPlans
+  */
+  /*const randomPlanData = initRandomPlanData(selectedState);*/
+  /*const randomPlanData = [...displayedPlans];*/
 
   if (isRight) {
     return (
@@ -180,7 +191,7 @@ function Map({
             return (
               <GeoJSON
                 key={selectedState + plan.type + plan.id}
-                data={randomPlanData.stateJson}
+                data={plan.geometry}
                 onEachFeature={onEachFeature}
               />
             );
@@ -216,7 +227,7 @@ function Map({
           return (
             <GeoJSON
               key={selectedState + plan.type + plan.id}
-              data={randomPlanData.stateJson}
+              data={plan.geometry}
               onEachFeature={onEachFeature}
             />
           );

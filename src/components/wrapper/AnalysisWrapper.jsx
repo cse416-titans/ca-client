@@ -14,6 +14,27 @@ export default function AnalysisWrapper({
   setSelectedState,
   setshowCurrentDistrictPlan,
 }) {
+  /*
+    DESC:
+      1. StateInfoForm
+        1) state select
+      2. EnsembleInfoForm
+        1) when state selected, ensemble select
+        2) display ensemble summary
+        3) display cluster size bound for all distance measures
+      3. ClusterPlotForm
+        1) Clusters Overview
+          a. when state, ensemble, distance measure selected, display scatter plot of clusters
+        2) Clustering Method
+          a. when state, ensemble selected, distance measure select
+          b. display distance measure evaluation
+      4. ClusterTableForm
+        1) when state, ensemble, distance measure selected, display cluster summary table
+        2) when cluster selected, display plan summary table
+        3) map toggle -> display plan/cluster on map.
+          a. send request to server (/AZ/ensemble-1/clusterset-1/cluster-1/plan-1 OR /AZ/ensemble-1/clusterset-1/cluster-1)
+          b. add/pop plan/cluster id & fetched geojson e.g., plan-1/cluster-1 to displayedPlans
+  */
   return (
     <ContentsContainer>
       <Tabs
