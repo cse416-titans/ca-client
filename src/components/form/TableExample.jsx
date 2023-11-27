@@ -38520,6 +38520,11 @@ export function TableWrapperPlan({
   setActiveClusterIdx,
   pageSize,
 }) {
+  /*
+    TODO:
+    Change column field. for cluster and plan summary.
+  */
+
   const columns = React.useMemo(
     () => [
       {
