@@ -1,14 +1,12 @@
 // external modules
-import { Button } from "react-bootstrap";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { useState } from "react";
+import { Button } from "react-bootstrap";
+import { GeoJSON, MapContainer, TileLayer, useMap } from "react-leaflet";
 
 // json
 import arizonaPlanJson from "../data/arizona_curr.json";
 import louisianaPlanJson from "../data/louisiana_curr.json";
 import nevadaPlanJson from "../data/nevada_curr.json";
-import randomPlanJson from "../data/az_cong_2012_to_2021.json";
 
 function initStatePlanData(state) {
   if (state === "Arizona") {
@@ -78,8 +76,8 @@ function Map({
   */
 
   const voteStyle = (feature) => {
-    const demVoteCount = feature.properties.G20PREDBID;
-    const repVoteCount = feature.properties.G20PRERTRU;
+    const demVoteCount = feature.properties.Democratic;
+    const repVoteCount = feature.properties.Republic;
 
     const getColor = (demVoteCount, repVoteCount) => {
       // give more red hue if repVoteCount is higher, give more blue hue if demVoteCount is higher
