@@ -79,6 +79,7 @@ function PlanScatterPlot({
     },
   };
 
+  // Plan scatter plot: send request to get geojson of the plan
   const onClick = (e) => {
     const elementArr = Array.from(getElementAtEvent(chartRef.current, e));
 
@@ -142,6 +143,7 @@ function ClusterScatterPlot({
     animation: false,
   };
 
+  // Cluster scatter plot: send request to get geojson of the cluster
   const onClick = (e) => {
     const elementArr = Array.from(getElementAtEvent(chartRef.current, e));
     if (elementArr.length === 0) {

@@ -308,13 +308,7 @@ function Map({
                 key={selectedState + plan.type + plan.id}
                 data={plan.geometry}
                 onEachFeature={onEachFeature}
-                style={
-                  mapColorFilter === "vote"
-                    ? voteStyle
-                    : mapColorFilter === "default"
-                    ? defaultStyle
-                    : populationStyle
-                }
+                style={defaultStyle}
               />
             );
           })}
