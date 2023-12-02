@@ -5,6 +5,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Stack } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
+import Button from "react-bootstrap/Button";
 
 // css
 import "./App.css";
@@ -16,7 +18,6 @@ import MapWrapper from "./components/wrapper/MapWrapper";
 import DisplayedPlansTab from "./components/DisplayedPlansTab";
 
 function App() {
-
   const [stage, setStage] = useState(0);
   const [width, setWidth] = useState(6);
 
@@ -24,6 +25,12 @@ function App() {
   const [displayedPlansRight, setDisplayedPlansRight] = useState([]); // same
   const [selectedState, setSelectedState] = useState("Arizona");
   const [showCurrentDistrictPlan, setShowCurrentDistrictPlan] = useState(true);
+
+  const [mapColorFilter, setMapColorFilter] = useState("default");
+
+  const onChangeMapColorFilter = (e) => {
+    setMapColorFilter(e.target.value);
+  };
 
   return (
     <Container className="h-100" fluid style={{ position: "fixed" }}>
@@ -46,13 +53,56 @@ function App() {
                 setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
                 displayedPlansRight={displayedPlansRight}
                 setDisplayedPlansRight={setDisplayedPlansRight}
+                setMapColorFilter={setMapColorFilter}
               />
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                bottom: 0,
+                zIndex: 100000,
+                margin: "10px 0 0 10px",
+              }}
+            >
+              <ListGroup variant="flush">
+                <ListGroup.Item>
+                  <Button value={"white"} onClick={onChangeMapColorFilter}>
+                    White View
+                  </Button>
+                  <Button value={"black"} onClick={onChangeMapColorFilter}>
+                    Black View
+                  </Button>
+                  <Button value={"asian"} onClick={onChangeMapColorFilter}>
+                    Asian View
+                  </Button>
+                  <Button value={"hispanic"} onClick={onChangeMapColorFilter}>
+                    Hispanic View
+                  </Button>
+                  <Button
+                    value={"AmericanIndian"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    American Indian View
+                  </Button>
+                  <Button value={"majmin"} onClick={onChangeMapColorFilter}>
+                    Majority-Minority View
+                  </Button>
+                  <Button value={"vote"} onClick={onChangeMapColorFilter}>
+                    Vote View
+                  </Button>
+                  <Button value={"default"} onClick={onChangeMapColorFilter}>
+                    Default View
+                  </Button>
+                </ListGroup.Item>
+              </ListGroup>
             </div>
             <Map
               displayedPlans={displayedPlans}
               selectedState={selectedState}
               showCurrentDistrictPlan={showCurrentDistrictPlan}
               isRight={false}
+              mapColorFilter={mapColorFilter}
             />
           </MapWrapper>
         </Col>

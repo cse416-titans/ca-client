@@ -152,6 +152,7 @@ export default function DisplayedPlansTab({
   setShowCurrentDistrictPlan,
   displayedPlansRight,
   setDisplayedPlansRight,
+  setMapColorFilter,
 }) {
   const onRemove = (e) => {
     setDisplayedPlans(
