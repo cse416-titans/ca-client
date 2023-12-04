@@ -23,11 +23,11 @@ export default function StateInfoForm({
               <Row>
                 <Col>
                   <Card
-                    bg={selectedState === "Arizona" ? "primary" : "light"}
-                    text={selectedState === "Arizona" ? "white" : ""}
+                    bg={selectedState === "AZ" ? "primary" : "light"}
+                    text={selectedState === "AZ" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
-                      setSelectedState("Arizona");
+                      setSelectedState("AZ");
                       setshowCurrentDistrictPlan(true);
                     }}
                   >
@@ -64,7 +64,7 @@ export default function StateInfoForm({
                           <Col>
                             <Button
                               variant={
-                                selectedState === "Arizona"
+                                selectedState === "AZ"
                                   ? "outline-light"
                                   : "outline-primary"
                               }
@@ -80,11 +80,11 @@ export default function StateInfoForm({
                 </Col>
                 <Col>
                   <Card
-                    bg={selectedState === "Louisianna" ? "primary" : "light"}
-                    text={selectedState === "Louisianna" ? "white" : ""}
+                    bg={selectedState === "LA" ? "primary" : "light"}
+                    text={selectedState === "LA" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
-                      setSelectedState("Louisianna");
+                      setSelectedState("LA");
                       setshowCurrentDistrictPlan(true);
                     }}
                   >
@@ -121,7 +121,7 @@ export default function StateInfoForm({
                           <Col>
                             <Button
                               variant={
-                                selectedState === "Louisianna"
+                                selectedState === "LA"
                                   ? "outline-light"
                                   : "outline-primary"
                               }
@@ -137,11 +137,11 @@ export default function StateInfoForm({
                 </Col>
                 <Col>
                   <Card
-                    bg={selectedState === "Nevada" ? "primary" : "light"}
-                    text={selectedState === "Nevada" ? "white" : ""}
+                    bg={selectedState === "NV" ? "primary" : "light"}
+                    text={selectedState === "NV" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
-                      setSelectedState("Nevada");
+                      setSelectedState("NV");
                       setshowCurrentDistrictPlan(true);
                     }}
                   >
@@ -178,7 +178,7 @@ export default function StateInfoForm({
                           <Col>
                             <Button
                               variant={
-                                selectedState === "Nevada"
+                                selectedState === "NV"
                                   ? "outline-light"
                                   : "outline-primary"
                               }

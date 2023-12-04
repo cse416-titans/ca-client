@@ -80,9 +80,11 @@ function EnsembleAssociationGraph() {
   );
 }
 
-export default function EnsembleInfoForm() {
+export default function EnsembleInfoForm({
+  selectedEnsemble,
+  setselectedEnsemble,
+}) {
   const [show, setShow] = useState(false);
-  const [selectedEnsembleSize, setSelectedEnsembleSize] = useState("Small"); // ["Small", "Medium", "Large"]
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -168,9 +170,9 @@ export default function EnsembleInfoForm() {
               <Row className="mb-3">
                 <Col>
                   <Card
-                    bg={selectedEnsembleSize === "Small" ? "primary" : "light"}
-                    text={selectedEnsembleSize === "Small" ? "white" : ""}
-                    onClick={() => setSelectedEnsembleSize("Small")}
+                    bg={selectedEnsemble === 1 ? "primary" : "light"}
+                    text={selectedEnsemble === 1 ? "white" : ""}
+                    onClick={() => setselectedEnsemble(1)}
                     className="h-100 selectable"
                   >
                     <Card.Body>
@@ -178,8 +180,7 @@ export default function EnsembleInfoForm() {
                       <Card.Subtitle
                         className="mb-2 text-muted"
                         style={{
-                          color:
-                            selectedEnsembleSize === "Small" ? "white" : "",
+                          color: selectedEnsemble === 1 ? "white" : "",
                         }}
                       >
                         ~100 Plans
@@ -193,9 +194,9 @@ export default function EnsembleInfoForm() {
                 </Col>
                 <Col>
                   <Card
-                    bg={selectedEnsembleSize === "Medium" ? "primary" : "light"}
-                    text={selectedEnsembleSize === "Medium" ? "white" : ""}
-                    onClick={() => setSelectedEnsembleSize("Medium")}
+                    bg={selectedEnsemble === 2 ? "primary" : "light"}
+                    text={selectedEnsemble === 2 ? "white" : ""}
+                    onClick={() => setselectedEnsemble(2)}
                     className="h-100 selectable"
                   >
                     <Card.Body>
@@ -203,8 +204,7 @@ export default function EnsembleInfoForm() {
                       <Card.Subtitle
                         className="mb-2 text-muted"
                         style={{
-                          color:
-                            selectedEnsembleSize === "Medium" ? "white" : "",
+                          color: selectedEnsemble === 2 ? "white" : "",
                         }}
                       >
                         ~1000 Plans
@@ -215,9 +215,9 @@ export default function EnsembleInfoForm() {
                 </Col>
                 <Col>
                   <Card
-                    bg={selectedEnsembleSize === "Large" ? "primary" : "light"}
-                    text={selectedEnsembleSize === "Large" ? "white" : ""}
-                    onClick={() => setSelectedEnsembleSize("Large")}
+                    bg={selectedEnsemble === 3 ? "primary" : "light"}
+                    text={selectedEnsemble === 3 ? "white" : ""}
+                    onClick={() => setselectedEnsemble(3)}
                     className="h-100 selectable"
                   >
                     <Card.Body>
@@ -225,8 +225,7 @@ export default function EnsembleInfoForm() {
                       <Card.Subtitle
                         className="mb-2 text-muted"
                         style={{
-                          color:
-                            selectedEnsembleSize === "Large" ? "white" : "",
+                          color: selectedEnsemble === 3 ? "white" : "",
                         }}
                       >
                         5000~ Plans

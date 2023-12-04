@@ -19,7 +19,12 @@ import {
   Dropdown,
 } from "react-bootstrap";
 
-import { data, dataPlan } from "../../assets/testData";
+import {
+  data,
+  dataPlan,
+  dynamicColors,
+  randomColorArr,
+} from "../../assets/testData";
 import DataForm from "../common/DataForm";
 
 import {
@@ -29,19 +34,35 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Chart, getElementAtEvent } from "react-chartjs-2";
+import { Chart, getElementAtEvent, getDatasetAtEvent } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
 import Zoom from "chartjs-plugin-zoom";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
 import { useRef } from "react";
 import { displayablePlans } from "../../assets/makeData";
+import {
+  formatClusterId,
+  formatGetClusterAnalysisUrl,
+  formatGetClusterAvgPlanBoundaryUrl,
+  formatGetClusterSetAnalysisUrl,
+  formatGetPlanBoundaryUrl,
+  formatPlanId,
+  parseClusterId,
+  parsePlanId,
+} from "../../../util/FormatUtil";
+import { formatEnsembleId } from "../../../util/FormatUtil";
+import api from "../../../api/client";
 
 function PlanScatterPlot({
   setIndex,
   selectedClusterIdx,
   displayedPlans,
   setDisplayedPlans,
+  selectedState,
+  selectedEnsemble,
+  selectedDistanceMeasure,
+  clusterAnalysis,
 }) {
   const chartRef = useRef();
   ChartJS.register(
@@ -79,24 +100,109 @@ function PlanScatterPlot({
     },
   };
 
+  if (clusterAnalysis === null) {
+    return <div></div>;
+  }
+
+  const planScatterPlotData = { labels: [], datasets: [] };
+
+  const planScatterPlotCoordinates = [];
+  const planScatterPlotLabels = [];
+  const planScatterPlotCoordinatesUnavailable = [];
+  const planScatterPlotLabelsUnavailable = [];
+
+  Array.from(clusterAnalysis).forEach((plan, i) => {
+    if (plan["availability"] === true) {
+      planScatterPlotCoordinates.push({
+        x: plan["coordinate"][0],
+        y: plan["coordinate"][1],
+        r: 6,
+      });
+      planScatterPlotLabels.push(parsePlanId(plan["name"]));
+    } else {
+      planScatterPlotCoordinatesUnavailable.push({
+        x: plan["coordinate"][0],
+        y: plan["coordinate"][1],
+        r: 3,
+      });
+      planScatterPlotLabelsUnavailable.push(parsePlanId(plan["name"]));
+    }
+  });
+
+  planScatterPlotData.datasets.push({
+    type: "bubble",
+    label: "Available Plan",
+    labels: planScatterPlotLabels,
+    data: planScatterPlotCoordinates,
+    backgroundColor: "rgba(50, 99, 255, 0.5)",
+    datalabels: {
+      color: "black",
+    },
+  });
+
+  planScatterPlotData.datasets.push({
+    type: "bubble",
+    label: "Unavailable Plan",
+    labels: planScatterPlotLabelsUnavailable,
+    data: planScatterPlotCoordinatesUnavailable,
+    backgroundColor: "rgba(255, 99, 132, 0.5)",
+  });
+
   // Plan scatter plot: send request to get geojson of the plan
   const onClick = (e) => {
+    const datasetArr = Array.from(getDatasetAtEvent(chartRef.current, e));
+
+    if (datasetArr.length === 0) {
+      return;
+    }
+
+    if (datasetArr[0].datasetIndex === 1) {
+      return;
+    }
+
     const elementArr = Array.from(getElementAtEvent(chartRef.current, e));
 
     if (elementArr.length === 0) {
       return;
     }
 
-    const newDisplayedPlans = [
-      ...displayedPlans,
-      {
-        type: "plan",
-        id: displayablePlans[Math.floor(Math.random() * 1000)],
-        parent: selectedClusterIdx,
-      },
-    ];
+    console.log(datasetArr);
+    console.log(elementArr);
 
-    setDisplayedPlans(newDisplayedPlans);
+    const elementIdx = elementArr[0].index;
+    const selectedPlanIdx = parsePlanId(
+      clusterAnalysis.filter((plan) => plan["availability"] == true)[
+        elementIdx
+      ]["name"]
+    );
+
+    const planId = formatPlanId(
+      selectedState,
+      selectedEnsemble,
+      selectedDistanceMeasure,
+      selectedClusterIdx,
+      selectedPlanIdx
+    );
+
+    console.log(planId);
+
+    let url = formatGetPlanBoundaryUrl(planId);
+
+    api.get(url).then((res) => {
+      const data = res.data;
+      console.log(data);
+      const newDisplayedPlans = [
+        ...displayedPlans,
+        {
+          type: "plan",
+          id: selectedPlanIdx,
+          parent: selectedClusterIdx,
+          geometry: data,
+        },
+      ];
+
+      setDisplayedPlans(newDisplayedPlans);
+    });
   };
 
   return (
@@ -108,7 +214,7 @@ function PlanScatterPlot({
           ref={chartRef}
           type="scatter"
           options={options}
-          data={dataPlan}
+          data={planScatterPlotData}
           onClick={onClick}
         />
       </Row>
@@ -120,7 +226,12 @@ function ClusterScatterPlot({
   setIndex,
   displayedPlans,
   setDisplayedPlans,
+  selectedState,
+  selectedEnsemble,
+  selectedDistanceMeasure,
   setSelectedClusterIdx,
+  clusterSetAnalysis,
+  setClusterAnalysis,
 }) {
   const chartRef = useRef();
 
@@ -143,6 +254,35 @@ function ClusterScatterPlot({
     animation: false,
   };
 
+  if (clusterSetAnalysis === null) {
+    return <div></div>;
+  }
+
+  const clusterSetScatterPlotData = { labels: [], datasets: [] };
+
+  const clusterSetScatterPlotCoordinates = [];
+
+  Array.from(clusterSetAnalysis).forEach((cluster, i) => {
+    clusterSetScatterPlotData.labels.push(i + 1);
+    clusterSetScatterPlotCoordinates.push({
+      x: cluster["coordinate"][0],
+      y: cluster["coordinate"][1],
+      r: cluster["numOfPlans"],
+    });
+  });
+
+  clusterSetScatterPlotData.datasets.push({
+    type: "bubble",
+    label: "Cluster",
+    data: clusterSetScatterPlotCoordinates,
+    backgroundColor: Array.from({ length: clusterSetAnalysis.length }, () =>
+      dynamicColors()
+    ),
+    datalabels: {
+      color: "black",
+    },
+  });
+
   // Cluster scatter plot: send request to get geojson of the cluster
   const onClick = (e) => {
     const elementArr = Array.from(getElementAtEvent(chartRef.current, e));
@@ -150,16 +290,42 @@ function ClusterScatterPlot({
       return;
     }
 
-    const selectedClusterIdx = elementArr[0].index;
+    const elementIdx = elementArr[0].index;
+    const selectedClusterIdx = parseClusterId(
+      clusterSetAnalysis[elementIdx]["name"]
+    );
+    console.log(selectedClusterIdx);
+    const clusterId = formatClusterId(
+      selectedState,
+      selectedEnsemble,
+      selectedDistanceMeasure,
+      selectedClusterIdx
+    );
 
-    setSelectedClusterIdx(selectedClusterIdx + 1);
+    let url = formatGetClusterAvgPlanBoundaryUrl(clusterId);
 
-    const newDisplayedPlans = [
-      ...displayedPlans,
-      { type: "cluster", id: selectedClusterIdx + 1, parent: null },
-    ];
-    setDisplayedPlans(newDisplayedPlans);
-    setIndex(1);
+    api.get(url).then((res) => {
+      const data = res.data;
+      const newDisplayedPlans = [
+        ...displayedPlans,
+        {
+          type: "cluster",
+          id: selectedClusterIdx,
+          parent: null,
+          geometry: data,
+        },
+      ];
+      setDisplayedPlans(newDisplayedPlans);
+      setSelectedClusterIdx(selectedClusterIdx);
+      setIndex(1);
+    });
+
+    url = formatGetClusterAnalysisUrl(clusterId);
+
+    api.get(url).then((res) => {
+      const data = res.data;
+      setClusterAnalysis(data);
+    });
   };
 
   return (
@@ -171,7 +337,7 @@ function ClusterScatterPlot({
           ref={chartRef}
           type="scatter"
           options={options}
-          data={data}
+          data={clusterSetScatterPlotData}
           onClick={onClick}
           plugins={[ChartDataLabels]}
         />
@@ -180,15 +346,23 @@ function ClusterScatterPlot({
   );
 }
 
-export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
+export default function ClusterPlotForm({
+  displayedPlans,
+  setDisplayedPlans,
+  selectedState,
+  selectedEnsemble,
+  selectedDistanceMeasure,
+  setSelectedDistanceMeasure,
+  clusterSetAnalysis,
+  setClusterSetAnalysis,
+  clusterAnalysis,
+  setClusterAnalysis,
+}) {
   const [showTabularSummary, setShowTabularSummary] = useState(false);
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
   const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
   const [showClusteringMethodEvaluation, setShowClusteringMethodEvaluation] =
     useState(false);
-
-  const [selectedDistanceMeasure, setSelectedDistanceMeasure] =
-    useState("optimalTransport"); // optimalTransport, hammingDistance, totalVariationDistance
 
   const [index, setIndex] = useState(0);
 
@@ -209,12 +383,29 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
     setIndex(selectedIndex);
   };
 
+  const handleSelectDistanceMeasure = (key) => {
+    console.log(key);
+
+    if (key === "cluster") {
+      const url = formatGetClusterSetAnalysisUrl(
+        formatEnsembleId(selectedState, selectedEnsemble),
+        selectedDistanceMeasure
+      );
+
+      api.get(url).then((res) => {
+        const data = res.data;
+        setClusterSetAnalysis(data);
+      });
+    }
+  };
+
   return (
     <DataForm headerText={"ClusterPlotForm"}>
       <Tabs
         defaultActiveKey="cluster"
         id="uncontrolled-tab-example"
         className="mb-3"
+        onSelect={handleSelectDistanceMeasure}
       >
         <Tab eventKey="cluster" title="Clusters Overview">
           <Row className="mb-3 align-middle">
@@ -225,14 +416,16 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                     <span>Scatter Plot of </span>
                     <Breadcrumb>
                       {index === 0 ? (
-                        <Breadcrumb.Item active>Ensemble #1</Breadcrumb.Item>
+                        <Breadcrumb.Item
+                          active
+                        >{`Ensemble ${selectedEnsemble}, Cluster Set ${selectedDistanceMeasure}`}</Breadcrumb.Item>
                       ) : (
                         <>
                           <Breadcrumb.Item onClick={() => setIndex(0)}>
-                            Ensemble #1
+                            {`Ensemble ${selectedEnsemble}, Cluster Set ${selectedDistanceMeasure}`}
                           </Breadcrumb.Item>
                           <Breadcrumb.Item active>
-                            {"Cluster #" + selectedClusterIdx}
+                            {`Cluster ${selectedClusterIdx}`}
                           </Breadcrumb.Item>
                         </>
                       )}
@@ -254,7 +447,12 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                         setIndex={setIndex}
                         displayedPlans={displayedPlans}
                         setDisplayedPlans={setDisplayedPlans}
+                        selectedState={selectedState}
+                        selectedEnsemble={selectedEnsemble}
+                        selectedDistanceMeasure={selectedDistanceMeasure}
                         setSelectedClusterIdx={setSelectedClusterIdx}
+                        clusterSetAnalysis={clusterSetAnalysis}
+                        setClusterAnalysis={setClusterAnalysis}
                       />
                     </Carousel.Item>
                     <Carousel.Item>
@@ -262,6 +460,10 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                         selectedClusterIdx={selectedClusterIdx}
                         displayedPlans={displayedPlans}
                         setDisplayedPlans={setDisplayedPlans}
+                        selectedState={selectedState}
+                        selectedEnsemble={selectedEnsemble}
+                        selectedDistanceMeasure={selectedDistanceMeasure}
+                        clusterAnalysis={clusterAnalysis}
                       />
                     </Carousel.Item>
                   </Carousel>
@@ -551,21 +753,15 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                           <Card
                             className="selectable"
                             bg={
-                              selectedDistanceMeasure === "optimalTransport"
+                              selectedDistanceMeasure === 3
                                 ? "primary"
                                 : "light"
                             }
-                            text={
-                              selectedDistanceMeasure === "optimalTransport"
-                                ? "white"
-                                : ""
-                            }
-                            onClick={() =>
-                              setSelectedDistanceMeasure("optimalTransport")
-                            }
+                            text={selectedDistanceMeasure === 3 ? "white" : ""}
+                            onClick={() => setSelectedDistanceMeasure(3)}
                           >
                             <Card.Body>
-                              <Card.Title>Center-Point Distance</Card.Title>
+                              <Card.Title>Optimal Transport</Card.Title>
                               <Card.Text>
                                 Some quick example text to build on the card
                                 title and make up the bulk of the card's
@@ -578,18 +774,12 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                           <Card
                             className="selectable"
                             bg={
-                              selectedDistanceMeasure === "hammingDistance"
+                              selectedDistanceMeasure === 1
                                 ? "primary"
                                 : "light"
                             }
-                            text={
-                              selectedDistanceMeasure === "hammingDistance"
-                                ? "white"
-                                : ""
-                            }
-                            onClick={() =>
-                              setSelectedDistanceMeasure("hammingDistance")
-                            }
+                            text={selectedDistanceMeasure === 1 ? "white" : ""}
+                            onClick={() => setSelectedDistanceMeasure(1)}
                           >
                             <Card.Body>
                               <Card.Title>Hamming Distance</Card.Title>
@@ -605,25 +795,15 @@ export default function ClusterPlotForm({ displayedPlans, setDisplayedPlans }) {
                           <Card
                             className="selectable"
                             bg={
-                              selectedDistanceMeasure ===
-                              "totalVariationDistance"
+                              selectedDistanceMeasure === 2
                                 ? "primary"
                                 : "light"
                             }
-                            text={
-                              selectedDistanceMeasure ===
-                              "totalVariationDistance"
-                                ? "white"
-                                : ""
-                            }
-                            onClick={() =>
-                              setSelectedDistanceMeasure(
-                                "totalVariationDistance"
-                              )
-                            }
+                            text={selectedDistanceMeasure === 2 ? "white" : ""}
+                            onClick={() => setSelectedDistanceMeasure(2)}
                           >
                             <Card.Body>
-                              <Card.Title>Total Variation Distance</Card.Title>
+                              <Card.Title>Entropy Distance</Card.Title>
                               <Card.Text>
                                 Some quick example text to build on the card
                                 title and make up the bulk of the card's

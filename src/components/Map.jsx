@@ -9,21 +9,21 @@ import louisianaPlanJson from "../data/louisiana_curr.json";
 import nevadaPlanJson from "../data/nevada_curr.json";
 
 function initStatePlanData(state) {
-  if (state === "Arizona") {
+  if (state === "AZ") {
     return {
       lat: 34.048927,
       lng: -111.093735,
       zoom: 7,
       stateJson: arizonaPlanJson,
     };
-  } else if (state === "Louisianna") {
+  } else if (state === "LA") {
     return {
       lat: 30.39183,
       lng: -92.329102,
       zoom: 7,
       stateJson: louisianaPlanJson,
     };
-  } else if (state === "Nevada") {
+  } else if (state === "NV") {
     return {
       lat: 39.876019,
       lng: -117.224121,
@@ -256,14 +256,14 @@ function Map({
   let statePlanData = null;
 
   switch (selectedState) {
-    case "Arizona":
-      statePlanData = initStatePlanData("Arizona");
+    case "AZ":
+      statePlanData = initStatePlanData("AZ");
       break;
-    case "Louisianna":
-      statePlanData = initStatePlanData("Louisianna");
+    case "LA":
+      statePlanData = initStatePlanData("LA");
       break;
-    case "Nevada":
-      statePlanData = initStatePlanData("Nevada");
+    case "NV":
+      statePlanData = initStatePlanData("NV");
       break;
     default:
       break;

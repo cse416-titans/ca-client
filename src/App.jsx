@@ -16,14 +16,19 @@ import AnalysisWrapper from "./components/wrapper/AnalysisWrapper";
 import Map from "./components/Map";
 import MapWrapper from "./components/wrapper/MapWrapper";
 import DisplayedPlansTab from "./components/DisplayedPlansTab";
+import axios from "axios";
 
 function App() {
+  axios.defaults.withCredentials = true;
+
   const [stage, setStage] = useState(0);
   const [width, setWidth] = useState(6);
 
   const [displayedPlans, setDisplayedPlans] = useState([]); // {type:'cluster'|'plan', id:int, parent:null|clusterId}
   const [displayedPlansRight, setDisplayedPlansRight] = useState([]); // same
-  const [selectedState, setSelectedState] = useState("Arizona");
+  const [selectedState, setSelectedState] = useState("AZ");
+  const [selectedEnsemble, setselectedEnsemble] = useState(1);
+  const [selectedDistanceMeasure, setSelectedDistanceMeasure] = useState(1); // 1: hamming, 2: entroy, 3: optimal transport
   const [showCurrentDistrictPlan, setShowCurrentDistrictPlan] = useState(true);
 
   const [mapColorFilter, setMapColorFilter] = useState("default");
@@ -134,6 +139,10 @@ function App() {
                 setDisplayedPlans={setDisplayedPlans}
                 selectedState={selectedState}
                 setSelectedState={setSelectedState}
+                selectedEnsemble={selectedEnsemble}
+                setselectedEnsemble={setselectedEnsemble}
+                selectedDistanceMeasure={selectedDistanceMeasure}
+                setSelectedDistanceMeasure={setSelectedDistanceMeasure}
                 setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
               />
             </Stack>

@@ -17,7 +17,7 @@ export const scatterData = Array.from({ length: 10000 }, () => ({
   z: faker.number.float({ min: 0.7, max: 1 }),
 }));
 
-const dynamicColors = function () {
+export const dynamicColors = function () {
   const r = Math.floor(Math.random() * 255);
   const g = Math.floor(Math.random() * 255);
   const b = Math.floor(Math.random() * 255);

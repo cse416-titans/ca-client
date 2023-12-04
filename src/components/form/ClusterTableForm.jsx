@@ -27,6 +27,13 @@ import { useState } from "react";
 export default function ClusterTableForm({
   displayedPlans,
   setDisplayedPlans,
+  selectedState,
+  selectedEnsemble,
+  selectedDistanceMeasure,
+  clusterSetAnalysis,
+  setClusterSetAnalysis,
+  clusterAnalysis,
+  setClusterAnalysis,
 }) {
   const [showSummaryTable, setShowSummaryTable] = useState(false);
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
@@ -89,8 +96,13 @@ export default function ClusterTableForm({
                         setIndex={setIndex}
                         displayedPlans={displayedPlans}
                         setDisplayedPlans={setDisplayedPlans}
+                        selectedState={selectedState}
+                        selectedEnsemble={selectedEnsemble}
+                        selectedDistanceMeasure={selectedDistanceMeasure}
                         activeClusterIdx={activeClusterIdx}
                         setActiveClusterIdx={setActiveClusterIdx}
+                        clusterSetAnalysis={clusterSetAnalysis}
+                        setClusterAnalysis={setClusterAnalysis}
                         pageSize={10}
                       />
                     </Carousel.Item>
@@ -98,8 +110,12 @@ export default function ClusterTableForm({
                       <TableWrapperPlan
                         displayedPlans={displayedPlans}
                         setDisplayedPlans={setDisplayedPlans}
+                        selectedState={selectedState}
+                        selectedEnsemble={selectedEnsemble}
+                        selectedDistanceMeasure={selectedDistanceMeasure}
                         activeClusterIdx={activeClusterIdx}
                         setActiveClusterIdx={setActiveClusterIdx}
+                        clusterAnalysis={clusterAnalysis}
                         pageSize={10}
                       />
                     </Carousel.Item>
@@ -169,6 +185,7 @@ export default function ClusterTableForm({
                                     setDisplayedPlans={setDisplayedPlans}
                                     activeClusterIdx={activeClusterIdx}
                                     setActiveClusterIdx={setActiveClusterIdx}
+                                    setClusterAnalysis={setClusterAnalysis}
                                     pageSize={20}
                                   />
                                 </Carousel.Item>
