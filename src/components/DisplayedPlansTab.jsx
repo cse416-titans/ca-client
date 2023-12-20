@@ -28,39 +28,10 @@ const popover = (
         </Popover.Header>
       )}
       <Popover.Body>
-        <Row className="mb-1">
-          <b>Information</b>
-        </Row>
-        <Row className="mb-3">
-          <Col>
-            <Button variant="outline-primary" size="sm">
-              View In Detail...
-            </Button>
-          </Col>
-        </Row>
         {plan.type === "cluster" ? (
           <>
             <Row className="mb-1">
               <b>Display Option</b>
-            </Row>
-            <Row className="mb-3">
-              <Col>
-                <Form>
-                  <Form.Check
-                    type={"radio"}
-                    name="clusterdisplayoption"
-                    label={`Show Approximation of the Cluster`}
-                  />
-                  <Form.Check
-                    type={"radio"}
-                    name="clusterdisplayoption"
-                    label={`Show Plans in the Cluster`}
-                  />
-                </Form>
-              </Col>
-            </Row>
-            <Row className="mb-1">
-              <b>Show On Different Screen</b>
             </Row>
             <Row>
               <Col>
@@ -87,19 +58,6 @@ const popover = (
                       }
                     }}
                   ></Form.Check>
-                </Form>
-              </Col>
-            </Row>
-            <Row className="mb-1 mt-3">
-              <b>Show Up To...</b>
-            </Row>
-            <Row>
-              <Col>
-                <Form>
-                  <>
-                    <Form.Label>Number of Plans</Form.Label>
-                    <Form.Range />
-                  </>
                 </Form>
               </Col>
             </Row>

@@ -343,16 +343,14 @@ function PlanScatterPlot({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   });
 
-  /*
   planScatterPlotData.datasets.push({
     type: "bubble",
-    label: null,
+    label: "Click to see relative coordinates",
     data: coordsDomain,
     backgroundColor: null,
     borderColor: null,
     borderWidth: 0,
   });
-  */
 
   // Plan scatter plot: send request to get geojson of the plan
   const onClick = (e) => {
@@ -699,7 +697,7 @@ function ClusterScatterPlot({
 
   clusterSetScatterPlotData.datasets.push({
     type: "bubble",
-    label: null,
+    label: "Click to see relative coordinates",
     data: coordsDomain,
     backgroundColor: null,
     borderColor: null,
