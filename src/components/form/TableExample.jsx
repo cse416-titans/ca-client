@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { usePagination, useTable } from "react-table";
 import styled from "styled-components";
@@ -85,6 +85,7 @@ function TableExample({
   activeClusterIdx,
   setActiveClusterIdx,
   setClusterAnalysis,
+  setIsLoading,
 }) {
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -109,7 +110,7 @@ function TableExample({
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: newPageSize },
+      initialState: { pageIndex: 0, pageSize: 15 },
     },
     usePagination
   );
@@ -205,7 +206,7 @@ function TableExample({
                                       plan.type === planType
                                   )
                                 }
-                                onClick={(e) => {
+                                onChange={(e) => {
                                   const clusterId = formatClusterId(
                                     selectedState,
                                     selectedEnsemble,
@@ -219,19 +220,23 @@ function TableExample({
                                     );
 
                                   if (e.target.checked) {
-                                    api.get(url).then((res) => {
-                                      const data = res.data;
+                                    setIsLoading(true);
+                                    api
+                                      .get(url)
+                                      .then((res) => {
+                                        const data = res.data;
 
-                                      setDisplayedPlans([
-                                        ...displayedPlans,
-                                        {
-                                          type: planType,
-                                          id: row.cells[0].value,
-                                          parent: activeClusterIdx,
-                                          geometry: data,
-                                        },
-                                      ]);
-                                    });
+                                        setDisplayedPlans([
+                                          ...displayedPlans,
+                                          {
+                                            type: planType,
+                                            id: row.cells[0].value,
+                                            parent: activeClusterIdx,
+                                            geometry: data,
+                                          },
+                                        ]);
+                                      })
+                                      .finally(() => setIsLoading(false));
                                   } else {
                                     setDisplayedPlans(
                                       displayedPlans.filter(
@@ -268,12 +273,17 @@ function TableExample({
                               const url =
                                 formatGetClusterAnalysisUrl(clusterId);
 
-                              api.get(url).then((res) => {
-                                const data = res.data;
-                                setClusterAnalysis(data);
-                                setIndex(1);
-                                setActiveClusterIdx(row.cells[0].value);
-                              });
+                              setIsLoading(true);
+
+                              api
+                                .get(url)
+                                .then((res) => {
+                                  const data = res.data;
+                                  setClusterAnalysis(data);
+                                  setIndex(1);
+                                  setActiveClusterIdx(row.cells[0].value);
+                                })
+                                .finally(() => setIsLoading(false));
                             }}
                           >
                             {parseInt(cell.value) ? ">" : ""}
@@ -316,6 +326,7 @@ function TableExamplePlan({
   activeClusterIdx,
   setActiveClusterIdx,
   setClusterAnalysis,
+  setIsLoading,
 }) {
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -341,6 +352,7 @@ function TableExamplePlan({
       columns,
       data,
       initialState: { pageIndex: 0, pageSize: newPageSize },
+      autoResetPage: false, // To prevent page reset on data change
     },
     usePagination
   );
@@ -436,7 +448,7 @@ function TableExamplePlan({
                                       plan.type === planType
                                   )
                                 }
-                                onClick={(e) => {
+                                onChange={(e) => {
                                   const planId = formatPlanId(
                                     selectedState,
                                     selectedEnsemble,
@@ -450,19 +462,23 @@ function TableExamplePlan({
                                   const url = formatGetPlanBoundaryUrl(planId);
 
                                   if (e.target.checked) {
-                                    api.get(url).then((res) => {
-                                      const data = res.data;
+                                    setIsLoading(true);
+                                    api
+                                      .get(url)
+                                      .then((res) => {
+                                        const data = res.data;
 
-                                      setDisplayedPlans([
-                                        ...displayedPlans,
-                                        {
-                                          type: planType,
-                                          id: row.cells[0].value,
-                                          parent: activeClusterIdx,
-                                          geometry: data,
-                                        },
-                                      ]);
-                                    });
+                                        setDisplayedPlans([
+                                          ...displayedPlans,
+                                          {
+                                            type: planType,
+                                            id: row.cells[0].value,
+                                            parent: activeClusterIdx,
+                                            geometry: data,
+                                          },
+                                        ]);
+                                      })
+                                      .finally(() => setIsLoading(false));
                                   } else {
                                     setDisplayedPlans(
                                       displayedPlans.filter(
@@ -546,85 +562,104 @@ export function TableWrapper({
   clusterSetAnalysis,
   setClusterAnalysis,
   pageSize,
+  setIsLoading,
 }) {
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Cluster",
+        columns: [
+          {
+            Header: "No.",
+            accessor: "clusterId",
+          },
+          {
+            Header: "Size",
+            accessor: "numOfPlans",
+          },
+        ],
+      },
+      {
+        Header: "Avg. Split",
+        columns: [
+          {
+            Header: "Dem",
+            accessor: "avgDemocraticSplit",
+          },
+          {
+            Header: "Rep",
+            accessor: "avgRepublicanSplit",
+          },
+        ],
+      },
+      {
+        Header: "Avg. District Measure",
+        columns: [
+          {
+            Header: "Asian",
+            accessor: "avgNumOfAsianOpps",
+          },
+          {
+            Header: "A-A",
+            accessor: "avgNumOfAAOpps",
+          },
+          {
+            Header: "Hispanic",
+            accessor: "avgNumOfHispanicOpps",
+          },
+          {
+            Header: "MajMin",
+            accessor: "avgNumOfMajMinDistricts",
+          },
+          {
+            Header: "Compet.",
+            accessor: "avgNumOfCompetitiveDistricts",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Map",
+            accessor: "showMap",
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        columns: [
+          {
+            Header: "Detail",
+            accessor: "gotoDetail",
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const tableData = useMemo(() => {
+    let arr = [];
+
+    if (!clusterSetAnalysis) {
+      return arr;
+    }
+
+    Array.from(clusterSetAnalysis).forEach((cluster) => {
+      arr.push({
+        clusterId: parseClusterId(cluster["name"]),
+        ...cluster,
+        showMap: 1,
+        gotoDetail: 1,
+      });
+    });
+    return arr;
+  }, [clusterSetAnalysis]);
+
   if (!clusterSetAnalysis) {
     return <div></div>;
   }
-
-  const columns = [
-    {
-      Header: "Cluster",
-      columns: [
-        {
-          Header: "No.",
-          accessor: "clusterId",
-        },
-      ],
-    },
-    {
-      Header: "Avg. Voting Split",
-      columns: [
-        {
-          Header: "Democratic Split",
-          accessor: "avgDemocraticSplit",
-        },
-        {
-          Header: "Republican Split",
-          accessor: "avgRepublicanSplit",
-        },
-      ],
-    },
-    {
-      Header: "Avg. Opportunity Districts",
-      columns: [
-        {
-          Header: "Asian",
-          accessor: "avgNumOfAsianOpps",
-        },
-        {
-          Header: "African American",
-          accessor: "avgNumOfAAOpps",
-        },
-        {
-          Header: "Hispanic",
-          accessor: "avgNumOfHispanicOpps",
-        },
-        {
-          Header: "White",
-          accessor: "avgNumOfWhiteOpps",
-        },
-      ],
-    },
-    {
-      Header: "Action",
-      columns: [
-        {
-          Header: "Map",
-          accessor: "showMap",
-        },
-      ],
-    },
-    {
-      Header: "Action",
-      columns: [
-        {
-          Header: "Detail",
-          accessor: "gotoDetail",
-        },
-      ],
-    },
-  ];
-
-  const tableData = [];
-
-  Array.from(clusterSetAnalysis).forEach((cluster) => {
-    tableData.push({
-      clusterId: parseClusterId(cluster["name"]),
-      ...cluster,
-      showMap: 1,
-      gotoDetail: 1,
-    });
-  });
 
   return (
     <Styles>
@@ -641,6 +676,7 @@ export function TableWrapper({
         activeClusterIdx={activeClusterIdx}
         setActiveClusterIdx={setActiveClusterIdx}
         setClusterAnalysis={setClusterAnalysis}
+        setIsLoading={setIsLoading}
       />
     </Styles>
   );
@@ -657,6 +693,7 @@ export function TableWrapperPlan({
   setActiveClusterIdx,
   clusterAnalysis,
   pageSize,
+  setIsLoading,
 }) {
   /*
     TODO:
@@ -693,27 +730,27 @@ export function TableWrapperPlan({
       ],
     },
     {
-      Header: "Voting Split",
+      Header: "Split",
       columns: [
         {
-          Header: "Democratic Split",
+          Header: "Dem",
           accessor: "democraticSplit",
         },
         {
-          Header: "Republican Split",
+          Header: "Rep",
           accessor: "republicanSplit",
         },
       ],
     },
     {
-      Header: "Avg. Opportunity Districts",
+      Header: "District Measure",
       columns: [
         {
           Header: "Asian",
           accessor: "numOfAsianOpp",
         },
         {
-          Header: "African American",
+          Header: "A-A",
           accessor: "numOfAAOpp",
         },
         {
@@ -721,8 +758,12 @@ export function TableWrapperPlan({
           accessor: "numOfHispanicOpp",
         },
         {
-          Header: "White",
-          accessor: "numOfWhiteOpp",
+          Header: "MajMin",
+          accessor: "numOfMajMinDistricts",
+        },
+        {
+          Header: "Compte.",
+          accessor: "numOfCompetitiveDistricts",
         },
       ],
     },
@@ -751,6 +792,7 @@ export function TableWrapperPlan({
         activeClusterIdx={activeClusterIdx}
         setActiveClusterIdx={setActiveClusterIdx}
         newPageSize={pageSize}
+        setIsLoading={setIsLoading}
       />
     </Styles>
   );

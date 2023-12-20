@@ -153,6 +153,7 @@ export default function DisplayedPlansTab({
   displayedPlansRight,
   setDisplayedPlansRight,
   setMapColorFilter,
+  setIsLoading,
 }) {
   const onRemove = (e) => {
     setDisplayedPlans(

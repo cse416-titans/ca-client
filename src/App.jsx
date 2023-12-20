@@ -7,6 +7,7 @@ import Col from "react-bootstrap/Col";
 import { Stack } from "react-bootstrap";
 import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
+import { Table } from "react-bootstrap";
 
 // css
 import "./App.css";
@@ -17,6 +18,8 @@ import Map from "./components/Map";
 import MapWrapper from "./components/wrapper/MapWrapper";
 import DisplayedPlansTab from "./components/DisplayedPlansTab";
 import axios from "axios";
+import { formatGetCurrentEnactedPlanUrl } from "../util/FormatUtil";
+import api from "../api/client";
 
 function App() {
   axios.defaults.withCredentials = true;
@@ -26,21 +29,81 @@ function App() {
 
   const [displayedPlans, setDisplayedPlans] = useState([]); // {type:'cluster'|'plan', id:int, parent:null|clusterId}
   const [displayedPlansRight, setDisplayedPlansRight] = useState([]); // same
-  const [selectedState, setSelectedState] = useState("AZ");
+  const [selectedState, setSelectedState] = useState(null);
   const [selectedEnsemble, setselectedEnsemble] = useState(1);
   const [selectedDistanceMeasure, setSelectedDistanceMeasure] = useState(1); // 1: hamming, 2: entroy, 3: optimal transport
   const [showCurrentDistrictPlan, setShowCurrentDistrictPlan] = useState(true);
 
   const [mapColorFilter, setMapColorFilter] = useState("default");
 
+  const [currentlyEnactedPlan, setCurrentlyEnactedPlan] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [showInitial, setShowInitial] = useState(true);
+
   const onChangeMapColorFilter = (e) => {
     setMapColorFilter(e.target.value);
   };
+
+  const [AZSummary, setAZSummary] = useState(null);
+  const [LASummary, setLASummary] = useState(null);
+  const [NVSummary, setNVSummary] = useState(null);
+
+  useEffect(() => {
+    const url = formatGetCurrentEnactedPlanUrl("az_curr.json");
+
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        console.log(data);
+        setAZSummary(data);
+      })
+      .finally(() => setIsLoading(false));
+  }, [setIsLoading]);
+
+  useEffect(() => {
+    const url = formatGetCurrentEnactedPlanUrl("la_curr.json");
+
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        setLASummary(data);
+      })
+      .finally(() => setIsLoading(false));
+  }, [setIsLoading]);
+
+  useEffect(() => {
+    const url = formatGetCurrentEnactedPlanUrl("nv_curr.json");
+
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        setNVSummary(data);
+      })
+      .finally(() => setIsLoading(false));
+  }, [setIsLoading]);
 
   return (
     <Container className="h-100" fluid style={{ position: "fixed" }}>
       <Row className="h-100">
         <Col lg={12 - width} className="m-0 p-0">
+          <div
+            style={{
+              position: "fixed",
+              width: "100vw",
+              height: "100vh",
+              zIndex: "999999999",
+              visibility: isLoading ? "visible" : "hidden",
+              backgroundColor: "rgba(0,0,0,0.5)",
+            }}
+          ></div>
           <MapWrapper>
             <div
               style={{
@@ -59,6 +122,8 @@ function App() {
                 displayedPlansRight={displayedPlansRight}
                 setDisplayedPlansRight={setDisplayedPlansRight}
                 setMapColorFilter={setMapColorFilter}
+                setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
+                setIsLoading={setIsLoading}
               />
             </div>
             <div
@@ -67,37 +132,114 @@ function App() {
                 left: 0,
                 bottom: 0,
                 zIndex: 100000,
-                margin: "10px 0 0 10px",
+                margin: "0px 0 0 0px",
+                width: "50%",
               }}
             >
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <Button value={"white"} onClick={onChangeMapColorFilter}>
-                    White View
-                  </Button>
-                  <Button value={"black"} onClick={onChangeMapColorFilter}>
-                    Black View
-                  </Button>
-                  <Button value={"asian"} onClick={onChangeMapColorFilter}>
-                    Asian View
-                  </Button>
-                  <Button value={"hispanic"} onClick={onChangeMapColorFilter}>
-                    Hispanic View
+                  <span style={{ marginRight: "10px", fontWeight: "bold" }}>
+                    Map View:
+                  </span>
+                  <Button
+                    variant={
+                      mapColorFilter === "white" ? "primary" : "outline-primary"
+                    }
+                    size="sm"
+                    value={"white"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    White
                   </Button>
                   <Button
+                    variant={
+                      mapColorFilter === "black" ? "primary" : "outline-primary"
+                    }
+                    size="sm"
+                    value={"black"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    A-A
+                  </Button>
+                  <Button
+                    variant={
+                      mapColorFilter === "asian" ? "primary" : "outline-primary"
+                    }
+                    size="sm"
+                    value={"asian"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    Asian
+                  </Button>
+                  <Button
+                    variant={
+                      mapColorFilter === "hispanic"
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    size="sm"
+                    value={"hispanic"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    Hispanic
+                  </Button>
+                  <Button
+                    variant={
+                      mapColorFilter === "AmericanIndian"
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    size="sm"
                     value={"AmericanIndian"}
                     onClick={onChangeMapColorFilter}
                   >
-                    American Indian View
+                    A-Indian
                   </Button>
-                  <Button value={"majmin"} onClick={onChangeMapColorFilter}>
-                    Majority-Minority View
+                  <Button
+                    variant={
+                      mapColorFilter === "majmin"
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    size="sm"
+                    value={"majmin"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    Maj-Min
                   </Button>
-                  <Button value={"vote"} onClick={onChangeMapColorFilter}>
-                    Vote View
+                  <Button
+                    variant={
+                      mapColorFilter === "vote" ? "primary" : "outline-primary"
+                    }
+                    size="sm"
+                    value={"vote"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    Vote
                   </Button>
-                  <Button value={"default"} onClick={onChangeMapColorFilter}>
-                    Default View
+                  <Button
+                    variant={
+                      mapColorFilter === "default"
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    size="sm"
+                    value={"default"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    District
+                  </Button>
+                  <Button
+                    variant={
+                      mapColorFilter === "highlight"
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    size="sm"
+                    value={"highlight"}
+                    onClick={onChangeMapColorFilter}
+                  >
+                    Highlight Borders
                   </Button>
                 </ListGroup.Item>
               </ListGroup>
@@ -108,6 +250,12 @@ function App() {
               showCurrentDistrictPlan={showCurrentDistrictPlan}
               isRight={false}
               mapColorFilter={mapColorFilter}
+              currentlyEnactedPlan={currentlyEnactedPlan}
+              setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
+              showInitial={showInitial}
+              AZSummary={AZSummary}
+              LASummary={LASummary}
+              NVSummary={NVSummary}
             />
           </MapWrapper>
         </Col>
@@ -120,6 +268,13 @@ function App() {
                 selectedState={selectedState}
                 showCurrentDistrictPlan={showCurrentDistrictPlan}
                 isRight={true}
+                mapColorFilter={mapColorFilter}
+                currentlyEnactedPlan={currentlyEnactedPlan}
+                setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
+                showInitial={showInitial}
+                AZSummary={AZSummary}
+                LASummary={LASummary}
+                NVSummary={NVSummary}
               />
             </MapWrapper>
           </Col>
@@ -132,7 +287,9 @@ function App() {
           >
             <Stack gap={0} className="content-center">
               <Header>
-                <h2>Titan: Redistricting Cluster Analyzer</h2>
+                <h4 style={{ fontWeight: "bold" }}>
+                  Titan: Redistricting Cluster Analyzer
+                </h4>
               </Header>
               <AnalysisWrapper
                 displayedPlans={displayedPlans}
@@ -144,6 +301,17 @@ function App() {
                 selectedDistanceMeasure={selectedDistanceMeasure}
                 setSelectedDistanceMeasure={setSelectedDistanceMeasure}
                 setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
+                setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
+                setIsLoading={setIsLoading}
+                currentlyEnactedPlan={currentlyEnactedPlan}
+                showInitial={showInitial}
+                setShowInitial={setShowInitial}
+                AZSummary={AZSummary}
+                LASummary={LASummary}
+                NVSummary={NVSummary}
+                setAZSummary={setAZSummary}
+                setLASummary={setLASummary}
+                setNVSummary={setNVSummary}
               />
             </Stack>
           </Col>

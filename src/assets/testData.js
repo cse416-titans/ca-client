@@ -25,7 +25,21 @@ export const dynamicColors = function () {
   return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 };
 
-export const randomColorArr = Array.from({ length: 50 }, () => dynamicColors());
+const configureColor = (r, g, b, a) => {
+  return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+};
+
+export const randomColorArr = (l) => {
+  // make a pastel color array of length l
+  const arr = [];
+  for (let i = 0; i < l; i++) {
+    const r = Math.floor(255 / l) * i;
+    const g = Math.floor(255 / l) * i;
+    const b = Math.floor(255 / l) * i;
+    arr.push(configureColor(10, 40, 230, 0.5));
+  }
+  return arr;
+};
 
 i = 1;
 export const data = {

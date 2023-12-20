@@ -8,12 +8,14 @@ import arizonaPlanJson from "../data/arizona_curr.json";
 import louisianaPlanJson from "../data/louisiana_curr.json";
 import nevadaPlanJson from "../data/nevada_curr.json";
 
+import { useState } from "react";
+
 function initStatePlanData(state) {
   if (state === "AZ") {
     return {
       lat: 34.048927,
       lng: -111.093735,
-      zoom: 7,
+      zoom: 6,
       stateJson: arizonaPlanJson,
     };
   } else if (state === "LA") {
@@ -27,7 +29,7 @@ function initStatePlanData(state) {
     return {
       lat: 39.876019,
       lng: -117.224121,
-      zoom: 7,
+      zoom: 6,
       stateJson: nevadaPlanJson,
     };
   }
@@ -68,6 +70,11 @@ function Map({
   showCurrentDistrictPlan,
   isRight,
   mapColorFilter,
+  currentlyEnactedPlan,
+  showInitial,
+  AZSummary,
+  LASummary,
+  NVSummary,
 }) {
   /*
     DESC:
@@ -75,27 +82,33 @@ function Map({
     randomPlanData : Random plan geojson
   */
 
+  if (!AZSummary || !LASummary || !NVSummary) {
+    return <div></div>;
+  }
+
+  console.log("showInitial", showInitial);
+
   const voteStyle = (feature) => {
     const demVoteCount = feature.properties.Democratic;
     const repVoteCount = feature.properties.Republic;
 
     const getColor = (demVoteCount, repVoteCount) => {
-      // give more red hue if repVoteCount is higher, give more blue hue if demVoteCount is higher
-      const demColor = Math.round(
-        255 * (demVoteCount / (demVoteCount + repVoteCount))
-      );
-      const repColor = Math.round(
-        255 * (repVoteCount / (demVoteCount + repVoteCount))
-      );
-      return `rgb(${repColor}, 0, ${demColor})`;
+      // give red if republican won, blue if democrat won
+      if (demVoteCount > repVoteCount) {
+        return "#0000ff";
+      } else if (demVoteCount < repVoteCount) {
+        return "#ff0000";
+      } else {
+        return "#ffffff";
+      }
     };
 
     return {
       fillColor: getColor(demVoteCount, repVoteCount),
-      weight: 2,
-      opacity: 1,
-      color: getColor(demVoteCount, repVoteCount),
-      fillOpacity: 1,
+      weight: 1,
+      opacity: 0.5,
+      color: "black",
+      fillOpacity: 0.5,
     };
   };
 
@@ -127,31 +140,79 @@ function Map({
 
       const minorityCount = totalPopulation - whiteCount;
 
+      // for each mode, if the population is greater than half of the total population, give purple color; else if greather than 25%, give light purple; else if greater than 10%, give more light purple; else give white
       switch (mode) {
         case "white":
-          color = Math.round(255 * (whiteCount / totalPopulation));
+          if (whiteCount / totalPopulation > 0.5) {
+            color = "#800080";
+          } else if (whiteCount / totalPopulation > 0.25) {
+            color = "#9370DB";
+          } else if (whiteCount / totalPopulation > 0.1) {
+            color = "#D8BFD8";
+          } else {
+            color = "#FFFFFF";
+          }
           break;
         case "black":
-          color = Math.round(255 * (blackCount / minorityCount) * 5);
+          if (blackCount / totalPopulation > 0.5) {
+            color = "#800080";
+          } else if (blackCount / totalPopulation > 0.25) {
+            color = "#9370DB";
+          } else if (blackCount / totalPopulation > 0.1) {
+            color = "#D8BFD8";
+          } else {
+            color = "#FFFFFF";
+          }
           break;
         case "asian":
-          color = Math.round(255 * (asianCount / minorityCount) * 5);
+          if (asianCount / totalPopulation > 0.5) {
+            color = "#800080";
+          } else if (asianCount / totalPopulation > 0.25) {
+            color = "#9370DB";
+          } else if (asianCount / totalPopulation > 0.1) {
+            color = "#D8BFD8";
+          } else {
+            color = "#FFFFFF";
+          }
           break;
         case "AmericanIndian":
-          color = Math.round(255 * (AmericanIndianCount / minorityCount));
+          if (AmericanIndianCount / totalPopulation > 0.5) {
+            color = "#800080";
+          } else if (AmericanIndianCount / totalPopulation > 0.25) {
+            color = "#9370DB";
+          } else if (AmericanIndianCount / totalPopulation > 0.1) {
+            color = "#D8BFD8";
+          } else {
+            color = "#FFFFFF";
+          }
           break;
         case "hispanic":
-          color = Math.round(255 * (hispanicCount / minorityCount));
+          if (hispanicCount / totalPopulation > 0.5) {
+            color = "#800080";
+          } else if (hispanicCount / totalPopulation > 0.25) {
+            color = "#9370DB";
+          } else if (hispanicCount / totalPopulation > 0.1) {
+            color = "#D8BFD8";
+          } else {
+            color = "#FFFFFF";
+          }
           break;
         case "majmin":
-          color = Math.round(255 * (minorityCount / totalPopulation));
+          if (minorityCount / totalPopulation > 0.5) {
+            color = "#800080";
+          } else if (minorityCount / totalPopulation > 0.25) {
+            color = "#9370DB";
+          } else if (minorityCount / totalPopulation > 0.1) {
+            color = "#D8BFD8";
+          } else {
+            color = "#FFFFFF";
+          }
           break;
         default:
-          color = Math.round(255 * (whiteCount / totalPopulation) * 5);
           break;
       }
 
-      return `rgba(${255 - color / 2}, ${255 - color}, ${255 - color / 2})`;
+      return color;
     };
 
     return {
@@ -164,18 +225,40 @@ function Map({
         totalPopulation,
         mapColorFilter
       ),
+      weight: 1,
+      opacity: 0.5,
+      color: "black",
+      fillOpacity: 0.5,
+    };
+  };
+
+  const initialStyle = (feature) => {
+    return {
+      fillColor: "pink",
+      weight: 1,
+      opacity: 0.5,
+      color: "black",
+      fillOpacity: 0.5,
+    };
+  };
+
+  const borderHighlightStyle = (feature) => {
+    return {
+      fillColor: "white",
       weight: 2,
       opacity: 1,
-      color: getColor(
-        whiteCount,
-        blackCount,
-        asianCount,
-        AmericanIndianCount,
-        hispanicCount,
-        totalPopulation,
-        mapColorFilter
-      ),
-      fillOpacity: 1,
+      color: "red",
+      fillOpacity: 0,
+    };
+  };
+
+  const borderHighlightStyle2 = (feature) => {
+    return {
+      fillColor: "white",
+      weight: 2,
+      opacity: 1,
+      color: "green",
+      fillOpacity: 0,
     };
   };
 
@@ -224,32 +307,26 @@ function Map({
 
     return {
       fillColor: getColor(districtId),
-      weight: 2,
-      opacity: 1,
-      color: getColor(districtId),
-      fillOpacity: 1,
+      weight: 1,
+      opacity: 0.5,
+      color: "black",
+      fillOpacity: 0.5,
     };
   };
 
   function onEachFeature(feature, layer) {
     layer.on("mouseover", function (e) {
       console.log("mouseovered");
-      getVoivodeshipName(feature, layer);
+      //getVoivodeshipName(feature, layer);
 
-      this.openPopup();
+      //this.openPopup();
 
       // style
-      this.setStyle({
-        fillOpacity: 0.5,
-      });
     });
 
     layer.on("mouseout", function () {
-      this.closePopup();
+      //this.closePopup();
       // style
-      this.setStyle({
-        fillOpacity: 1,
-      });
     });
   }
 
@@ -270,7 +347,11 @@ function Map({
   }
 
   if (!statePlanData) {
-    return <div></div>;
+    statePlanData = {
+      lat: 34.048927,
+      lng: -104.093735,
+      zoom: 4.5,
+    };
   }
 
   /*
@@ -279,9 +360,9 @@ function Map({
   /*const randomPlanData = initRandomPlanData(selectedState);*/
   /*const randomPlanData = [...displayedPlans];*/
 
-  if (isRight) {
-    return (
-      <div style={{ width: "100%", height: "100%" }}>
+  return (
+    <div style={{ width: "100%", height: "100%" }}>
+      {isRight && (
         <Button
           variant="danger"
           className="mx-5 mt-3"
@@ -290,76 +371,77 @@ function Map({
         >
           X
         </Button>
-        <MapContainer
-          center={[statePlanData.lat, statePlanData.lng]}
-          zoom={statePlanData.zoom}
-          scrollWheelZoom={true}
-          className="map-container"
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          ></TileLayer>
-          {displayedPlans.map((plan, i) => {
-            return (
-              <GeoJSON
-                key={selectedState + plan.type + plan.id}
-                data={plan.geometry}
-                onEachFeature={onEachFeature}
-                style={defaultStyle}
-              />
-            );
-          })}
-        </MapContainer>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ width: "100%", height: "100%" }}>
+      )}
       <MapContainer
         center={[statePlanData.lat, statePlanData.lng]}
         zoom={statePlanData.zoom}
         scrollWheelZoom={true}
         className="map-container"
       >
-        {showCurrentDistrictPlan && (
-          <ChangeView statePlanData={statePlanData} />
+        {showInitial && (
+          <ChangeView
+            statePlanData={{
+              lat: 34.048927,
+              lng: -104.093735,
+              zoom: 4.5,
+            }}
+          />
         )}
+        {!showInitial && <ChangeView statePlanData={statePlanData} />}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></TileLayer>
-        {showCurrentDistrictPlan && (
-          <GeoJSON
-            key={selectedState}
-            data={statePlanData.stateJson}
-            onEachFeature={onEachFeature}
-            style={
-              mapColorFilter === "vote"
-                ? voteStyle
-                : mapColorFilter === "default"
-                ? defaultStyle
-                : populationStyle
-            }
-          />
-        )}
-        {displayedPlans.map((plan, i) => {
-          return (
+        {showInitial &&
+          !isRight &&
+          [AZSummary, LASummary, NVSummary].map((summary) => {
+            return (
+              <GeoJSON
+                key={summary.state}
+                data={summary.geoJson}
+                onEachFeature={onEachFeature}
+                style={initialStyle}
+              />
+            );
+          })}
+        {!showInitial &&
+          showCurrentDistrictPlan &&
+          currentlyEnactedPlan &&
+          !isRight && (
             <GeoJSON
-              key={selectedState + plan.type + plan.id}
-              data={plan.geometry}
+              key={selectedState}
+              data={currentlyEnactedPlan["geoJson"]}
               onEachFeature={onEachFeature}
               style={
                 mapColorFilter === "vote"
                   ? voteStyle
                   : mapColorFilter === "default"
                   ? defaultStyle
+                  : mapColorFilter === "highlight"
+                  ? borderHighlightStyle2
                   : populationStyle
               }
             />
-          );
-        })}
+          )}
+        {!showInitial &&
+          displayedPlans.map((plan, i) => {
+            return (
+              <GeoJSON
+                key={selectedState + plan.type + plan.id}
+                data={plan.geometry}
+                onEachFeature={onEachFeature}
+                style={
+                  mapColorFilter === "vote"
+                    ? voteStyle
+                    : mapColorFilter === "default"
+                    ? defaultStyle
+                    : mapColorFilter === "highlight"
+                    ? borderHighlightStyle
+                    : populationStyle
+                }
+              />
+            );
+          })}
       </MapContainer>
     </div>
   );

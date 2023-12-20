@@ -1,6 +1,18 @@
 import { Row, Col, Tooltip, Card, Button, Badge, Table } from "react-bootstrap";
 
 import DataForm from "../common/DataForm";
+import api from "../../../api/client";
+import {
+  formatGetCurrentEnactedPlanUrl,
+  formatGetStateSummaryUrl,
+} from "../../../util/FormatUtil";
+import { dataPlan } from "../../assets/testData";
+
+import { useEffect, useState } from "react";
+import {
+  convertToPercentageString,
+  convertToRatioPercents,
+} from "../../utils/StringFormat";
 
 /*
  * Placeholder for basic info about the set of ensembles that user selected
@@ -11,8 +23,24 @@ import DataForm from "../common/DataForm";
 export default function StateInfoForm({
   selectedState,
   setSelectedState,
-  setshowCurrentDistrictPlan,
+  setShowCurrentDistrictPlan,
+  setCurrentlyEnactedPlan,
+  setIsLoading,
+  AZSummary,
+  LASummary,
+  NVSummary,
+  setAZSummary,
+  setLASummary,
+  setNVSummary,
+  setShowInitial,
 }) {
+  if (!AZSummary || !LASummary || !NVSummary) {
+    return <div></div>;
+  }
+
+  console.log("AZSummary");
+  console.log(AZSummary);
+
   return (
     <DataForm headerText={"EnsembleInfoForm"}>
       <Row className="mb-3">
@@ -27,8 +55,10 @@ export default function StateInfoForm({
                     text={selectedState === "AZ" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
+                      setCurrentlyEnactedPlan(AZSummary);
                       setSelectedState("AZ");
-                      setshowCurrentDistrictPlan(true);
+                      setShowCurrentDistrictPlan(true);
+                      setShowInitial(false);
                     }}
                   >
                     <Card.Body>
@@ -43,35 +73,91 @@ export default function StateInfoForm({
                               hover
                               className="text-center"
                             >
-                              <tbody>
+                              <tbody
+                                style={{
+                                  padding: "0px",
+                                  fontSize: "12pt",
+                                  margin: "0 0",
+                                }}
+                              >
                                 <tr>
-                                  <td>Enacted</td>
+                                  <td>A.A %</td>
                                   <td>
-                                    <Badge bg="secondary">2021</Badge>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        AZSummary["avgAAPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>White %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        AZSummary["avgWhitePercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Asian %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        AZSummary["avgAsianPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Hispanic %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        AZSummary["avgHispanicPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Rep *</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToRatioPercents(
+                                        AZSummary["totalRepublicanVotes"],
+                                        AZSummary["totalDemocraticVotes"] +
+                                          AZSummary["totalRepublicanVotes"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Dem *</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToRatioPercents(
+                                        AZSummary["totalDemocraticVotes"],
+                                        AZSummary["totalDemocraticVotes"] +
+                                          AZSummary["totalRepublicanVotes"]
+                                      )}
+                                    </Badge>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>Districts</td>
                                   <td>
-                                    <Badge bg="secondary">17</Badge>
+                                    <Badge bg="secondary">
+                                      {
+                                        Array.from(
+                                          AZSummary["whitePercentages"]
+                                        ).length
+                                      }
+                                    </Badge>
                                   </td>
                                 </tr>
                               </tbody>
                             </Table>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Button
-                              variant={
-                                selectedState === "AZ"
-                                  ? "outline-light"
-                                  : "outline-primary"
-                              }
-                              size="sm"
-                            >
-                              Detail..
-                            </Button>
                           </Col>
                         </Row>
                       </Card.Text>
@@ -84,8 +170,10 @@ export default function StateInfoForm({
                     text={selectedState === "LA" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
+                      setCurrentlyEnactedPlan(LASummary);
                       setSelectedState("LA");
-                      setshowCurrentDistrictPlan(true);
+                      setShowCurrentDistrictPlan(true);
+                      setShowInitial(false);
                     }}
                   >
                     <Card.Body>
@@ -100,35 +188,91 @@ export default function StateInfoForm({
                               hover
                               className="text-center"
                             >
-                              <tbody>
+                              <tbody
+                                style={{
+                                  padding: "0px",
+                                  fontSize: "12pt",
+                                  margin: "0 0",
+                                }}
+                              >
                                 <tr>
-                                  <td>Enacted</td>
+                                  <td>A.A %</td>
                                   <td>
-                                    <Badge bg="secondary">2021</Badge>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        LASummary["avgAAPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>White %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        LASummary["avgWhitePercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Asian %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        LASummary["avgAsianPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Hispanic %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        LASummary["avgHispanicPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Rep *</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToRatioPercents(
+                                        LASummary["totalRepublicanVotes"],
+                                        LASummary["totalDemocraticVotes"] +
+                                          LASummary["totalRepublicanVotes"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Dem *</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToRatioPercents(
+                                        LASummary["totalDemocraticVotes"],
+                                        LASummary["totalDemocraticVotes"] +
+                                          LASummary["totalRepublicanVotes"]
+                                      )}
+                                    </Badge>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>Districts</td>
                                   <td>
-                                    <Badge bg="secondary">17</Badge>
+                                    <Badge bg="secondary">
+                                      {
+                                        Array.from(
+                                          LASummary["whitePercentages"]
+                                        ).length
+                                      }
+                                    </Badge>
                                   </td>
                                 </tr>
                               </tbody>
                             </Table>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Button
-                              variant={
-                                selectedState === "LA"
-                                  ? "outline-light"
-                                  : "outline-primary"
-                              }
-                              size="sm"
-                            >
-                              Detail..
-                            </Button>
                           </Col>
                         </Row>
                       </Card.Text>
@@ -141,8 +285,10 @@ export default function StateInfoForm({
                     text={selectedState === "NV" ? "white" : ""}
                     className="selectable"
                     onClick={() => {
+                      setCurrentlyEnactedPlan(NVSummary);
                       setSelectedState("NV");
-                      setshowCurrentDistrictPlan(true);
+                      setShowCurrentDistrictPlan(true);
+                      setShowInitial(false);
                     }}
                   >
                     <Card.Body>
@@ -157,35 +303,91 @@ export default function StateInfoForm({
                               hover
                               className="text-center"
                             >
-                              <tbody>
+                              <tbody
+                                style={{
+                                  padding: "0px",
+                                  fontSize: "12pt",
+                                  margin: "0 0",
+                                }}
+                              >
                                 <tr>
-                                  <td>Enacted</td>
+                                  <td>A.A %</td>
                                   <td>
-                                    <Badge bg="secondary">2021</Badge>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        NVSummary["avgAAPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>White %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        NVSummary["avgWhitePercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Asian %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        NVSummary["avgAsianPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Hispanic %</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToPercentageString(
+                                        NVSummary["avgHispanicPercentage"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Rep *</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToRatioPercents(
+                                        NVSummary["totalRepublicanVotes"],
+                                        NVSummary["totalDemocraticVotes"] +
+                                          NVSummary["totalRepublicanVotes"]
+                                      )}
+                                    </Badge>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Dem *</td>
+                                  <td>
+                                    <Badge bg="secondary">
+                                      {convertToRatioPercents(
+                                        NVSummary["totalDemocraticVotes"],
+                                        NVSummary["totalDemocraticVotes"] +
+                                          NVSummary["totalRepublicanVotes"]
+                                      )}
+                                    </Badge>
                                   </td>
                                 </tr>
                                 <tr>
                                   <td>Districts</td>
                                   <td>
-                                    <Badge bg="secondary">17</Badge>
+                                    <Badge bg="secondary">
+                                      {
+                                        Array.from(
+                                          NVSummary["whitePercentages"]
+                                        ).length
+                                      }
+                                    </Badge>
                                   </td>
                                 </tr>
                               </tbody>
                             </Table>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Button
-                              variant={
-                                selectedState === "NV"
-                                  ? "outline-light"
-                                  : "outline-primary"
-                              }
-                              size="sm"
-                            >
-                              Detail..
-                            </Button>
                           </Col>
                         </Row>
                       </Card.Text>
@@ -198,29 +400,6 @@ export default function StateInfoForm({
                   <span style={{ fontStyle: "italic" }}>
                     ... And More to Come!
                   </span>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={6}>
-          <Card border="info">
-            <Card.Header>How to Use</Card.Header>
-            <Card.Body>
-              <Row className="mb-3">
-                <Col>
-                  <span>
-                    Take a look at the instructions on how to use this tool.
-                  </span>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Button variant="outline-info" size="sm">
-                    See How...
-                  </Button>
                 </Col>
               </Row>
             </Card.Body>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Tabs,
@@ -17,6 +17,8 @@ import {
   Modal,
   Alert,
   Dropdown,
+  DropdownButton,
+  ButtonGroup,
 } from "react-bootstrap";
 
 import {
@@ -38,21 +40,28 @@ import { Chart, getElementAtEvent, getDatasetAtEvent } from "react-chartjs-2";
 import zoomPlugin from "chartjs-plugin-zoom";
 import Zoom from "chartjs-plugin-zoom";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { ReferenceLine } from "recharts";
 
 import { useRef } from "react";
 import { displayablePlans } from "../../assets/makeData";
 import {
+  formatAxisTitle,
   formatClusterId,
+  formatColorFilterTitle,
   formatGetClusterAnalysisUrl,
   formatGetClusterAvgPlanBoundaryUrl,
   formatGetClusterSetAnalysisUrl,
+  formatGetDistanceMeasureComparisonUrl,
   formatGetPlanBoundaryUrl,
   formatPlanId,
+  getClusterId,
   parseClusterId,
   parsePlanId,
 } from "../../../util/FormatUtil";
 import { formatEnsembleId } from "../../../util/FormatUtil";
 import api from "../../../api/client";
+import { Label, XAxis, YAxis } from "recharts";
+import { DMComparison } from "../clustering-pane/DMComparison";
 
 function PlanScatterPlot({
   setIndex,
@@ -63,6 +72,10 @@ function PlanScatterPlot({
   selectedEnsemble,
   selectedDistanceMeasure,
   clusterAnalysis,
+  setIsLoading,
+  selectedColorFilter,
+  selectedAxisX,
+  selectedAxisY,
 }) {
   const chartRef = useRef();
   ChartJS.register(
@@ -82,20 +95,11 @@ function PlanScatterPlot({
           return tooltipItem.datasetIndex === 0;
         },
       },
-    },
-    animation: false,
-    zoom: {
-      zoom: {
-        wheel: {
-          enabled: true, // SET SCROOL ZOOM TO TRUE
+      datalabels: {
+        color: "#36A2EB",
+        formatter: function (value, context) {
+          return context.chart.data.labels[context.dataIndex];
         },
-        mode: "xy",
-        speed: 100,
-      },
-      pan: {
-        enabled: true,
-        mode: "xy",
-        speed: 100,
       },
     },
   };
@@ -104,12 +108,53 @@ function PlanScatterPlot({
     return <div></div>;
   }
 
+  const numOfDistricts = clusterAnalysis[0]["aAPercentages"].length;
+
   const planScatterPlotData = { labels: [], datasets: [] };
 
   const planScatterPlotCoordinates = [];
   const planScatterPlotLabels = [];
-  const planScatterPlotCoordinatesUnavailable = [];
   const planScatterPlotLabelsUnavailable = [];
+
+  const planScatterPlotCoordinatesDemSplit = [];
+  const planScatterPlotCoordinatesRepSplit = [];
+  const planScatterPlotCoordinatesNumOfAAOpp = [];
+  const planScatterPlotCoordinatesNumOfAsianOpp = [];
+  const planScatterPlotCoordinatesNumOfHispanicOpp = [];
+  const planScatterPlotCoordinatesNumOfWhiteOpp = [];
+  const planScatterPlotColorsVote = [];
+  const planScatterPlotColorsNumOfAAOpp = [];
+  const planScatterPlotColorsNumOfAsianOpp = [];
+  const planScatterPlotColorsNumOfHispanicOpp = [];
+  const planScatterPlotColorsNumOfWhiteOpp = [];
+
+  const getVoteColor = (demSplit, repSplit) => {
+    return demSplit > repSplit
+      ? "rgba(50, 99, 255, 0.5)"
+      : "rgba(255, 99, 132, 0.5)";
+  };
+
+  const getOppsColor = (numOfOpps, numOfDistricts) => {
+    let opacity = 0;
+
+    if (numOfOpps === 0) {
+      opacity = 0;
+    } else if (numOfOpps === numOfDistricts) {
+      opacity = 1;
+    } else if (numOfOpps > numOfDistricts / 1.2) {
+      opacity = 0.8;
+    } else if (numOfOpps > numOfDistricts / 1.5) {
+      opacity = 0.6;
+    } else if (numOfOpps > numOfDistricts / 2) {
+      opacity = 0.4;
+    } else if (numOfOpps > numOfDistricts / 3) {
+      opacity = 0.2;
+    } else {
+      opacity = 0.1;
+    }
+
+    return `rgba(100,50,255, ${opacity})`;
+  };
 
   Array.from(clusterAnalysis).forEach((plan, i) => {
     if (plan["availability"] === true) {
@@ -118,23 +163,173 @@ function PlanScatterPlot({
         y: plan["coordinate"][1],
         r: 6,
       });
-      planScatterPlotLabels.push(parsePlanId(plan["name"]));
+      planScatterPlotLabels.push(plan["name"]);
+      planScatterPlotCoordinatesDemSplit.push(plan["democraticSplit"].length);
+      planScatterPlotCoordinatesRepSplit.push(plan["republicanSplit"].length);
+      planScatterPlotCoordinatesNumOfAAOpp.push(plan["numOfAAOpp"]);
+      planScatterPlotCoordinatesNumOfAsianOpp.push(plan["numOfAsianOpp"]);
+      planScatterPlotCoordinatesNumOfHispanicOpp.push(plan["numOfHispanicOpp"]);
+      planScatterPlotCoordinatesNumOfWhiteOpp.push(plan["numOfWhiteOpp"]);
+      planScatterPlotColorsVote.push(
+        getVoteColor(plan["democraticSplit"], plan["republicanSplit"])
+      );
+      planScatterPlotColorsNumOfAAOpp.push(
+        getOppsColor(plan["numOfAAOpp"], numOfDistricts)
+      );
+      planScatterPlotColorsNumOfAsianOpp.push(
+        getOppsColor(plan["numOfAsianOpp"], numOfDistricts)
+      );
+      planScatterPlotColorsNumOfHispanicOpp.push(
+        getOppsColor(plan["numOfHispanicOpp"], numOfDistricts)
+      );
+      planScatterPlotColorsNumOfWhiteOpp.push(
+        getOppsColor(plan["numOfWhiteOpp"], numOfDistricts)
+      );
     } else {
-      planScatterPlotCoordinatesUnavailable.push({
+      planScatterPlotCoordinates.push({
         x: plan["coordinate"][0],
         y: plan["coordinate"][1],
         r: 3,
       });
-      planScatterPlotLabelsUnavailable.push(parsePlanId(plan["name"]));
+      planScatterPlotLabels.push(plan["name"]);
+      planScatterPlotCoordinatesDemSplit.push(plan["democraticSplit"].length);
+      planScatterPlotCoordinatesRepSplit.push(plan["republicanSplit"].length);
+      planScatterPlotCoordinatesNumOfAAOpp.push(plan["numOfAAOpp"]);
+      planScatterPlotCoordinatesNumOfAsianOpp.push(plan["numOfAsianOpp"]);
+      planScatterPlotCoordinatesNumOfHispanicOpp.push(plan["numOfHispanicOpp"]);
+      planScatterPlotCoordinatesNumOfWhiteOpp.push(plan["numOfWhiteOpp"]);
     }
   });
+
+  let coords = [];
+  let coordsUnavailable = [];
+
+  let colorArr = [];
+
+  switch (selectedColorFilter) {
+    case "voteSplit":
+      colorArr = planScatterPlotColorsVote;
+      break;
+    case "avgNumOfAAOpps":
+      colorArr = planScatterPlotColorsNumOfAAOpp;
+      break;
+    case "avgNumOfAsianOpps":
+      colorArr = planScatterPlotColorsNumOfAsianOpp;
+      break;
+    case "avgNumOfHispanicOpps":
+      colorArr = planScatterPlotColorsNumOfHispanicOpp;
+      break;
+    case "avgNumOfWhiteOpps":
+      colorArr = planScatterPlotColorsNumOfWhiteOpp;
+      break;
+    default:
+      colorArr = planScatterPlotColorsVote;
+      break;
+  }
+
+  let coordXArr = [];
+
+  switch (selectedAxisX) {
+    case "default":
+      break;
+    case "avgDemocraticSplit":
+      coordXArr = planScatterPlotCoordinatesDemSplit;
+      break;
+    case "avgRepublicanSplit":
+      coordXArr = planScatterPlotCoordinatesRepSplit;
+      break;
+    case "avgNumOfAAOpps":
+      coordXArr = planScatterPlotCoordinatesNumOfAAOpp;
+      break;
+    case "avgNumOfAsianOpps":
+      coordXArr = planScatterPlotCoordinatesNumOfAsianOpp;
+      break;
+    case "avgNumOfHispanicOpps":
+      coordXArr = planScatterPlotCoordinatesNumOfHispanicOpp;
+      break;
+    case "avgNumOfWhiteOpps":
+      coordXArr = planScatterPlotCoordinatesNumOfWhiteOpp;
+      break;
+    default:
+      coordXArr = planScatterPlotCoordinates;
+      break;
+  }
+
+  let coordYArr = [];
+
+  switch (selectedAxisY) {
+    case "default":
+      break;
+    case "avgDemocraticSplit":
+      coordYArr = planScatterPlotCoordinatesDemSplit;
+      break;
+    case "avgRepublicanSplit":
+      coordYArr = planScatterPlotCoordinatesRepSplit;
+      break;
+    case "avgNumOfAAOpps":
+      coordYArr = planScatterPlotCoordinatesNumOfAAOpp;
+      break;
+    case "avgNumOfAsianOpps":
+      coordYArr = planScatterPlotCoordinatesNumOfAsianOpp;
+      break;
+    case "avgNumOfHispanicOpps":
+      coordYArr = planScatterPlotCoordinatesNumOfHispanicOpp;
+      break;
+    case "avgNumOfWhiteOpps":
+      coordYArr = planScatterPlotCoordinatesNumOfWhiteOpp;
+      break;
+    default:
+      coordYArr = planScatterPlotCoordinates;
+      break;
+  }
+
+  console.log("coordXArr");
+  console.log(coordXArr);
+
+  Array.from(clusterAnalysis).forEach((plan, i) => {
+    if (plan["availability"] === true) {
+      coords.push({
+        x:
+          selectedAxisX === "default"
+            ? planScatterPlotCoordinates[i]["x"]
+            : coordXArr[i],
+        y:
+          selectedAxisY === "default"
+            ? planScatterPlotCoordinates[i]["y"]
+            : coordYArr[i],
+        r: 6,
+      });
+    } else {
+      coordsUnavailable.push({
+        x:
+          selectedAxisX === "default"
+            ? planScatterPlotCoordinates[i]["x"]
+            : coordXArr[i],
+        y:
+          selectedAxisY === "default"
+            ? planScatterPlotCoordinates[i]["y"]
+            : coordYArr[i],
+        r: 3,
+      });
+    }
+  });
+
+  console.log("plan coords");
+  console.log(coords);
+
+  const coordsDomain = [
+    { x: -1, y: -1, r: 0 },
+    { x: 1, y: 1, r: 0 },
+    { x: 1, y: -1, r: 0 },
+    { x: -1, y: 1, r: 0 },
+  ];
 
   planScatterPlotData.datasets.push({
     type: "bubble",
     label: "Available Plan",
     labels: planScatterPlotLabels,
-    data: planScatterPlotCoordinates,
-    backgroundColor: "rgba(50, 99, 255, 0.5)",
+    data: coords,
+    backgroundColor: colorArr,
     datalabels: {
       color: "black",
     },
@@ -144,9 +339,20 @@ function PlanScatterPlot({
     type: "bubble",
     label: "Unavailable Plan",
     labels: planScatterPlotLabelsUnavailable,
-    data: planScatterPlotCoordinatesUnavailable,
-    backgroundColor: "rgba(255, 99, 132, 0.5)",
+    data: coordsUnavailable,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   });
+
+  /*
+  planScatterPlotData.datasets.push({
+    type: "bubble",
+    label: null,
+    data: coordsDomain,
+    backgroundColor: null,
+    borderColor: null,
+    borderWidth: 0,
+  });
+  */
 
   // Plan scatter plot: send request to get geojson of the plan
   const onClick = (e) => {
@@ -179,8 +385,6 @@ function PlanScatterPlot({
     const planId = formatPlanId(
       selectedState,
       selectedEnsemble,
-      selectedDistanceMeasure,
-      selectedClusterIdx,
       selectedPlanIdx
     );
 
@@ -188,27 +392,39 @@ function PlanScatterPlot({
 
     let url = formatGetPlanBoundaryUrl(planId);
 
-    api.get(url).then((res) => {
-      const data = res.data;
-      console.log(data);
-      const newDisplayedPlans = [
-        ...displayedPlans,
-        {
-          type: "plan",
-          id: selectedPlanIdx,
-          parent: selectedClusterIdx,
-          geometry: data,
-        },
-      ];
+    console.log("get plan boundary url");
+    console.log(url);
 
-      setDisplayedPlans(newDisplayedPlans);
-    });
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        console.log(data);
+        const newDisplayedPlans = [
+          ...displayedPlans,
+          {
+            type: "plan",
+            id: selectedPlanIdx,
+            parent: selectedClusterIdx,
+            geometry: data,
+          },
+        ];
+
+        setDisplayedPlans(newDisplayedPlans);
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <Container className="justify-content-center">
       <Row
-        style={{ width: "700px", height: "300px", justifyContent: "center" }}
+        style={{
+          width: "700px",
+          height: "300px",
+          justifyContent: "center",
+          paddingBottom: "30px",
+        }}
       >
         <Chart
           ref={chartRef}
@@ -216,8 +432,19 @@ function PlanScatterPlot({
           options={options}
           data={planScatterPlotData}
           onClick={onClick}
-        />
+        >
+          <XAxis
+            dataKey={"x"}
+            name="x"
+            ticks={[100, 120, 140, 160, 180]}
+            domain={[80, 200]}
+            type="number"
+          />
+          <YAxis type="number" domain={[0, 1]} />
+        </Chart>
       </Row>
+      <div className="axisY">{formatAxisTitle(selectedAxisY)}</div>
+      <div className="axisX">{formatAxisTitle(selectedAxisX)}</div>
     </Container>
   );
 }
@@ -232,6 +459,10 @@ function ClusterScatterPlot({
   setSelectedClusterIdx,
   clusterSetAnalysis,
   setClusterAnalysis,
+  setIsLoading,
+  selectedColorFilter,
+  selectedAxisX,
+  selectedAxisY,
 }) {
   const chartRef = useRef();
 
@@ -251,35 +482,230 @@ function ClusterScatterPlot({
         },
       },
     },
-    animation: false,
   };
 
   if (clusterSetAnalysis === null) {
     return <div></div>;
   }
 
+  const numOfDistricts = clusterSetAnalysis[0]["aAPercentages"][0].length;
+
   const clusterSetScatterPlotData = { labels: [], datasets: [] };
 
   const clusterSetScatterPlotCoordinates = [];
 
+  const clusterSetScatterPlotCoordinatesDemSplit = [];
+  const clusterSetScatterPlotCoordinatesRepSplit = [];
+  const clusterSetScatterPlotCoordinatesAvgNumOfAAOpps = [];
+  const clusterSetScatterPlotCoordinatesAvgNumOfAsianOpps = [];
+  const clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps = [];
+  const clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps = [];
+  const clusterSetScatterPlotColorsVote = [];
+  const clusterSetScatterPlotColorsAvgNumOfAAOpps = [];
+  const clusterSetScatterPlotColorsAvgNumOfAsianOpps = [];
+  const clusterSetScatterPlotColorsAvgNumOfHispanicOpps = [];
+  const clusterSetScatterPlotColorsAvgNumOfWhiteOpps = [];
+  const clusterSetScatterPlotSize = [];
+
+  const maxNumOfPlans = Math.max(
+    ...Array.from(clusterSetAnalysis).map((cluster) => cluster["numOfPlans"])
+  );
+
+  const getVoteColor = (demSplit, repSplit) => {
+    return demSplit > repSplit
+      ? "rgba(50, 99, 255, 0.3)"
+      : "rgba(255, 99, 132, 0.3)";
+  };
+
+  // get Opportunity Districts scatter plot point color based on avg num of opps. Less opps have color closer to white, more opps have color closer to purple.
+  const getOppsColor = (avgNumOfOpps, numOfDistricts) => {
+    let opacity = 0;
+
+    if (avgNumOfOpps === 0) {
+      opacity = 0;
+    } else if (avgNumOfOpps === numOfDistricts) {
+      opacity = 1;
+    } else if (avgNumOfOpps > numOfDistricts / 1.2) {
+      opacity = 0.8;
+    } else if (avgNumOfOpps > numOfDistricts / 1.5) {
+      opacity = 0.6;
+    } else if (avgNumOfOpps > numOfDistricts / 2) {
+      opacity = 0.4;
+    } else if (avgNumOfOpps > numOfDistricts / 3) {
+      opacity = 0.2;
+    } else {
+      opacity = 0.1;
+    }
+
+    return `rgba(100,50,255, ${opacity})`;
+  };
+
   Array.from(clusterSetAnalysis).forEach((cluster, i) => {
-    clusterSetScatterPlotData.labels.push(i + 1);
+    clusterSetScatterPlotData.labels.push(cluster["name"]);
     clusterSetScatterPlotCoordinates.push({
       x: cluster["coordinate"][0],
       y: cluster["coordinate"][1],
-      r: cluster["numOfPlans"],
+      r: (cluster["numOfPlans"] / maxNumOfPlans) * 20,
+    });
+    clusterSetScatterPlotSize.push(
+      (cluster["numOfPlans"] / maxNumOfPlans) * 20
+    );
+    clusterSetScatterPlotCoordinatesDemSplit.push(
+      cluster["avgDemocraticSplit"]
+    );
+    clusterSetScatterPlotCoordinatesRepSplit.push(
+      cluster["avgRepublicanSplit"]
+    );
+    clusterSetScatterPlotCoordinatesAvgNumOfAAOpps.push(
+      cluster["avgNumOfAAOpps"]
+    );
+    clusterSetScatterPlotCoordinatesAvgNumOfAsianOpps.push(
+      cluster["avgNumOfAsianOpps"]
+    );
+    clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps.push(
+      cluster["avgNumOfHispanicOpps"]
+    );
+    clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps.push(
+      cluster["avgNumOfWhiteOpps"]
+    );
+    clusterSetScatterPlotColorsVote.push(
+      getVoteColor(cluster["avgDemocraticSplit"], cluster["avgRepublicanSplit"])
+    );
+    clusterSetScatterPlotColorsAvgNumOfAAOpps.push(
+      getOppsColor(cluster["avgNumOfAAOpps"], numOfDistricts)
+    );
+    clusterSetScatterPlotColorsAvgNumOfAsianOpps.push(
+      getOppsColor(cluster["avgNumOfAsianOpps"], numOfDistricts)
+    );
+    clusterSetScatterPlotColorsAvgNumOfHispanicOpps.push(
+      getOppsColor(cluster["avgNumOfHispanicOpps"], numOfDistricts)
+    );
+    clusterSetScatterPlotColorsAvgNumOfWhiteOpps.push(
+      getOppsColor(cluster["avgNumOfWhiteOpps"], numOfDistricts)
+    );
+  });
+
+  let coords = [];
+
+  let colorArr = [];
+
+  switch (selectedColorFilter) {
+    case "voteSplit":
+      colorArr = clusterSetScatterPlotColorsVote;
+      break;
+    case "avgNumOfAAOpps":
+      colorArr = clusterSetScatterPlotColorsAvgNumOfAAOpps;
+      break;
+    case "avgNumOfAsianOpps":
+      colorArr = clusterSetScatterPlotColorsAvgNumOfAsianOpps;
+      break;
+    case "avgNumOfHispanicOpps":
+      colorArr = clusterSetScatterPlotColorsAvgNumOfHispanicOpps;
+      break;
+    case "avgNumOfWhiteOpps":
+      colorArr = clusterSetScatterPlotColorsAvgNumOfWhiteOpps;
+      break;
+    default:
+      colorArr = clusterSetScatterPlotColorsVote;
+      break;
+  }
+
+  let coordXArr = [];
+
+  switch (selectedAxisX) {
+    case "default":
+      break;
+    case "avgDemocraticSplit":
+      coordXArr = clusterSetScatterPlotCoordinatesDemSplit;
+      break;
+    case "avgRepublicanSplit":
+      coordXArr = clusterSetScatterPlotCoordinatesRepSplit;
+      break;
+    case "avgNumOfAAOpps":
+      coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfAAOpps;
+      break;
+    case "avgNumOfAsianOpps":
+      coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfAsianOpps;
+      break;
+    case "avgNumOfHispanicOpps":
+      coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps;
+      break;
+    case "avgNumOfWhiteOpps":
+      coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps;
+      break;
+    default:
+      coordXArr = clusterSetScatterPlotCoordinates;
+      break;
+  }
+
+  let coordYArr = [];
+
+  switch (selectedAxisY) {
+    case "default":
+      break;
+    case "avgDemocraticSplit":
+      coordYArr = clusterSetScatterPlotCoordinatesDemSplit;
+      break;
+    case "avgRepublicanSplit":
+      coordYArr = clusterSetScatterPlotCoordinatesRepSplit;
+      break;
+    case "avgNumOfAAOpps":
+      coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfAAOpps;
+      break;
+    case "avgNumOfAsianOpps":
+      coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfAsianOpps;
+      break;
+    case "avgNumOfHispanicOpps":
+      coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps;
+      break;
+    case "avgNumOfWhiteOpps":
+      coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps;
+      break;
+    default:
+      coordYArr = clusterSetScatterPlotCoordinates;
+      break;
+  }
+
+  Array.from(clusterSetAnalysis).forEach((cluster, i) => {
+    coords.push({
+      x:
+        selectedAxisX === "default"
+          ? clusterSetScatterPlotCoordinates[i]["x"]
+          : coordXArr[i],
+      y:
+        selectedAxisY === "default"
+          ? clusterSetScatterPlotCoordinates[i]["y"]
+          : coordYArr[i],
+      r: (cluster["numOfPlans"] / maxNumOfPlans) * 20,
     });
   });
+
+  const coordsDomain = [
+    { x: -1, y: -1, r: 0 },
+    { x: 1, y: 1, r: 0 },
+    { x: 1, y: -1, r: 0 },
+    { x: -1, y: 1, r: 0 },
+  ];
 
   clusterSetScatterPlotData.datasets.push({
     type: "bubble",
     label: "Cluster",
-    data: clusterSetScatterPlotCoordinates,
-    backgroundColor: Array.from({ length: clusterSetAnalysis.length }, () =>
-      dynamicColors()
-    ),
+    data: coords,
+    backgroundColor: colorArr,
     datalabels: {
       color: "black",
+    },
+  });
+
+  clusterSetScatterPlotData.datasets.push({
+    type: "bubble",
+    label: null,
+    data: coordsDomain,
+    backgroundColor: null,
+    borderColor: null,
+    borderWidth: 0,
+    datalabels: {
+      color: null,
     },
   });
 
@@ -304,34 +730,50 @@ function ClusterScatterPlot({
 
     let url = formatGetClusterAvgPlanBoundaryUrl(clusterId);
 
-    api.get(url).then((res) => {
-      const data = res.data;
-      const newDisplayedPlans = [
-        ...displayedPlans,
-        {
-          type: "cluster",
-          id: selectedClusterIdx,
-          parent: null,
-          geometry: data,
-        },
-      ];
-      setDisplayedPlans(newDisplayedPlans);
-      setSelectedClusterIdx(selectedClusterIdx);
-      setIndex(1);
-    });
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        const newDisplayedPlans = [
+          ...displayedPlans,
+          {
+            type: "cluster",
+            id: selectedClusterIdx,
+            parent: null,
+            geometry: data,
+          },
+        ];
+        setDisplayedPlans(newDisplayedPlans);
+        setSelectedClusterIdx(selectedClusterIdx);
+        setIndex(1);
+      })
+      .finally(() => setIsLoading(false));
 
     url = formatGetClusterAnalysisUrl(clusterId);
 
-    api.get(url).then((res) => {
-      const data = res.data;
-      setClusterAnalysis(data);
-    });
+    console.log("get cluster analysis url");
+    console.log(url);
+
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        setClusterAnalysis(data);
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <Container className="justify-content-center">
       <Row
-        style={{ width: "700px", height: "300px", justifyContent: "center" }}
+        style={{
+          width: "700px",
+          height: "300px",
+          justifyContent: "center",
+          paddingBottom: "30px",
+        }}
       >
         <Chart
           ref={chartRef}
@@ -342,6 +784,8 @@ function ClusterScatterPlot({
           plugins={[ChartDataLabels]}
         />
       </Row>
+      <div className="axisY">{formatAxisTitle(selectedAxisY)}</div>
+      <div className="axisX">{formatAxisTitle(selectedAxisX)}</div>
     </Container>
   );
 }
@@ -357,7 +801,10 @@ export default function ClusterPlotForm({
   setClusterSetAnalysis,
   clusterAnalysis,
   setClusterAnalysis,
+  setIsLoading,
 }) {
+  const [distanceMeasureComparison, setDistanceMeasureComparison] =
+    useState(null);
   const [showTabularSummary, setShowTabularSummary] = useState(false);
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
   const [showChangeViewSettings, setShowChangeViewSettings] = useState(false);
@@ -367,6 +814,10 @@ export default function ClusterPlotForm({
   const [index, setIndex] = useState(0);
 
   const [selectedClusterIdx, setSelectedClusterIdx] = useState(0);
+
+  const [selectedColorFilter, setSelectedColorFilter] = useState("voteSplit");
+  const [selectedAxisX, setSelectedAxisX] = useState("default");
+  const [selectedAxisY, setSelectedAxisY] = useState("default");
 
   const handleCloseTabularSummary = () => setShowTabularSummary(false);
   const handleShowTabularSummary = () => setShowTabularSummary(true);
@@ -392,733 +843,312 @@ export default function ClusterPlotForm({
         selectedDistanceMeasure
       );
 
-      api.get(url).then((res) => {
-        const data = res.data;
-        setClusterSetAnalysis(data);
-      });
+      setIsLoading(true);
+      api
+        .get(url)
+        .then((res) => {
+          const data = res.data;
+          setClusterSetAnalysis(data);
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
+  const handleChangeColorFilter = (e) => {
+    const id = e.target.id;
+    setSelectedColorFilter(id);
+  };
+
+  const handleChangeAxisX = (e) => {
+    const id = e.target.id;
+    setSelectedAxisX(id);
+  };
+
+  const handleChangeAxisY = (e) => {
+    const id = e.target.id;
+    setSelectedAxisY(id);
+  };
+
+  useEffect(() => {
+    const url = formatGetDistanceMeasureComparisonUrl(
+      formatEnsembleId(selectedState, selectedEnsemble)
+    );
+
+    console.log(url);
+
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        setDistanceMeasureComparison(data);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [selectedEnsemble, selectedState, setIsLoading, setClusterSetAnalysis]);
+
+  useEffect(() => {
+    const url = formatGetClusterSetAnalysisUrl(
+      formatEnsembleId(selectedState, selectedEnsemble),
+      selectedDistanceMeasure
+    );
+
+    console.log(url);
+
+    setIsLoading(true);
+    api
+      .get(url)
+      .then((res) => {
+        const data = res.data;
+        setClusterSetAnalysis(data);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setIndex(0);
+      });
+  }, [
+    selectedDistanceMeasure,
+    selectedEnsemble,
+    selectedState,
+    setIsLoading,
+    setClusterSetAnalysis,
+  ]);
+
+  if (distanceMeasureComparison === null) {
+    return <div>ERROR: NO_ENSEMBLE_SELECTED</div>;
+  }
+
+  console.log("distanceMeasureComparison");
+  console.log(distanceMeasureComparison);
+
   return (
     <DataForm headerText={"ClusterPlotForm"}>
-      <Tabs
-        defaultActiveKey="cluster"
-        id="uncontrolled-tab-example"
-        className="mb-3"
-        onSelect={handleSelectDistanceMeasure}
-      >
-        <Tab eventKey="cluster" title="Clusters Overview">
-          <Row className="mb-3 align-middle">
-            <Col lg={12}>
-              <Card>
-                <Card.Header>
-                  <Stack direction="horizontal" gap={3}>
-                    <span>Scatter Plot of </span>
-                    <Breadcrumb>
-                      {index === 0 ? (
-                        <Breadcrumb.Item
-                          active
-                        >{`Ensemble ${selectedEnsemble}, Cluster Set ${selectedDistanceMeasure}`}</Breadcrumb.Item>
-                      ) : (
-                        <>
-                          <Breadcrumb.Item onClick={() => setIndex(0)}>
-                            {`Ensemble ${selectedEnsemble}, Cluster Set ${selectedDistanceMeasure}`}
-                          </Breadcrumb.Item>
-                          <Breadcrumb.Item active>
-                            {`Cluster ${selectedClusterIdx}`}
-                          </Breadcrumb.Item>
-                        </>
-                      )}
-                    </Breadcrumb>
-                  </Stack>
-                </Card.Header>
-                <Card.Body>
-                  <Carousel
-                    data-bs-theme="dark"
-                    activeIndex={index}
-                    onSelect={handleSelect}
-                    slide={true}
-                    interval={null}
-                    controls={false}
-                    indicators={false}
+      <Row className="mb-3 align-middle">
+        <Col lg={12}>
+          <Card>
+            <Card.Header>
+              <Stack direction="horizontal" gap={3}>
+                <span>Scatter Plot of </span>
+                <Breadcrumb>
+                  {index === 0 ? (
+                    <Breadcrumb.Item
+                      active
+                    >{`Ensemble ${selectedEnsemble}`}</Breadcrumb.Item>
+                  ) : (
+                    <>
+                      <Breadcrumb.Item onClick={() => setIndex(0)}>
+                        {`Ensemble ${selectedEnsemble}`}
+                      </Breadcrumb.Item>
+                      <Breadcrumb.Item active>
+                        {`Cluster ${selectedClusterIdx}`}
+                      </Breadcrumb.Item>
+                    </>
+                  )}
+                </Breadcrumb>
+              </Stack>
+            </Card.Header>
+            <Card.Body>
+              <Carousel
+                data-bs-theme="dark"
+                activeIndex={index}
+                onSelect={handleSelect}
+                slide={true}
+                interval={null}
+                controls={false}
+                indicators={false}
+              >
+                <Carousel.Item>
+                  <ClusterScatterPlot
+                    setIndex={setIndex}
+                    displayedPlans={displayedPlans}
+                    setDisplayedPlans={setDisplayedPlans}
+                    selectedState={selectedState}
+                    selectedEnsemble={selectedEnsemble}
+                    selectedDistanceMeasure={selectedDistanceMeasure}
+                    setSelectedClusterIdx={setSelectedClusterIdx}
+                    clusterSetAnalysis={clusterSetAnalysis}
+                    setClusterAnalysis={setClusterAnalysis}
+                    setIsLoading={setIsLoading}
+                    selectedColorFilter={selectedColorFilter}
+                    selectedAxisX={selectedAxisX}
+                    selectedAxisY={selectedAxisY}
+                  />
+                </Carousel.Item>
+                <Carousel.Item>
+                  <PlanScatterPlot
+                    selectedClusterIdx={selectedClusterIdx}
+                    displayedPlans={displayedPlans}
+                    setDisplayedPlans={setDisplayedPlans}
+                    selectedState={selectedState}
+                    selectedEnsemble={selectedEnsemble}
+                    selectedDistanceMeasure={selectedDistanceMeasure}
+                    clusterAnalysis={clusterAnalysis}
+                    setIsLoading={setIsLoading}
+                    selectedColorFilter={selectedColorFilter}
+                    selectedAxisX={selectedAxisX}
+                    selectedAxisY={selectedAxisY}
+                  />
+                </Carousel.Item>
+              </Carousel>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col lg={6}></Col>
+      </Row>
+      <Row className="mb-3">
+        <Col lg={6}>
+          <Card>
+            <Card.Header>Adjust Color Filter</Card.Header>
+            <Card.Body>
+              <Row>
+                <Col>
+                  <DropdownButton
+                    id="dropdownColorFilter"
+                    title={
+                      "Current: " + formatColorFilterTitle(selectedColorFilter)
+                    }
                   >
-                    <Carousel.Item>
-                      <ClusterScatterPlot
-                        setIndex={setIndex}
-                        displayedPlans={displayedPlans}
-                        setDisplayedPlans={setDisplayedPlans}
-                        selectedState={selectedState}
-                        selectedEnsemble={selectedEnsemble}
-                        selectedDistanceMeasure={selectedDistanceMeasure}
-                        setSelectedClusterIdx={setSelectedClusterIdx}
-                        clusterSetAnalysis={clusterSetAnalysis}
-                        setClusterAnalysis={setClusterAnalysis}
-                      />
-                    </Carousel.Item>
-                    <Carousel.Item>
-                      <PlanScatterPlot
-                        selectedClusterIdx={selectedClusterIdx}
-                        displayedPlans={displayedPlans}
-                        setDisplayedPlans={setDisplayedPlans}
-                        selectedState={selectedState}
-                        selectedEnsemble={selectedEnsemble}
-                        selectedDistanceMeasure={selectedDistanceMeasure}
-                        clusterAnalysis={clusterAnalysis}
-                      />
-                    </Carousel.Item>
-                  </Carousel>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col lg={6}></Col>
-          </Row>
-          <Row className="mb-3">
-            <Col lg={6}>
-              <Card>
-                <Card.Header>View Tabular Summary</Card.Header>
-                <Card.Body>
-                  <Row>
-                    <Col>
-                      <Table striped bordered hover className="text-center">
-                        <tbody>
-                          <tr>
-                            <td>No. of Clusters</td>
-                            <td>
-                              <Badge bg="secondary">50</Badge>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Avg. Cluster Size</td>
-                            <td>
-                              <Badge bg="secondary">17</Badge>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <Button variant="outline-primary" size="sm">
-                        Learn More...
-                      </Button>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col lg={6}>
-              <Card>
-                <Card.Header>Filter & View</Card.Header>
-                <Card.Body>
-                  <Row className="mb-3">
-                    <Col>
-                      <>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={handleShowAdjustFilter}
-                        >
-                          Adjust Filter...
-                        </Button>
-
-                        <Modal
-                          show={showAdjustFilter}
-                          onHide={handleCloseAdjustFilter}
-                        >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Change View Settings</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body>
-                            <Row>
-                              <Col>
-                                <Alert variant="success">
-                                  <Alert.Heading>
-                                    Filter Out Unwanted Items.
-                                  </Alert.Heading>
-                                  <p>
-                                    Throw out the items you don't want to see,
-                                    just focus on the ones you want.
-                                  </p>
-                                </Alert>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col>
-                                <Dropdown>
-                                  <Dropdown.Toggle
-                                    size="sm"
-                                    variant="success"
-                                    id="dropdown-basic"
-                                  >
-                                    Filter By: <b>Vote Margin</b>
-                                  </Dropdown.Toggle>
-
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item href="#/action-1">
-                                      Vote Margin
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-2">
-                                      No. of Opportunity Districts
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Cracking Occurences
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Packing Occurences
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Compactness Index
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                              </Col>
-                            </Row>
-                            <Row className="mt-3">
-                              <Col>
-                                <>
-                                  <Form.Label>Min</Form.Label>
-                                  <Form.Range />
-                                </>
-                              </Col>
-                              <Col>
-                                <>
-                                  <Form.Label>Max</Form.Label>
-                                  <Form.Range />
-                                </>
-                              </Col>
-                            </Row>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button
-                              variant="secondary"
-                              onClick={handleCloseAdjustFilter}
-                            >
-                              Close
-                            </Button>
-                            <Button
-                              variant="primary"
-                              onClick={handleCloseAdjustFilter}
-                            >
-                              Save Changes
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                      </>
-                    </Col>
-                  </Row>
-                  <Row className="mb-3">
-                    <Col>
-                      <>
-                        <Button
-                          variant="outline-success"
-                          size="sm"
-                          onClick={handleShowChangeViewSettings}
-                        >
-                          Change View Settings...
-                        </Button>
-
-                        <Modal
-                          show={showChangeViewSettings}
-                          onHide={handleCloseChangeViewSettings}
-                        >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Change View Settings</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body>
-                            <Row>
-                              <Col>
-                                <Alert variant="success">
-                                  <Alert.Heading>
-                                    Display the Cluters and Plans In a Way that
-                                    Suits You.
-                                  </Alert.Heading>
-                                  <p>
-                                    Depending how a plan is redistricted, each
-                                    can have variety of different
-                                    characteristics. (e.g., compactness,
-                                    demographics, etc). In order to analyze such
-                                    variation, you can display the cluster and
-                                    plans with different X-Y axis system.
-                                  </p>
-                                </Alert>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col>
-                                <Dropdown>
-                                  <Dropdown.Toggle
-                                    size="sm"
-                                    variant="success"
-                                    id="dropdown-basic"
-                                  >
-                                    X-axis: <b>No. of Opportunity Districts</b>
-                                  </Dropdown.Toggle>
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item href="#/action-1">
-                                      No. of Opportunity Districts
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-2">
-                                      No. of Opportunity Districts
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Cracking Occurences
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Packing Occurences
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Compactness Index
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                              </Col>
-                            </Row>
-                            <Row className="mt-3">
-                              <Col>
-                                <Dropdown>
-                                  <Dropdown.Toggle
-                                    size="sm"
-                                    variant="success"
-                                    id="dropdown-basic"
-                                  >
-                                    Y-axis:{" "}
-                                    <b>Average African-American Proportion</b>
-                                  </Dropdown.Toggle>
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item href="#/action-1">
-                                      Average African-American Proportion
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-2">
-                                      Average Asian Proportion
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Average Hispanic Proportion
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Average White Proportion
-                                    </Dropdown.Item>
-                                    <Dropdown.Item href="#/action-3">
-                                      Compactness Index
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                              </Col>
-                            </Row>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button
-                              variant="secondary"
-                              onClick={handleCloseChangeViewSettings}
-                            >
-                              Close
-                            </Button>
-                            <Button
-                              variant="primary"
-                              onClick={handleCloseChangeViewSettings}
-                            >
-                              Save Changes
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                      </>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <Button variant="outline-primary" size="sm">
-                        Learn More...
-                      </Button>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Tab>
-        <Tab eventKey="plan" title="Clustering Method">
-          <Row>
-            <Col lg={12} className="mb-3">
-              <Row>
-                <Col>
-                  <Card>
-                    <Card.Header className="align-middle">
-                      <Row>
-                        <Col>Change Distance Measure</Col>
-                      </Row>
-                    </Card.Header>
-                    <Card.Body>
-                      <Row className="gy-4">
-                        <Col md={6}>
-                          <Card
-                            className="selectable"
-                            bg={
-                              selectedDistanceMeasure === 3
-                                ? "primary"
-                                : "light"
-                            }
-                            text={selectedDistanceMeasure === 3 ? "white" : ""}
-                            onClick={() => setSelectedDistanceMeasure(3)}
-                          >
-                            <Card.Body>
-                              <Card.Title>Optimal Transport</Card.Title>
-                              <Card.Text>
-                                Some quick example text to build on the card
-                                title and make up the bulk of the card's
-                                content.
-                              </Card.Text>
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                        <Col md={6}>
-                          <Card
-                            className="selectable"
-                            bg={
-                              selectedDistanceMeasure === 1
-                                ? "primary"
-                                : "light"
-                            }
-                            text={selectedDistanceMeasure === 1 ? "white" : ""}
-                            onClick={() => setSelectedDistanceMeasure(1)}
-                          >
-                            <Card.Body>
-                              <Card.Title>Hamming Distance</Card.Title>
-                              <Card.Text>
-                                Some quick example text to build on the card
-                                title and make up the bulk of the card's
-                                content.
-                              </Card.Text>
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                        <Col md={6}>
-                          <Card
-                            className="selectable"
-                            bg={
-                              selectedDistanceMeasure === 2
-                                ? "primary"
-                                : "light"
-                            }
-                            text={selectedDistanceMeasure === 2 ? "white" : ""}
-                            onClick={() => setSelectedDistanceMeasure(2)}
-                          >
-                            <Card.Body>
-                              <Card.Title>Entropy Distance</Card.Title>
-                              <Card.Text>
-                                Some quick example text to build on the card
-                                title and make up the bulk of the card's
-                                content.
-                              </Card.Text>
-                            </Card.Body>
-                          </Card>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
+                    <Dropdown.Item
+                      id="voteSplit"
+                      onClick={handleChangeColorFilter}
+                    >
+                      Voting Split (Democratic: Blue, Republican: Red)
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfAAOpps"
+                      onClick={handleChangeColorFilter}
+                    >
+                      Avg. Num. of AA Opp. (Low: White, High: Purple)
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfAsianOpps"
+                      onClick={handleChangeColorFilter}
+                    >
+                      Avg. Num. of Asian Opp. (Low: White, High: Purple)
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfHispanicOpps"
+                      onClick={handleChangeColorFilter}
+                    >
+                      Avg. Num. of Hispanic Opp. (Low: White, High: Purple)
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfWhiteOpps"
+                      onClick={handleChangeColorFilter}
+                    >
+                      Avg. Num. of White Opp. (Low: White, High: Purple)
+                    </Dropdown.Item>
+                  </DropdownButton>
                 </Col>
               </Row>
-            </Col>
-            <Col lg={6}>
-              <Row>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col lg={6}>
+          <Card>
+            <Card.Header>Adjust Plot Axis</Card.Header>
+            <Card.Body>
+              <Row className="mb-3">
                 <Col>
-                  <Card>
-                    <Card.Header className="align-middle">
-                      <Row>
-                        <Col>Adjust Cluster Size</Col>
-                      </Row>
-                    </Card.Header>
-                    <Card.Body>
-                      <Row>
-                        <Col md={12}>
-                          <>
-                            <Form.Label>Minimum</Form.Label>
-                            <Form.Range />
-                          </>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={12}>
-                          <>
-                            <Form.Label>Maximum</Form.Label>
-                            <Form.Range />
-                          </>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <Button variant="outline-primary" size="sm">
-                            Learn More...
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
+                  <DropdownButton
+                    id="dropdownAxisX"
+                    title={"X Axis: " + formatAxisTitle(selectedAxisX)}
+                  >
+                    <Dropdown.Item id="default" onClick={handleChangeAxisX}>
+                      Default
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgDemocraticSplit"
+                      onClick={handleChangeAxisX}
+                    >
+                      Avg. Democratic Split
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgRepublicanSplit"
+                      onClick={handleChangeAxisX}
+                    >
+                      Avg. Republican Split
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfAAOpps"
+                      onClick={handleChangeAxisX}
+                    >
+                      Avg. Num. of AA Opp.
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfAsianOpps"
+                      onClick={handleChangeAxisX}
+                    >
+                      Avg. Num. of Asian Opp.
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfHispanicOpps"
+                      onClick={handleChangeAxisX}
+                    >
+                      Avg. Num. of Hispanic Opp.
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfWhiteOpps"
+                      onClick={handleChangeAxisX}
+                    >
+                      Avg. Num. of White Opp.
+                    </Dropdown.Item>
+                  </DropdownButton>
                 </Col>
               </Row>
-            </Col>
-            <Col lg={6}>
               <Row>
                 <Col>
-                  <Card>
-                    <Card.Header className="align-middle">
-                      <Row>
-                        <Col>Clustering Method Evaluation</Col>
-                      </Row>
-                    </Card.Header>
-                    <Card.Body>
-                      <Row>
-                        <Col>
-                          <Table striped bordered hover>
-                            <tbody>
-                              <tr className="text-center">
-                                <td colSpan={2}>
-                                  <b>Optimal Transport</b>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Mean Cluster Distance</td>
-                                <td>
-                                  <Badge bg="secondary">0.8</Badge>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col>
-                          <>
-                            <Button
-                              variant="outline-success"
-                              size="sm"
-                              onClick={handleShowClusteringMethodEvaluation}
-                            >
-                              View In Detail...
-                            </Button>
-
-                            <Modal
-                              show={showClusteringMethodEvaluation}
-                              onHide={handleCloseClusteringMethodEvaluation}
-                              size="xl"
-                            >
-                              <Modal.Header closeButton>
-                                <Modal.Title>
-                                  Evaluate Your Clustering Method
-                                </Modal.Title>
-                              </Modal.Header>
-                              <Modal.Body>
-                                <Row>
-                                  <Col>
-                                    <Alert variant="success">
-                                      <Alert.Heading>
-                                        See if the Ensemble is well-clustered.
-                                      </Alert.Heading>
-                                      <p>
-                                        What defines a 'good clustering'? It can
-                                        assessed by both, or either one of the
-                                        two criteria:
-                                      </p>
-                                      <p>
-                                        <b>First,</b> Each cluster is
-                                        well-defined (meaning that each cluster
-                                        is separate from other clusters).
-                                      </p>
-                                      <p>
-                                        <b>Second,</b> Each cluster is 'compact'
-                                        (meaning that each cluster is not too
-                                        spread out).
-                                      </p>
-                                      <hr />
-                                      <p className="mb-0">
-                                        In the table below, you can see the
-                                        comparison between each measure and the
-                                        optimal transport, the one known to be
-                                        the best so far.
-                                      </p>
-                                    </Alert>
-                                  </Col>
-                                </Row>
-                                <Row>
-                                  <Col>
-                                    <Table
-                                      striped
-                                      bordered
-                                      hover
-                                      className="text-center"
-                                    >
-                                      <thead>
-                                        <tr>
-                                          <td> </td>
-                                          <td colSpan={4}>
-                                            Cluster Separation Index
-                                          </td>
-                                          <td colSpan={4}>
-                                            In-Cluster Similarity Index
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td>Distance Measure</td>
-                                          <td>Median</td>
-                                          <td>Mean</td>
-                                          <td>Max</td>
-                                          <td>Min</td>
-                                          <td>Median</td>
-                                          <td>Mean</td>
-                                          <td>Max</td>
-                                          <td>Min</td>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        <tr>
-                                          <td>Center-Point Distance</td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.9</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.1</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.8</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.98</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                        </tr>
-
-                                        <tr>
-                                          <td>Hamming Distance</td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.9</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.1</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.8</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.98</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td>Total Variation Distance</td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.9</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.1</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.8</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.98</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td
-                                            style={{
-                                              backgroundColor: "yellow",
-                                            }}
-                                          >
-                                            Optimal Transport
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.9</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.1</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.7</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.8</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.98</Badge>
-                                          </td>
-                                          <td>
-                                            <Badge bg="secondary">0.43</Badge>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                    </Table>
-                                  </Col>
-                                </Row>
-                              </Modal.Body>
-                              <Modal.Footer>
-                                <Button
-                                  variant="secondary"
-                                  onClick={
-                                    handleCloseClusteringMethodEvaluation
-                                  }
-                                >
-                                  Close
-                                </Button>
-                                <Button
-                                  variant="primary"
-                                  onClick={
-                                    handleCloseClusteringMethodEvaluation
-                                  }
-                                >
-                                  Save Changes
-                                </Button>
-                              </Modal.Footer>
-                            </Modal>
-                          </>
-                        </Col>
-                      </Row>
-                    </Card.Body>
-                  </Card>
+                  <DropdownButton
+                    id="dropdownAxisY"
+                    title={"Y Axis: " + formatAxisTitle(selectedAxisY)}
+                  >
+                    <Dropdown.Item id="default" onClick={handleChangeAxisY}>
+                      Default
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgDemocraticSplit"
+                      onClick={handleChangeAxisY}
+                    >
+                      Avg. Democratic Split
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgRepublicanSplit"
+                      onClick={handleChangeAxisY}
+                    >
+                      Avg. Republican Split
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfAAOpps"
+                      onClick={handleChangeAxisY}
+                    >
+                      Avg. Num. of AA Opp.
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfAsianOpps"
+                      onClick={handleChangeAxisY}
+                    >
+                      Avg. Num. of Asian Opp.
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfHispanicOpps"
+                      onClick={handleChangeAxisY}
+                    >
+                      Avg. Num. of Hispanic Opp.
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="avgNumOfWhiteOpps"
+                      onClick={handleChangeAxisY}
+                    >
+                      Avg. Num. of White Opp.
+                    </Dropdown.Item>
+                  </DropdownButton>
                 </Col>
               </Row>
-            </Col>
-          </Row>
-        </Tab>
-      </Tabs>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </DataForm>
   );
 }

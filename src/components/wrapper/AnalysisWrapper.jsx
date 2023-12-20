@@ -23,7 +23,18 @@ export default function AnalysisWrapper({
   setselectedEnsemble,
   selectedDistanceMeasure,
   setSelectedDistanceMeasure,
-  setshowCurrentDistrictPlan,
+  setShowCurrentDistrictPlan,
+  setCurrentlyEnactedPlan,
+  setIsLoading,
+  currentlyEnactedPlan,
+  showInitial,
+  setShowInitial,
+  AZSummary,
+  LASummary,
+  NVSummary,
+  setAZSummary,
+  setLASummary,
+  setNVSummary,
 }) {
   const [clusterSetAnalysis, setClusterSetAnalysis] = useState(null);
   const [clusterAnalysis, setClusterAnalysis] = useState(null);
@@ -35,10 +46,14 @@ export default function AnalysisWrapper({
         selectedDistanceMeasure
       );
 
-      api.get(url).then((res) => {
-        const data = res.data;
-        setClusterSetAnalysis(data);
-      });
+      setIsLoading(true);
+      api
+        .get(url)
+        .then((res) => {
+          const data = res.data;
+          setClusterSetAnalysis(data);
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
@@ -50,20 +65,33 @@ export default function AnalysisWrapper({
         className="mb-3"
         onSelect={handleTabSelect}
       >
-        <Tab eventKey={"state"} title={"State Information"}>
+        <Tab eventKey={"state"} title={"State Overview"}>
           <StateInfoForm
             selectedState={selectedState}
             setSelectedState={setSelectedState}
-            setshowCurrentDistrictPlan={setshowCurrentDistrictPlan}
+            setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
+            setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
+            setIsLoading={setIsLoading}
+            AZSummary={AZSummary}
+            LASummary={LASummary}
+            NVSummary={NVSummary}
+            setAZSummary={setAZSummary}
+            setLASummary={setLASummary}
+            setNVSummary={setNVSummary}
+            setShowInitial={setShowInitial}
           />
         </Tab>
         <Tab eventKey="ensemble" title="Manage My Ensemble">
           <EnsembleInfoForm
+            selectedState={selectedState}
             selectedEnsemble={selectedEnsemble}
             setselectedEnsemble={setselectedEnsemble}
+            selectedDistanceMeasure={selectedDistanceMeasure}
+            setSelectedDistanceMeasure={setSelectedDistanceMeasure}
+            setIsLoading={setIsLoading}
           />
         </Tab>
-        <Tab eventKey="clusterSet" title="Manage Clusters">
+        <Tab eventKey="clusterSet" title="Manage My Clusters">
           <ClusterPlotForm
             displayedPlans={displayedPlans}
             setDisplayedPlans={setDisplayedPlans}
@@ -75,6 +103,7 @@ export default function AnalysisWrapper({
             setClusterSetAnalysis={setClusterSetAnalysis}
             clusterAnalysis={clusterAnalysis}
             setClusterAnalysis={setClusterAnalysis}
+            setIsLoading={setIsLoading}
           />
         </Tab>
         <Tab eventKey="cluster" title="Cluster Pattern">
@@ -88,6 +117,8 @@ export default function AnalysisWrapper({
             setClusterSetAnalysis={setClusterSetAnalysis}
             clusterAnalysis={clusterAnalysis}
             setClusterAnalysis={setClusterAnalysis}
+            setIsLoading={setIsLoading}
+            currentlyEnactedPlan={currentlyEnactedPlan}
           />
         </Tab>
       </Tabs>

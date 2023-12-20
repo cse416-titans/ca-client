@@ -22,7 +22,23 @@ import {
   TableWrapperPlan,
 } from "./TableExample";
 
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Label,
+  Legend,
+  Bar,
+  Rectangle,
+  BarChart,
+} from "recharts";
+
 import { useState } from "react";
+import { convertToStringSplitFromArrays } from "../../utils/StringFormat";
 
 export default function ClusterTableForm({
   displayedPlans,
@@ -34,6 +50,8 @@ export default function ClusterTableForm({
   setClusterSetAnalysis,
   clusterAnalysis,
   setClusterAnalysis,
+  setIsLoading,
+  currentlyEnactedPlan,
 }) {
   const [showSummaryTable, setShowSummaryTable] = useState(false);
   const [showAdjustFilter, setShowAdjustFilter] = useState(false);
@@ -51,6 +69,66 @@ export default function ClusterTableForm({
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
   };
+
+  if (clusterAnalysis === null) {
+    return <div>ERROR: NO_CLUSTER_SELECTED</div>;
+  }
+
+  if (!currentlyEnactedPlan) {
+    return <div>ERROR: NO_STATE_SELECTED</div>;
+  }
+
+  console.log("currentlyEnactedPlan");
+  console.log(currentlyEnactedPlan);
+
+  console.log("clusterAnalysis");
+  console.log(clusterAnalysis);
+
+  const numOfDistricts = clusterAnalysis[0]["aAPercentages"].length;
+  const numOfClusters = clusterAnalysis.length;
+
+  console.log("numOfDistricts");
+  console.log(numOfDistricts);
+
+  const voteSplitData = [];
+  const districtData = [];
+
+  for (let i = 0; i < numOfClusters; i++) {
+    voteSplitData.push({
+      democraticSplit: clusterAnalysis[i]["democraticSplit"].length,
+      republicanSplit: clusterAnalysis[i]["republicanSplit"].length,
+    });
+  }
+
+  Array.from(clusterAnalysis).forEach((plan) => {
+    districtData.push({
+      name: `${plan["name"]}`,
+      numOfMajMinDistricts: plan["numOfMajMinDistricts"],
+      numOfCompetitiveDistricts: plan["numOfCompetitiveDistricts"],
+      numOfAAOpp: plan["numOfAAOpp"],
+      numOfHispanicOpp: plan["numOfHispanicOpp"],
+      numOfAsianOpp: plan["numOfAsianOpp"],
+    });
+  });
+
+  console.log("districtData");
+  console.log(districtData);
+
+  const voteSplitFreq = [];
+
+  for (let i = 0; i <= numOfDistricts; i++) {
+    voteSplitFreq.push({
+      name: `${i}/${numOfDistricts - i}`,
+      freq: 0,
+    });
+  }
+
+  for (let i = 0; i < voteSplitData.length; i++) {
+    voteSplitFreq[voteSplitData[i]["democraticSplit"]]["freq"] += 1;
+  }
+
+  console.log("voteSplitFreq");
+  console.log(voteSplitFreq);
 
   return (
     <DataForm headerText={"ClusterTableForm"}>
@@ -104,6 +182,7 @@ export default function ClusterTableForm({
                         clusterSetAnalysis={clusterSetAnalysis}
                         setClusterAnalysis={setClusterAnalysis}
                         pageSize={10}
+                        setIsLoading={setIsLoading}
                       />
                     </Carousel.Item>
                     <Carousel.Item>
@@ -117,6 +196,7 @@ export default function ClusterTableForm({
                         setActiveClusterIdx={setActiveClusterIdx}
                         clusterAnalysis={clusterAnalysis}
                         pageSize={10}
+                        setIsLoading={setIsLoading}
                       />
                     </Carousel.Item>
                   </Carousel>
@@ -126,14 +206,16 @@ export default function ClusterTableForm({
                 <Col sm={12}>
                   <Stack direction="horizontal" gap={0}>
                     <>
-                      <Button
-                        className="mb-3 mx-3"
-                        variant="outline-success"
-                        size="sm"
-                        onClick={handleShowSummaryTable}
-                      >
-                        View In Detail...
-                      </Button>
+                      {index == 1 ? (
+                        <Button
+                          className="mb-3 mx-3"
+                          variant="outline-success"
+                          size="sm"
+                          onClick={handleShowSummaryTable}
+                        >
+                          View Cluster Chart...
+                        </Button>
+                      ) : null}
 
                       <Modal
                         show={showSummaryTable}
@@ -141,196 +223,82 @@ export default function ClusterTableForm({
                         onHide={handleCloseSummaryTable}
                       >
                         <Modal.Header closeButton>
-                          <Modal.Title>
-                            Tabular Summary of Ensemble #1
-                          </Modal.Title>
+                          <Modal.Title>Cluster Summary Chart</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                           <Row>
                             <Col>
-                              <Breadcrumb>
-                                {index === 0 ? (
-                                  <Breadcrumb.Item active>
-                                    Ensemble #1
-                                  </Breadcrumb.Item>
-                                ) : (
-                                  <>
-                                    <Breadcrumb.Item
-                                      onClick={() => setIndex(0)}
-                                    >
-                                      Ensemble #1
-                                    </Breadcrumb.Item>
-                                    <Breadcrumb.Item active>
-                                      {"Cluster #" + activeClusterIdx}
-                                    </Breadcrumb.Item>
-                                  </>
-                                )}
-                              </Breadcrumb>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col md={8}>
-                              <Carousel
-                                activeIndex={index}
-                                onSelect={handleSelect}
-                                slide={true}
-                                interval={null}
-                                controls={false}
-                                indicators={false}
+                              <h5>R/D Vote Split Frequency</h5>
+                              <BarChart
+                                width={500}
+                                height={300}
+                                data={voteSplitFreq}
+                                margin={{
+                                  top: 5,
+                                  right: 30,
+                                  left: 20,
+                                  bottom: 5,
+                                }}
                               >
-                                <Carousel.Item>
-                                  <TableWrapper
-                                    setIndex={setIndex}
-                                    displayedPlans={displayedPlans}
-                                    setDisplayedPlans={setDisplayedPlans}
-                                    activeClusterIdx={activeClusterIdx}
-                                    setActiveClusterIdx={setActiveClusterIdx}
-                                    setClusterAnalysis={setClusterAnalysis}
-                                    pageSize={20}
-                                  />
-                                </Carousel.Item>
-                                <Carousel.Item>
-                                  <TableWrapperPlan
-                                    displayedPlans={displayedPlans}
-                                    setDisplayedPlans={setDisplayedPlans}
-                                    activeClusterIdx={activeClusterIdx}
-                                    setActiveClusterIdx={setActiveClusterIdx}
-                                    pageSize={20}
-                                  />
-                                </Carousel.Item>
-                              </Carousel>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar
+                                  dataKey="freq"
+                                  label={{ position: "top" }}
+                                  fill="#8884d8"
+                                  activeBar={
+                                    <Rectangle fill="pink" stroke="blue" />
+                                  }
+                                />
+                              </BarChart>
                             </Col>
                             <Col>
-                              <Row>
-                                <Col>
-                                  <Card>
-                                    <Card.Header>
-                                      Change View Settings
-                                    </Card.Header>
-                                    <Card.Body>
-                                      <Row>
-                                        <Col>
-                                          <Form>
-                                            <Row>
-                                              <Col>
-                                                <Row>
-                                                  <Col>
-                                                    <Dropdown>
-                                                      <Dropdown.Toggle
-                                                        size="sm"
-                                                        variant="success"
-                                                        id="dropdown-basic"
-                                                      >
-                                                        Sort By:{" "}
-                                                        <b>Vote Margin</b>
-                                                      </Dropdown.Toggle>
-                                                      <Dropdown.Menu>
-                                                        <Dropdown.Item href="#/action-1">
-                                                          Vote Margin
-                                                        </Dropdown.Item>
-                                                        <Dropdown.Item href="#/action-2">
-                                                          No. of Opportunity
-                                                          Districts
-                                                        </Dropdown.Item>
-                                                        <Dropdown.Item href="#/action-3">
-                                                          Cracking Occurences
-                                                        </Dropdown.Item>
-                                                        <Dropdown.Item href="#/action-3">
-                                                          Packing Occurences
-                                                        </Dropdown.Item>
-                                                        <Dropdown.Item href="#/action-3">
-                                                          Compactness Index
-                                                        </Dropdown.Item>
-                                                      </Dropdown.Menu>
-                                                    </Dropdown>
-                                                  </Col>
-                                                </Row>
-                                                <Row className="mt-3">
-                                                  <Col>
-                                                    <Dropdown>
-                                                      <Dropdown.Toggle
-                                                        size="sm"
-                                                        variant="success"
-                                                        id="dropdown-basic"
-                                                      >
-                                                        Sort Order:{" "}
-                                                        <b>Ascending</b>
-                                                      </Dropdown.Toggle>
-
-                                                      <Dropdown.Menu>
-                                                        <Dropdown.Item href="#/action-1">
-                                                          Ascending
-                                                        </Dropdown.Item>
-                                                        <Dropdown.Item href="#/action-2">
-                                                          Descending
-                                                        </Dropdown.Item>
-                                                      </Dropdown.Menu>
-                                                    </Dropdown>
-                                                  </Col>
-                                                </Row>
-                                              </Col>
-                                            </Row>
-                                          </Form>
-                                        </Col>
-                                      </Row>
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              </Row>
-                              <Row className="mt-3">
-                                <Col>
-                                  <Card>
-                                    <Card.Header>Filter By...</Card.Header>
-                                    <Card.Body>
-                                      <Row>
-                                        <Col>
-                                          <Dropdown>
-                                            <Dropdown.Toggle
-                                              size="sm"
-                                              variant="success"
-                                              id="dropdown-basic"
-                                            >
-                                              Filter By: <b>Vote Margin</b>
-                                            </Dropdown.Toggle>
-
-                                            <Dropdown.Menu>
-                                              <Dropdown.Item href="#/action-1">
-                                                Vote Margin
-                                              </Dropdown.Item>
-                                              <Dropdown.Item href="#/action-2">
-                                                No. of Opportunity Districts
-                                              </Dropdown.Item>
-                                              <Dropdown.Item href="#/action-3">
-                                                Cracking Occurences
-                                              </Dropdown.Item>
-                                              <Dropdown.Item href="#/action-3">
-                                                Packing Occurences
-                                              </Dropdown.Item>
-                                              <Dropdown.Item href="#/action-3">
-                                                Compactness Index
-                                              </Dropdown.Item>
-                                            </Dropdown.Menu>
-                                          </Dropdown>
-                                        </Col>
-                                      </Row>
-                                      <Row className="mt-3">
-                                        <Col>
-                                          <>
-                                            <Form.Label>Min</Form.Label>
-                                            <Form.Range />
-                                          </>
-                                        </Col>
-                                        <Col>
-                                          <>
-                                            <Form.Label>Max</Form.Label>
-                                            <Form.Range />
-                                          </>
-                                        </Col>
-                                      </Row>
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              </Row>
+                              <h5>District Composition By Plan</h5>
+                              <BarChart
+                                width={500}
+                                height={300}
+                                data={districtData}
+                                margin={{
+                                  top: 5,
+                                  right: 30,
+                                  left: 20,
+                                  bottom: 5,
+                                }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar
+                                  dataKey="numOfMajMinDistricts"
+                                  stackId="a"
+                                  fill="#8884d8"
+                                />
+                                <Bar
+                                  dataKey="numOfCompetitiveDistricts"
+                                  stackId="a"
+                                  fill="#82ca9d"
+                                />
+                                <Bar
+                                  dataKey="numOfAAOpp"
+                                  stackId="a"
+                                  fill="purple"
+                                />
+                                <Bar
+                                  dataKey="numOfAsianOpp"
+                                  stackId="a"
+                                  fill="green"
+                                />
+                                <Bar
+                                  dataKey="numOfHispanicOpp"
+                                  stackId="a"
+                                  fill="blue"
+                                />
+                              </BarChart>
                             </Col>
                           </Row>
                         </Modal.Body>
@@ -344,22 +312,6 @@ export default function ClusterTableForm({
                         </Modal.Footer>
                       </Modal>
                     </>
-                    <Button
-                      className="m-3 mt-0"
-                      size="sm"
-                      variant="outline-primary"
-                    >
-                      {"Download .CSV..."}
-                    </Button>
-
-                    <Button
-                      className="m-3 mt-0"
-                      size="sm"
-                      variant="outline-primary"
-                      style={{ float: "right" }}
-                    >
-                      {"Learn More..."}
-                    </Button>
                   </Stack>
                 </Col>
               </Row>
@@ -370,235 +322,43 @@ export default function ClusterTableForm({
       <Row>
         <Col>
           <Card>
-            <Card.Header>Filter & View</Card.Header>
-            <Card.Body>
-              <Row className="mb-3">
-                <Col>
-                  <>
-                    <Button
-                      variant="outline-success"
-                      size="sm"
-                      onClick={handleShowAdjustFilter}
-                    >
-                      Change View Settings...
-                    </Button>
-
-                    <Modal
-                      show={showAdjustFilter}
-                      onHide={handleCloseAdjustFilter}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Change View Settings</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Row>
-                          <Col>
-                            <Alert variant="success">
-                              <Alert.Heading>
-                                Sort It and Find Your Item.
-                              </Alert.Heading>
-                              <p>
-                                It's a burden sorting through all clusters and
-                                plans. Use the dropdowns below to sort them.
-                              </p>
-                            </Alert>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Dropdown>
-                              <Dropdown.Toggle
-                                size="sm"
-                                variant="success"
-                                id="dropdown-basic"
-                              >
-                                Sort By: <b>Vote Margin</b>
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">
-                                  Vote Margin
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">
-                                  No. of Opportunity Districts
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                  Cracking Occurences
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                  Packing Occurences
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                  Compactness Index
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </Col>
-                        </Row>
-                        <Row className="mt-3">
-                          <Col>
-                            <Dropdown>
-                              <Dropdown.Toggle
-                                size="sm"
-                                variant="success"
-                                id="dropdown-basic"
-                              >
-                                Sort Order: <b>Ascending</b>
-                              </Dropdown.Toggle>
-
-                              <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">
-                                  Ascending
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">
-                                  Descending
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </Col>
-                        </Row>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleCloseAdjustFilter}
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          variant="primary"
-                          onClick={handleCloseAdjustFilter}
-                        >
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                  </>
-                </Col>
+            <Card.Header>
+              <Row>
+                <Col className="align-middle">Measures for Enacted Plan</Col>
               </Row>
-              <Row className="mb-3">
-                <Col>
-                  <>
-                    <Button
-                      variant="outline-success"
-                      size="sm"
-                      onClick={handleShowChangeViewSettings}
-                    >
-                      Adjust Filter...
-                    </Button>
-
-                    <Modal
-                      show={showChangeViewSettings}
-                      onHide={handleCloseChangeViewSettings}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Change View Settings</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Row>
-                          <Col>
-                            <Alert variant="success">
-                              <Alert.Heading>
-                                Filter Out Unwanted Items.
-                              </Alert.Heading>
-                              <p>
-                                Throw out the items you don't want to see, just
-                                focus on the ones you want.
-                              </p>
-                            </Alert>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Dropdown>
-                              <Dropdown.Toggle
-                                size="sm"
-                                variant="success"
-                                id="dropdown-basic"
-                              >
-                                Filter By: <b>Vote Margin</b>
-                              </Dropdown.Toggle>
-
-                              <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">
-                                  Vote Margin
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">
-                                  No. of Opportunity Districts
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                  Cracking Occurences
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                  Packing Occurences
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">
-                                  Compactness Index
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </Col>
-                        </Row>
-                        <Row className="mt-3">
-                          <Col>
-                            <>
-                              <Form.Label>Min</Form.Label>
-                              <Form.Range />
-                            </>
-                          </Col>
-                          <Col>
-                            <>
-                              <Form.Label>Max</Form.Label>
-                              <Form.Range />
-                            </>
-                          </Col>
-                        </Row>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleCloseChangeViewSettings}
-                        >
-                          Close
-                        </Button>
-                        <Button
-                          variant="primary"
-                          onClick={handleCloseChangeViewSettings}
-                        >
-                          Save Changes
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                  </>
-                </Col>
-              </Row>
+            </Card.Header>
+            <Card.Body className="p-0">
               <Row>
                 <Col>
-                  <Button variant="outline-primary" size="sm">
-                    Learn More...
-                  </Button>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col>
-          <Card border="info">
-            <Card.Header>Voting Estimation</Card.Header>
-            <Card.Body>
-              <Row className="mb-3">
-                <Col>
-                  <span>
-                    <b>2020 Presidential Election Data</b> is used to estimate
-                    the voting result. Click below to see how the voting margins
-                    for each cluster is calculated.
-                  </span>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Button variant="outline-info" size="sm">
-                    See How...
-                  </Button>
+                  <Table striped bordered hover className="text-center mb-0">
+                    <thead>
+                      <tr>
+                        <td>R-D Split</td>
+                        <td>Asian</td>
+                        <td>A-A</td>
+                        <td>Hispanic</td>
+                        <td>MajMin</td>
+                        <td>Compet.</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          {convertToStringSplitFromArrays(
+                            currentlyEnactedPlan["republicanSplit"],
+                            currentlyEnactedPlan["democraticSplit"]
+                          )}
+                        </td>
+                        <td>{currentlyEnactedPlan["numOfAsianOpp"]}</td>
+                        <td>{currentlyEnactedPlan["numOfAAOpp"]}</td>
+                        <td>{currentlyEnactedPlan["numOfHispanicOpp"]}</td>
+                        <td>{currentlyEnactedPlan["numOfMajMinDistricts"]}</td>
+                        <td>
+                          {currentlyEnactedPlan["numOfCompetitiveDistricts"]}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
                 </Col>
               </Row>
             </Card.Body>
