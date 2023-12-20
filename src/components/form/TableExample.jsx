@@ -452,11 +452,10 @@ function TableExamplePlan({
                                   const planId = formatPlanId(
                                     selectedState,
                                     selectedEnsemble,
-                                    selectedDistanceMeasure,
-                                    activeClusterIdx,
                                     `${row.cells[0].value}`
                                   );
 
+                                  console.log("planId");
                                   console.log(planId);
 
                                   const url = formatGetPlanBoundaryUrl(planId);

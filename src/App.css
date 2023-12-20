@@ -37,3 +37,9 @@ thead {
   left: 20%;
   bottom: 0%;
 }
+
+.refresh:hover {
+  cursor: pointer;
+  color: #007bff;
+  transition: 0.3s ease-in-out;
+}

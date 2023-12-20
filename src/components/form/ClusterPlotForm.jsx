@@ -386,6 +386,7 @@ function PlanScatterPlot({
       selectedPlanIdx
     );
 
+    console.log("selected plan idx");
     console.log(planId);
 
     let url = formatGetPlanBoundaryUrl(planId);

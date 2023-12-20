@@ -33,6 +33,7 @@ import {
   formatGetDistanceMeasureComparisonUrl,
   formatGetEnsembleAnalysisUrl,
   formatGetStateAnalysisUrl,
+  formatThousands,
   makeDistanceMeasureName,
 } from "../../../util/FormatUtil";
 import api from "../../../api/client";
@@ -272,8 +273,10 @@ export default function EnsembleInfoForm({
                       return (
                         <>
                           <h5 key={i}>
-                            {stateAnalysis[key]["numOfPlans"] /
-                              stateAnalysis[key]["numOfClusterSets"]}{" "}
+                            {formatThousands(
+                              stateAnalysis[key]["numOfPlans"] /
+                                stateAnalysis[key]["numOfClusterSets"]
+                            )}{" "}
                             Plans
                           </h5>
                           <Table striped bordered hover className="text-center">

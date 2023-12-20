@@ -130,3 +130,7 @@ export const formatAxisTitle = (axis) => {
 export const getClusterId = (clusterName) => {
   return clusterName.split("-")[1];
 };
+
+export const formatThousands = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

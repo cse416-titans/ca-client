@@ -287,10 +287,21 @@ function App() {
           >
             <Stack gap={0} className="content-center">
               <Header>
-                <h4 style={{ fontWeight: "bold" }}>
-                  Titan: Redistricting Cluster Analyzer
-                </h4>
+                <Row>
+                  <Col>
+                    <h4
+                      onClick={(e) => {
+                        window.location.reload();
+                      }}
+                      style={{ fontWeight: "bold" }}
+                      className="refresh"
+                    >
+                      Titan: Redistricting Cluster Analyzer
+                    </h4>
+                  </Col>
+                </Row>
               </Header>
+
               <AnalysisWrapper
                 displayedPlans={displayedPlans}
                 setDisplayedPlans={setDisplayedPlans}
