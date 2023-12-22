@@ -582,12 +582,12 @@ export function TableWrapper({
         Header: "Avg. Split",
         columns: [
           {
-            Header: "Dem",
-            accessor: "avgDemocraticSplit",
-          },
-          {
             Header: "Rep",
             accessor: "avgRepublicanSplit",
+          },
+          {
+            Header: "Dem",
+            accessor: "avgDemocraticSplit",
           },
         ],
       },
@@ -716,7 +716,13 @@ export function TableWrapperPlan({
     });
   });
 
+  console.log("tableData");
   console.log(tableData);
+
+  //sort tableData by planId
+  tableData.sort((a, b) => {
+    return a.planId - b.planId;
+  });
 
   const columns = [
     {
@@ -732,12 +738,12 @@ export function TableWrapperPlan({
       Header: "Split",
       columns: [
         {
-          Header: "Dem",
-          accessor: "democraticSplit",
-        },
-        {
           Header: "Rep",
           accessor: "republicanSplit",
+        },
+        {
+          Header: "Dem",
+          accessor: "democraticSplit",
         },
       ],
     },
@@ -761,7 +767,7 @@ export function TableWrapperPlan({
           accessor: "numOfMajMinDistricts",
         },
         {
-          Header: "Compte.",
+          Header: "Compet.",
           accessor: "numOfCompetitiveDistricts",
         },
       ],

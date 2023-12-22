@@ -118,8 +118,8 @@ export const formatAxisTitle = (axis) => {
       return "Avg. AA Opps";
     case "avgNumOfAsianOpps":
       return "Avg. Asian Opps";
-    case "avgNumOfWhiteOpps":
-      return "Avg. White Opps";
+    case "avgNumOfMajMinDistricts":
+      return "Avg. Maj-Min Districts";
     case "avgNumOfHispanicOpps":
       return "Avg. Hispanic Opps";
     default:

@@ -130,6 +130,14 @@ export default function ClusterTableForm({
   console.log("voteSplitFreq");
   console.log(voteSplitFreq);
 
+  //remove all element whose freq is 0
+  for (let i = 0; i < voteSplitFreq.length; i++) {
+    if (voteSplitFreq[i]["freq"] === 0) {
+      voteSplitFreq.splice(i, 1);
+      i--;
+    }
+  }
+
   return (
     <DataForm headerText={"ClusterTableForm"}>
       <Row className="mb-3">
@@ -213,25 +221,24 @@ export default function ClusterTableForm({
                           size="sm"
                           onClick={handleShowSummaryTable}
                         >
-                          View Cluster Chart...
+                          View R-D Split Frequency...
                         </Button>
                       ) : null}
 
                       <Modal
                         show={showSummaryTable}
-                        size="xl"
+                        size="lg"
                         onHide={handleCloseSummaryTable}
                       >
                         <Modal.Header closeButton>
-                          <Modal.Title>Cluster Summary Chart</Modal.Title>
+                          <Modal.Title>R/D Vote Split Frequency</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
                           <Row>
                             <Col>
-                              <h5>R/D Vote Split Frequency</h5>
                               <BarChart
-                                width={500}
-                                height={300}
+                                width={700}
+                                height={400}
                                 data={voteSplitFreq}
                                 margin={{
                                   top: 5,
@@ -252,51 +259,6 @@ export default function ClusterTableForm({
                                   activeBar={
                                     <Rectangle fill="pink" stroke="blue" />
                                   }
-                                />
-                              </BarChart>
-                            </Col>
-                            <Col>
-                              <h5>District Composition By Plan</h5>
-                              <BarChart
-                                width={500}
-                                height={300}
-                                data={districtData}
-                                margin={{
-                                  top: 5,
-                                  right: 30,
-                                  left: 20,
-                                  bottom: 5,
-                                }}
-                              >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar
-                                  dataKey="numOfMajMinDistricts"
-                                  stackId="a"
-                                  fill="#8884d8"
-                                />
-                                <Bar
-                                  dataKey="numOfCompetitiveDistricts"
-                                  stackId="a"
-                                  fill="#82ca9d"
-                                />
-                                <Bar
-                                  dataKey="numOfAAOpp"
-                                  stackId="a"
-                                  fill="purple"
-                                />
-                                <Bar
-                                  dataKey="numOfAsianOpp"
-                                  stackId="a"
-                                  fill="green"
-                                />
-                                <Bar
-                                  dataKey="numOfHispanicOpp"
-                                  stackId="a"
-                                  fill="blue"
                                 />
                               </BarChart>
                             </Col>

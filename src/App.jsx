@@ -279,54 +279,52 @@ function App() {
             </MapWrapper>
           </Col>
         ) : null}
-        {displayedPlansRight.length === 0 ? (
-          <Col
-            lg={width}
-            className="px-0"
-            style={{ boxShadow: "10px 5px 5px red", zIndex: 1 }}
-          >
-            <Stack gap={0} className="content-center">
-              <Header>
-                <Row>
-                  <Col>
-                    <h4
-                      onClick={(e) => {
-                        window.location.reload();
-                      }}
-                      style={{ fontWeight: "bold" }}
-                      className="refresh"
-                    >
-                      Titan: Redistricting Cluster Analyzer
-                    </h4>
-                  </Col>
-                </Row>
-              </Header>
+        <Col
+          lg={width}
+          className="px-0"
+          style={{ boxShadow: "10px 5px 5px red", zIndex: 1 }}
+        >
+          <Stack gap={0} className="content-center">
+            <Header>
+              <Row>
+                <Col>
+                  <h4
+                    onClick={(e) => {
+                      window.location.reload();
+                    }}
+                    style={{ fontWeight: "bold" }}
+                    className="refresh"
+                  >
+                    Titan: Redistricting Cluster Analyzer
+                  </h4>
+                </Col>
+              </Row>
+            </Header>
 
-              <AnalysisWrapper
-                displayedPlans={displayedPlans}
-                setDisplayedPlans={setDisplayedPlans}
-                selectedState={selectedState}
-                setSelectedState={setSelectedState}
-                selectedEnsemble={selectedEnsemble}
-                setselectedEnsemble={setselectedEnsemble}
-                selectedDistanceMeasure={selectedDistanceMeasure}
-                setSelectedDistanceMeasure={setSelectedDistanceMeasure}
-                setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
-                setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
-                setIsLoading={setIsLoading}
-                currentlyEnactedPlan={currentlyEnactedPlan}
-                showInitial={showInitial}
-                setShowInitial={setShowInitial}
-                AZSummary={AZSummary}
-                LASummary={LASummary}
-                NVSummary={NVSummary}
-                setAZSummary={setAZSummary}
-                setLASummary={setLASummary}
-                setNVSummary={setNVSummary}
-              />
-            </Stack>
-          </Col>
-        ) : null}
+            <AnalysisWrapper
+              displayedPlans={displayedPlans}
+              setDisplayedPlans={setDisplayedPlans}
+              selectedState={selectedState}
+              setSelectedState={setSelectedState}
+              selectedEnsemble={selectedEnsemble}
+              setselectedEnsemble={setselectedEnsemble}
+              selectedDistanceMeasure={selectedDistanceMeasure}
+              setSelectedDistanceMeasure={setSelectedDistanceMeasure}
+              setShowCurrentDistrictPlan={setShowCurrentDistrictPlan}
+              setCurrentlyEnactedPlan={setCurrentlyEnactedPlan}
+              setIsLoading={setIsLoading}
+              currentlyEnactedPlan={currentlyEnactedPlan}
+              showInitial={showInitial}
+              setShowInitial={setShowInitial}
+              AZSummary={AZSummary}
+              LASummary={LASummary}
+              NVSummary={NVSummary}
+              setAZSummary={setAZSummary}
+              setLASummary={setLASummary}
+              setNVSummary={setNVSummary}
+            />
+          </Stack>
+        </Col>
       </Row>
     </Container>
   );

@@ -360,8 +360,29 @@ function Map({
   /*const randomPlanData = initRandomPlanData(selectedState);*/
   /*const randomPlanData = [...displayedPlans];*/
 
+  let mapContainerStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "50%",
+    height: "100%",
+    zIndex: 999,
+  };
+
+  // if isRight is true, then mapContainerStyle has fixed position, width, and height
+  if (isRight) {
+    mapContainerStyle = {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      width: "50%",
+      height: "100%",
+      zIndex: 999,
+    };
+  }
+
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={mapContainerStyle}>
       {isRight && (
         <Button
           variant="danger"

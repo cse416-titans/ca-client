@@ -108,6 +108,9 @@ function PlanScatterPlot({
     return <div></div>;
   }
 
+  console.log("clusterAnalysis");
+  console.log(clusterAnalysis);
+
   const numOfDistricts = clusterAnalysis[0]["aAPercentages"].length;
 
   const planScatterPlotData = { labels: [], datasets: [] };
@@ -121,12 +124,12 @@ function PlanScatterPlot({
   const planScatterPlotCoordinatesNumOfAAOpp = [];
   const planScatterPlotCoordinatesNumOfAsianOpp = [];
   const planScatterPlotCoordinatesNumOfHispanicOpp = [];
-  const planScatterPlotCoordinatesNumOfWhiteOpp = [];
+  const planScatterPlotCoordinatesNumOfMajMinDistricts = [];
   const planScatterPlotColorsVote = [];
   const planScatterPlotColorsNumOfAAOpp = [];
   const planScatterPlotColorsNumOfAsianOpp = [];
   const planScatterPlotColorsNumOfHispanicOpp = [];
-  const planScatterPlotColorsNumOfWhiteOpp = [];
+  const planScatterPlotColorsNumOfMajMinDistricts = [];
 
   const getVoteColor = (demSplit, repSplit) => {
     return demSplit > repSplit
@@ -169,9 +172,14 @@ function PlanScatterPlot({
       planScatterPlotCoordinatesNumOfAAOpp.push(plan["numOfAAOpp"]);
       planScatterPlotCoordinatesNumOfAsianOpp.push(plan["numOfAsianOpp"]);
       planScatterPlotCoordinatesNumOfHispanicOpp.push(plan["numOfHispanicOpp"]);
-      planScatterPlotCoordinatesNumOfWhiteOpp.push(plan["numOfWhiteOpp"]);
+      planScatterPlotCoordinatesNumOfMajMinDistricts.push(
+        plan["numOfMajMinDistricts"]
+      );
       planScatterPlotColorsVote.push(
-        getVoteColor(plan["democraticSplit"], plan["republicanSplit"])
+        getVoteColor(
+          plan["democraticSplit"].length,
+          plan["republicanSplit"].length
+        )
       );
       planScatterPlotColorsNumOfAAOpp.push(
         getOppsColor(plan["numOfAAOpp"], numOfDistricts)
@@ -182,8 +190,8 @@ function PlanScatterPlot({
       planScatterPlotColorsNumOfHispanicOpp.push(
         getOppsColor(plan["numOfHispanicOpp"], numOfDistricts)
       );
-      planScatterPlotColorsNumOfWhiteOpp.push(
-        getOppsColor(plan["numOfWhiteOpp"], numOfDistricts)
+      planScatterPlotColorsNumOfMajMinDistricts.push(
+        getOppsColor(plan["numOfMajMinDistricts"], numOfDistricts)
       );
     } else {
       planScatterPlotCoordinates.push({
@@ -197,7 +205,9 @@ function PlanScatterPlot({
       planScatterPlotCoordinatesNumOfAAOpp.push(plan["numOfAAOpp"]);
       planScatterPlotCoordinatesNumOfAsianOpp.push(plan["numOfAsianOpp"]);
       planScatterPlotCoordinatesNumOfHispanicOpp.push(plan["numOfHispanicOpp"]);
-      planScatterPlotCoordinatesNumOfWhiteOpp.push(plan["numOfWhiteOpp"]);
+      planScatterPlotCoordinatesNumOfMajMinDistricts.push(
+        plan["numOfMajMinDistricts"]
+      );
     }
   });
 
@@ -219,8 +229,8 @@ function PlanScatterPlot({
     case "avgNumOfHispanicOpps":
       colorArr = planScatterPlotColorsNumOfHispanicOpp;
       break;
-    case "avgNumOfWhiteOpps":
-      colorArr = planScatterPlotColorsNumOfWhiteOpp;
+    case "avgNumOfMajMinDistricts":
+      colorArr = planScatterPlotColorsNumOfMajMinDistricts;
       break;
     default:
       colorArr = planScatterPlotColorsVote;
@@ -247,8 +257,8 @@ function PlanScatterPlot({
     case "avgNumOfHispanicOpps":
       coordXArr = planScatterPlotCoordinatesNumOfHispanicOpp;
       break;
-    case "avgNumOfWhiteOpps":
-      coordXArr = planScatterPlotCoordinatesNumOfWhiteOpp;
+    case "avgNumOfMajMinDistricts":
+      coordXArr = planScatterPlotCoordinatesNumOfMajMinDistricts;
       break;
     default:
       coordXArr = planScatterPlotCoordinates;
@@ -275,8 +285,8 @@ function PlanScatterPlot({
     case "avgNumOfHispanicOpps":
       coordYArr = planScatterPlotCoordinatesNumOfHispanicOpp;
       break;
-    case "avgNumOfWhiteOpps":
-      coordYArr = planScatterPlotCoordinatesNumOfWhiteOpp;
+    case "avgNumOfMajMinDistricts":
+      coordYArr = planScatterPlotCoordinatesNumOfMajMinDistricts;
       break;
     default:
       coordYArr = planScatterPlotCoordinates;
@@ -498,12 +508,12 @@ function ClusterScatterPlot({
   const clusterSetScatterPlotCoordinatesAvgNumOfAAOpps = [];
   const clusterSetScatterPlotCoordinatesAvgNumOfAsianOpps = [];
   const clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps = [];
-  const clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps = [];
+  const clusterSetScatterPlotCoordinatesAvgNumOfMajMinDistricts = [];
   const clusterSetScatterPlotColorsVote = [];
   const clusterSetScatterPlotColorsAvgNumOfAAOpps = [];
   const clusterSetScatterPlotColorsAvgNumOfAsianOpps = [];
   const clusterSetScatterPlotColorsAvgNumOfHispanicOpps = [];
-  const clusterSetScatterPlotColorsAvgNumOfWhiteOpps = [];
+  const clusterSetScatterPlotColorsAvgNumOfMajMinDistricts = [];
   const clusterSetScatterPlotSize = [];
 
   const maxNumOfPlans = Math.max(
@@ -564,8 +574,8 @@ function ClusterScatterPlot({
     clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps.push(
       cluster["avgNumOfHispanicOpps"]
     );
-    clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps.push(
-      cluster["avgNumOfWhiteOpps"]
+    clusterSetScatterPlotCoordinatesAvgNumOfMajMinDistricts.push(
+      cluster["avgNumOfMajMinDistricts"]
     );
     clusterSetScatterPlotColorsVote.push(
       getVoteColor(cluster["avgDemocraticSplit"], cluster["avgRepublicanSplit"])
@@ -579,8 +589,8 @@ function ClusterScatterPlot({
     clusterSetScatterPlotColorsAvgNumOfHispanicOpps.push(
       getOppsColor(cluster["avgNumOfHispanicOpps"], numOfDistricts)
     );
-    clusterSetScatterPlotColorsAvgNumOfWhiteOpps.push(
-      getOppsColor(cluster["avgNumOfWhiteOpps"], numOfDistricts)
+    clusterSetScatterPlotColorsAvgNumOfMajMinDistricts.push(
+      getOppsColor(cluster["avgNumOfMajMinDistricts"], numOfDistricts)
     );
   });
 
@@ -601,8 +611,8 @@ function ClusterScatterPlot({
     case "avgNumOfHispanicOpps":
       colorArr = clusterSetScatterPlotColorsAvgNumOfHispanicOpps;
       break;
-    case "avgNumOfWhiteOpps":
-      colorArr = clusterSetScatterPlotColorsAvgNumOfWhiteOpps;
+    case "avgNumOfMajMinDistricts":
+      colorArr = clusterSetScatterPlotColorsAvgNumOfMajMinDistricts;
       break;
     default:
       colorArr = clusterSetScatterPlotColorsVote;
@@ -629,8 +639,8 @@ function ClusterScatterPlot({
     case "avgNumOfHispanicOpps":
       coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps;
       break;
-    case "avgNumOfWhiteOpps":
-      coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps;
+    case "avgNumOfMajMinDistricts":
+      coordXArr = clusterSetScatterPlotCoordinatesAvgNumOfMajMinDistricts;
       break;
     default:
       coordXArr = clusterSetScatterPlotCoordinates;
@@ -657,8 +667,8 @@ function ClusterScatterPlot({
     case "avgNumOfHispanicOpps":
       coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfHispanicOpps;
       break;
-    case "avgNumOfWhiteOpps":
-      coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfWhiteOpps;
+    case "avgNumOfMajMinDistricts":
+      coordYArr = clusterSetScatterPlotCoordinatesAvgNumOfMajMinDistricts;
       break;
     default:
       coordYArr = clusterSetScatterPlotCoordinates;
@@ -1033,10 +1043,10 @@ export default function ClusterPlotForm({
                       Avg. Num. of Hispanic Opp. (Low: White, High: Purple)
                     </Dropdown.Item>
                     <Dropdown.Item
-                      id="avgNumOfWhiteOpps"
+                      id="avgNumOfMajMinDistricts"
                       onClick={handleChangeColorFilter}
                     >
-                      Avg. Num. of White Opp. (Low: White, High: Purple)
+                      Avg. Num. of Maj-Min Districts. (Low: White, High: Purple)
                     </Dropdown.Item>
                   </DropdownButton>
                 </Col>
@@ -1088,10 +1098,10 @@ export default function ClusterPlotForm({
                       Avg. Num. of Hispanic Opp.
                     </Dropdown.Item>
                     <Dropdown.Item
-                      id="avgNumOfWhiteOpps"
+                      id="avgNumOfMajMinDistricts"
                       onClick={handleChangeAxisX}
                     >
-                      Avg. Num. of White Opp.
+                      Avg. Num. of Maj-Min Districts
                     </Dropdown.Item>
                   </DropdownButton>
                 </Col>
@@ -1136,10 +1146,10 @@ export default function ClusterPlotForm({
                       Avg. Num. of Hispanic Opp.
                     </Dropdown.Item>
                     <Dropdown.Item
-                      id="avgNumOfWhiteOpps"
+                      id="avgNumOfMajMinDistricts"
                       onClick={handleChangeAxisY}
                     >
-                      Avg. Num. of White Opp.
+                      Avg. Num. of Maj-Min Districts
                     </Dropdown.Item>
                   </DropdownButton>
                 </Col>

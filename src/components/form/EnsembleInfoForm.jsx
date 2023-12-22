@@ -46,7 +46,7 @@ import { DMComparison } from "../clustering-pane/DMComparison";
  * Option includes: 1) ensemble selection dropdown menu
  */
 
-function EnsembleAssociationGraph({ data }) {
+function EnsembleAssociationGraph({ data, selectedState }) {
   let dataArr = {};
   let keys = [...Object.keys({ ...data } || {})];
   let sizeArr = [250, 1000, 5000];
@@ -104,54 +104,73 @@ function EnsembleAssociationGraph({ data }) {
   5000 31 
   */
 
-  const clusterData = [
-    { x: 100, y: 5 },
-    { x: 500, y: 11 },
-    { x: 1000, y: 15 },
-    { x: 1500, y: 19 },
-    { x: 2000, y: 20 },
-    { x: 2500, y: 23 },
-    { x: 3000, y: 24 },
-    { x: 3500, y: 29 },
-    { x: 4000, y: 30 },
-    { x: 4500, y: 31 },
-    { x: 5000, y: 31 },
-  ];
+  let clusterData = [];
+
+  switch (selectedState) {
+    case "AZ":
+      clusterData = [
+        { x: 250, y: 5 },
+        { x: 500, y: 11 },
+        { x: 1000, y: 15 },
+        { x: 1500, y: 19 },
+        { x: 2000, y: 20 },
+        { x: 2500, y: 23 },
+        { x: 3000, y: 24 },
+        { x: 3500, y: 29 },
+        { x: 4000, y: 30 },
+        { x: 4500, y: 31 },
+        { x: 5000, y: 31 },
+      ];
+      break;
+    case "LA":
+      clusterData = [
+        { x: 250, y: 9 },
+        { x: 500, y: 11 },
+        { x: 1000, y: 18 },
+        { x: 1500, y: 19 },
+        { x: 2000, y: 20 },
+        { x: 2500, y: 23 },
+        { x: 3000, y: 30 },
+        { x: 3500, y: 35 },
+        { x: 4000, y: 38 },
+        { x: 4500, y: 40 },
+        { x: 5000, y: 40 },
+      ];
+      break;
+    case "NV":
+      clusterData = [
+        { x: 250, y: 9 },
+        { x: 500, y: 11 },
+        { x: 1000, y: 18 },
+        { x: 1500, y: 19 },
+        { x: 2000, y: 20 },
+        { x: 2500, y: 23 },
+        { x: 3000, y: 30 },
+        { x: 3500, y: 35 },
+        { x: 4000, y: 38 },
+        { x: 4500, y: 40 },
+        { x: 5000, y: 40 },
+      ];
+      break;
+
+    default:
+      break;
+  }
 
   return (
     <Row>
       <Col>
-        <h5>Cluster Limit (For DB-Stored Ensemble)</h5>
-        <LineChart width={450} height={200} data={feedOrdered}>
+        <LineChart width={750} height={400} data={clusterData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="size"></XAxis>
+          <XAxis dataKey="x">
+            <Label dy={10}>Number of Plans</Label>
+          </XAxis>
           <YAxis>
             <Label angle={270}>Num. of Clusters</Label>
           </YAxis>
           <Tooltip />
-          <Legend />
-          <Line type="monotone" connectNulls dataKey="Hamming" stroke="red" />
-          <Line type="monotone" connectNulls dataKey="Entropy" stroke="green" />
           <Line
-            type="monotone"
-            connectNulls
-            dataKey="Optimal Transport"
-            stroke="blue"
-          />
-        </LineChart>
-      </Col>
-      <Col>
-        <h5>Cluster Limit (Using 5,000 Hamming-Clustered Plans)</h5>
-        <LineChart width={450} height={200} data={clusterData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="x"></XAxis>
-          <YAxis>
-            <Label angle={270}>Num. of Clusters</Label>
-          </YAxis>
-          <Tooltip />
-          <Legend />
-          <Line
-            label={{ position: "top" }}
+            label={{ position: "bottom" }}
             type="monotone"
             connectNulls
             dataKey="y"
@@ -385,14 +404,15 @@ export default function EnsembleInfoForm({
       <Row>
         <Col>
           <>
-            <Modal show={showGraph} onHide={handleCloseGraph}>
+            <Modal size="lg" show={showGraph} onHide={handleCloseGraph}>
               <Modal.Header closeButton>
-                <Modal.Title>Select an Ensemble</Modal.Title>
+                <Modal.Title>Ensemble Size and Cluster Association</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Row>
                   <EnsembleAssociationGraph
                     data={JSON.parse(JSON.stringify(associationSummary))}
+                    selectedState={selectedState}
                   />
                 </Row>
               </Modal.Body>
@@ -414,7 +434,7 @@ export default function EnsembleInfoForm({
               onHide={handleSCloseDMEvaluation}
             >
               <Modal.Header closeButton>
-                <Modal.Title>Select an Ensemble</Modal.Title>
+                <Modal.Title>Distance Measure Evaluation</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Row>
